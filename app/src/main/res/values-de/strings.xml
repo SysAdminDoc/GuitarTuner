@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GuitarTuner</string>
+    <string name="status_permission_required">Mikrofonberechtigung erforderlich</string>
+    <string name="status_ready">Bereit</string>
+    <string name="status_listening">Hoert zu</string>
+    <string name="status_input_clipping">Eingang uebersteuert</string>
+    <string name="status_no_string_detected">Keine Gitarrensaite erkannt</string>
+    <string name="status_detected">Erkannt</string>
+    <string name="target_waiting_for_string">Wartet auf Saite</string>
+    <string name="guidance_strum_open_string">Leere Saite anschlagen</string>
+    <string name="guidance_play_softer">Leiser spielen</string>
+    <string name="guidance_try_one_string">Eine Saite versuchen</string>
+    <string name="guidance_tune_up">Hoeher stimmen</string>
+    <string name="guidance_tune_down">Tiefer stimmen</string>
+    <string name="guidance_in_tune">Gestimmt</string>
+    <string name="action_allow_mic">Mikrofon erlauben</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_start">Start</string>
+    <string name="action_stop">Stopp</string>
+    <string name="action_set_favorite">Favorit setzen</string>
+    <string name="action_import">Importieren</string>
+    <string name="action_export">Exportieren</string>
+    <string name="action_privacy">Datenschutz</string>
+    <string name="startup_standard">Standard</string>
+    <string name="startup_last">Letzte</string>
+    <string name="startup_favorite">Favorit</string>
+    <string name="label_tuning">Stimmung</string>
+    <string name="label_available_tunings">Verfuegbare Stimmungen</string>
+    <string name="tuning_custom_suffix">%1$s benutzerdefiniert</string>
+    <string name="frequency_placeholder">-- Hz</string>
+    <string name="frequency_value">%1$s Hz</string>
+    <string name="cents_placeholder">-- cents</string>
+    <string name="cents_value">%1$s cents</string>
+    <string name="file_imported_tunings">%1$d benutzerdefinierte Stimmung(en) importiert</string>
+    <string name="file_exported_tunings">%1$d benutzerdefinierte Stimmung(en) exportiert</string>
+    <string name="file_no_custom_tunings">Keine benutzerdefinierten Stimmungen zum Exportieren</string>
+    <string name="privacy_title">Datenschutz</string>
+    <string name="privacy_summary">GuitarTuner verarbeitet Mikrofon-Audio nur lokal zum Stimmen.</string>
+    <string name="privacy_done">Fertig</string>
+    <string-array name="privacy_points">
+        <item>Audio wird auf diesem Geraet analysiert, solange das Stimmgeraet sichtbar ist.</item>
+        <item>Audiodaten werden nicht gespeichert, exportiert oder hochgeladen.</item>
+        <item>Die App deklariert nur die Mikrofonberechtigung und keine Netzwerkberechtigung.</item>
+        <item>Start-Stimmungsoptionen bleiben auf diesem Geraet, bis App-Daten geloescht werden oder die App deinstalliert wird.</item>
+        <item>Kontakt: replace-before-release@example.com.</item>
+    </string-array>
+</resources>

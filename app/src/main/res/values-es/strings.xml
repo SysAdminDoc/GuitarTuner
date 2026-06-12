@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GuitarTuner</string>
+    <string name="status_permission_required">Se requiere permiso de microfono</string>
+    <string name="status_ready">Listo</string>
+    <string name="status_listening">Escuchando</string>
+    <string name="status_input_clipping">La entrada esta saturada</string>
+    <string name="status_no_string_detected">No se detecto una cuerda de guitarra</string>
+    <string name="status_detected">Detectado</string>
+    <string name="target_waiting_for_string">Esperando cuerda</string>
+    <string name="guidance_strum_open_string">Toca una cuerda al aire</string>
+    <string name="guidance_play_softer">Toca mas suave</string>
+    <string name="guidance_try_one_string">Prueba una cuerda</string>
+    <string name="guidance_tune_up">Sube la afinacion</string>
+    <string name="guidance_tune_down">Baja la afinacion</string>
+    <string name="guidance_in_tune">Afinada</string>
+    <string name="action_allow_mic">Permitir microfono</string>
+    <string name="action_pause">Pausar</string>
+    <string name="action_start">Iniciar</string>
+    <string name="action_stop">Detener</string>
+    <string name="action_set_favorite">Guardar favorita</string>
+    <string name="action_import">Importar</string>
+    <string name="action_export">Exportar</string>
+    <string name="action_privacy">Privacidad</string>
+    <string name="startup_standard">Estandar</string>
+    <string name="startup_last">Ultima</string>
+    <string name="startup_favorite">Favorita</string>
+    <string name="label_tuning">Afinacion</string>
+    <string name="label_available_tunings">Afinaciones disponibles</string>
+    <string name="tuning_custom_suffix">%1$s personalizada</string>
+    <string name="frequency_placeholder">-- Hz</string>
+    <string name="frequency_value">%1$s Hz</string>
+    <string name="cents_placeholder">-- cents</string>
+    <string name="cents_value">%1$s cents</string>
+    <string name="file_imported_tunings">Se importaron %1$d afinacion(es) personalizadas</string>
+    <string name="file_exported_tunings">Se exportaron %1$d afinacion(es) personalizadas</string>
+    <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>
+    <string name="privacy_title">Privacidad</string>
+    <string name="privacy_summary">GuitarTuner procesa el audio del microfono localmente solo para afinar.</string>
+    <string name="privacy_done">Listo</string>
+    <string-array name="privacy_points">
+        <item>El audio se analiza en este dispositivo mientras el afinador esta visible.</item>
+        <item>Las muestras de audio no se guardan, exportan ni suben.</item>
+        <item>La app solo declara permiso de microfono y no tiene permiso de red.</item>
+        <item>Las preferencias de afinacion inicial permanecen en este dispositivo hasta borrar los datos o desinstalar la app.</item>
+        <item>Contacto: replace-before-release@example.com.</item>
+    </string-array>
+</resources>

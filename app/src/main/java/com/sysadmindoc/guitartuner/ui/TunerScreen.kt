@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -33,6 +34,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
@@ -55,7 +57,7 @@ fun TunerScreen(
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
-    tuningFileMessage: String?,
+    tuningFileMessage: TuningFileMessage?,
     onShowPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -77,7 +79,7 @@ fun TunerScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Text(
-                    text = "GuitarTuner",
+                    text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -135,7 +137,7 @@ fun TunerScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                 ) {
-                    Text("Stop")
+                    Text(stringResource(R.string.action_stop))
                 }
             }
             OutlinedButton(
@@ -143,7 +145,7 @@ fun TunerScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
             ) {
-                Text("Privacy")
+                Text(stringResource(R.string.action_privacy))
             }
         }
     }
@@ -159,7 +161,7 @@ private fun StartupTuningPanel(
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
-    tuningFileMessage: String?,
+    tuningFileMessage: TuningFileMessage?,
 ) {
     val hasCustomTunings = tunings.any { !it.isBuiltIn }
     Surface(
@@ -178,7 +180,7 @@ private fun StartupTuningPanel(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Tuning",
+                    text = stringResource(R.string.label_tuning),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -189,7 +191,7 @@ private fun StartupTuningPanel(
                 )
             }
             Text(
-                text = "Available tunings",
+                text = stringResource(R.string.label_available_tunings),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -218,7 +220,7 @@ private fun StartupTuningPanel(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
             ) {
-                Text("Set favorite")
+                Text(stringResource(R.string.action_set_favorite))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -229,7 +231,7 @@ private fun StartupTuningPanel(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                 ) {
-                    Text("Import")
+                    Text(stringResource(R.string.action_import))
                 }
                 OutlinedButton(
                     onClick = onExportTunings,
@@ -237,18 +239,28 @@ private fun StartupTuningPanel(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
                 ) {
-                    Text("Export")
+                    Text(stringResource(R.string.action_export))
                 }
             }
-            tuningFileMessage?.let { message ->
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            TuningFileMessageText(tuningFileMessage)
         }
     }
+}
+
+@Composable
+private fun TuningFileMessageText(message: TuningFileMessage?) {
+    if (message == null) return
+    val text = when (message) {
+        is TuningFileMessage.Imported -> stringResource(R.string.file_imported_tunings, message.count)
+        is TuningFileMessage.Exported -> stringResource(R.string.file_exported_tunings, message.count)
+        TuningFileMessage.NoCustomTunings -> stringResource(R.string.file_no_custom_tunings)
+        is TuningFileMessage.Error -> message.text
+    }
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable
@@ -257,7 +269,11 @@ private fun TuningChoiceButton(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val label = if (tuning.isBuiltIn) tuning.name else "${tuning.name} custom"
+    val label = if (tuning.isBuiltIn) {
+        tuning.name
+    } else {
+        stringResource(R.string.tuning_custom_suffix, tuning.name)
+    }
     if (selected) {
         Button(
             onClick = onClick,
@@ -321,7 +337,7 @@ private fun TargetString(state: TunerSessionState) {
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = target?.displayName ?: "Waiting for string",
+            text = target?.displayName ?: stringResource(R.string.target_waiting_for_string),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -402,41 +418,52 @@ private fun FrequencyReadout(state: TunerSessionState) {
         )
         Spacer(Modifier.size(2.dp))
         Text(
-            text = if (frequency == null) "-- Hz" else "${formatOneDecimal(frequency)} Hz",
+            text = if (frequency == null) {
+                stringResource(R.string.frequency_placeholder)
+            } else {
+                stringResource(R.string.frequency_value, formatOneDecimal(frequency))
+            },
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = if (cents == null) "-- cents" else "${formatSignedOneDecimal(cents)} cents",
+            text = if (cents == null) {
+                stringResource(R.string.cents_placeholder)
+            } else {
+                stringResource(R.string.cents_value, formatSignedOneDecimal(cents))
+            },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
 
+@Composable
 private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): String = when {
     state.errorMessage != null -> state.errorMessage
-    !hasAudioPermission -> "Microphone permission required"
-    !state.isListening -> "Ready"
-    state.measurement.status == TuningStatus.WaitingForSignal -> "Listening"
-    state.measurement.status == TuningStatus.SignalClipping -> "Input is clipping"
-    state.measurement.status == TuningStatus.NoStringDetected -> "No guitar string detected"
-    else -> "Detected"
+    !hasAudioPermission -> stringResource(R.string.status_permission_required)
+    !state.isListening -> stringResource(R.string.status_ready)
+    state.measurement.status == TuningStatus.WaitingForSignal -> stringResource(R.string.status_listening)
+    state.measurement.status == TuningStatus.SignalClipping -> stringResource(R.string.status_input_clipping)
+    state.measurement.status == TuningStatus.NoStringDetected -> stringResource(R.string.status_no_string_detected)
+    else -> stringResource(R.string.status_detected)
 }
 
+@Composable
 private fun primaryActionLabel(state: TunerSessionState, hasAudioPermission: Boolean): String = when {
-    !hasAudioPermission -> "Allow mic"
-    state.isListening -> "Pause"
-    else -> "Start"
+    !hasAudioPermission -> stringResource(R.string.action_allow_mic)
+    state.isListening -> stringResource(R.string.action_pause)
+    else -> stringResource(R.string.action_start)
 }
 
+@Composable
 private fun guidanceLabel(status: TuningStatus): String = when (status) {
-    TuningStatus.WaitingForSignal -> "Strum an open string"
-    TuningStatus.SignalClipping -> "Play softer"
-    TuningStatus.NoStringDetected -> "Try one string"
-    TuningStatus.TuneUp -> "Tune up"
-    TuningStatus.TuneDown -> "Tune down"
-    TuningStatus.InTune -> "In tune"
+    TuningStatus.WaitingForSignal -> stringResource(R.string.guidance_strum_open_string)
+    TuningStatus.SignalClipping -> stringResource(R.string.guidance_play_softer)
+    TuningStatus.NoStringDetected -> stringResource(R.string.guidance_try_one_string)
+    TuningStatus.TuneUp -> stringResource(R.string.guidance_tune_up)
+    TuningStatus.TuneDown -> stringResource(R.string.guidance_tune_down)
+    TuningStatus.InTune -> stringResource(R.string.guidance_in_tune)
 }
 
 private fun formatOneDecimal(value: Double): String =
@@ -445,8 +472,9 @@ private fun formatOneDecimal(value: Double): String =
 private fun formatSignedOneDecimal(value: Double): String =
     String.format(Locale.US, "%+.1f", value)
 
+@Composable
 private fun StartupTuningMode.label(): String = when (this) {
-    StartupTuningMode.StandardDefault -> "Standard"
-    StartupTuningMode.LastUsed -> "Last"
-    StartupTuningMode.Favorite -> "Favorite"
+    StartupTuningMode.StandardDefault -> stringResource(R.string.startup_standard)
+    StartupTuningMode.LastUsed -> stringResource(R.string.startup_last)
+    StartupTuningMode.Favorite -> stringResource(R.string.startup_favorite)
 }

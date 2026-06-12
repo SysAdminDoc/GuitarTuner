@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P2 — Add localization-ready strings and first translation pass
-  Why: Tunerly supports multiple languages and F-Droid users expect localizable OSS apps; this repo currently has no resource plan.
-  Evidence: RESEARCH.md; Tunerly README; Android resource conventions.
-  Touches: `app/src/main/res/values/strings.xml`, `values-es`, `values-de`, Compose UI text.
-  Acceptance: No hardcoded user-facing strings remain in Compose code, and at least Spanish and German resource files exist for core tuner states.
-  Complexity: M
-
 - [ ] P2 — Add clean tagged release and reproducible-build checklist
   Why: Choona's IzzyOnDroid report shows dirty or unreproducible APK artifacts damage trust for OSS Android tuners.
   Evidence: RESEARCH.md; Choona issue #51; F-Droid reproducibility pages.

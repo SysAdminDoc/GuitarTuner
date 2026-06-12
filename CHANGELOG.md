@@ -13,3 +13,4 @@
 - Added persisted startup tuning behavior for standard, last-used, and favorite tuning modes.
 - Added an in-app privacy screen and README Play Data Safety draft for local-only microphone processing.
 - Added custom tuning JSON import/export with validation and persisted custom tuning selection.
+- Added localization-ready tuner strings with initial Spanish and German resources.

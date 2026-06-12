@@ -30,6 +30,7 @@ import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.CustomTuningJsonCodec
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
+import com.sysadmindoc.guitartuner.ui.TuningFileMessage
 import com.sysadmindoc.guitartuner.ui.TunerScreen
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.io.IOException
@@ -56,7 +57,7 @@ private fun TunerRoute() {
     val controller = remember(scope) { AudioCaptureController(scope = scope) }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
     var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
-    var tuningFileMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var tuningFileMessage by remember { mutableStateOf<TuningFileMessage?>(null) }
     val preferencesRepository = remember(context.applicationContext) {
         TunerPreferencesRepository(context.applicationContext.tunerPreferencesDataStore)
     }
@@ -98,9 +99,9 @@ private fun TunerRoute() {
             val source = context.readTextFromUri(uri)
             val result = customTuningRepository.replaceFromJson(source)
             tuningFileMessage = if (result.errors.isEmpty()) {
-                "Imported ${result.tunings.size} custom tuning(s)"
+                TuningFileMessage.Imported(result.tunings.size)
             } else {
-                result.errors.joinToString(separator = "\n")
+                TuningFileMessage.Error(result.errors.joinToString(separator = "\n"))
             }
         }
     }
@@ -112,11 +113,11 @@ private fun TunerRoute() {
         scope.launch {
             val customOnly = tuningCatalog.tunings.filterNot { it.isBuiltIn }
             if (customOnly.isEmpty()) {
-                tuningFileMessage = "No custom tunings to export"
+                tuningFileMessage = TuningFileMessage.NoCustomTunings
                 return@launch
             }
             context.writeTextToUri(uri, CustomTuningJsonCodec.encode(customOnly))
-            tuningFileMessage = "Exported ${customOnly.size} custom tuning(s)"
+            tuningFileMessage = TuningFileMessage.Exported(customOnly.size)
         }
     }
 
