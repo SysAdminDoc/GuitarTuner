@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P1 — Add last-used and favorite tuning startup behavior
-  Why: Choona users requested custom/default startup tuning, and competitors reduce friction by reopening the expected tuning.
-  Evidence: RESEARCH.md; Choona README; Choona issue #34; Choona PR #49/#70.
-  Touches: `settings`, `tuning`, `ui/tuning-selector`.
-  Acceptance: User can choose standard default, last-used tuning, or a favorite tuning to open at app start.
-  Complexity: M
-
 - [ ] P1 — Add in-app privacy rationale and Play Data Safety draft
   Why: Google Play requires a privacy policy even for apps that collect no data, and microphone access needs clear in-app explanation.
   Evidence: RESEARCH.md; Google Play User Data policy; Android sensitive-permission rationale docs.

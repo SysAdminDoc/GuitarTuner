@@ -10,3 +10,24 @@ object StandardGuitarTuning {
         GuitarString(stringNumber = 1, name = "High E", scientificPitch = "E4", frequencyHz = 329.63),
     )
 }
+
+data class TuningDefinition(
+    val id: String,
+    val name: String,
+    val strings: List<GuitarString>,
+)
+
+object GuitarTunings {
+    const val StandardId = "standard"
+
+    val standard: TuningDefinition = TuningDefinition(
+        id = StandardId,
+        name = "Standard",
+        strings = StandardGuitarTuning.strings,
+    )
+
+    val builtIns: List<TuningDefinition> = listOf(standard)
+
+    fun find(id: String): TuningDefinition =
+        builtIns.firstOrNull { it.id == id } ?: standard
+}

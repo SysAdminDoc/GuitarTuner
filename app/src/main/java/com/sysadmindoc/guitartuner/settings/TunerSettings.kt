@@ -1,5 +1,7 @@
 package com.sysadmindoc.guitartuner.settings
 
+import com.sysadmindoc.guitartuner.tuning.GuitarTunings
+
 data class TunerSettings(
     val calibration: PitchCalibration = PitchCalibration(),
     val centsTolerance: Double = 5.0,
@@ -19,4 +21,22 @@ enum class ThemeMode {
     System,
     Dark,
     Light,
+}
+
+data class StoredTunerPreferences(
+    val startupMode: StartupTuningMode = StartupTuningMode.StandardDefault,
+    val lastUsedTuningId: String = GuitarTunings.StandardId,
+    val favoriteTuningId: String = GuitarTunings.StandardId,
+) {
+    fun startupTuningId(): String = when (startupMode) {
+        StartupTuningMode.StandardDefault -> GuitarTunings.StandardId
+        StartupTuningMode.LastUsed -> lastUsedTuningId
+        StartupTuningMode.Favorite -> favoriteTuningId
+    }
+}
+
+enum class StartupTuningMode {
+    StandardDefault,
+    LastUsed,
+    Favorite,
 }

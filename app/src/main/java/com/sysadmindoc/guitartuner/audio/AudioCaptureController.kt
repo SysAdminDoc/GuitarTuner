@@ -7,6 +7,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import com.sysadmindoc.guitartuner.pitch.SignalStatus
 import com.sysadmindoc.guitartuner.pitch.YinPitchDetector
+import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.StandardGuitarTuning
 import com.sysadmindoc.guitartuner.tuning.TuningAnalyzer
 import java.io.Closeable
@@ -25,10 +26,13 @@ class AudioCaptureController(
     private val scope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val pitchDetector: YinPitchDetector = YinPitchDetector(),
-    private val tuningAnalyzer: TuningAnalyzer = TuningAnalyzer(StandardGuitarTuning.strings),
+    initialStrings: List<GuitarString> = StandardGuitarTuning.strings,
 ) : Closeable {
     private val _state = MutableStateFlow(TunerSessionState())
     val state: StateFlow<TunerSessionState> = _state.asStateFlow()
+
+    @Volatile
+    private var tuningAnalyzer: TuningAnalyzer = TuningAnalyzer(initialStrings)
 
     private var captureJob: Job? = null
 
@@ -63,6 +67,10 @@ class AudioCaptureController(
             isListening = false,
             errorMessage = "Microphone permission is required for offline tuning.",
         )
+    }
+
+    fun setTuning(strings: List<GuitarString>) {
+        tuningAnalyzer = TuningAnalyzer(strings)
     }
 
     override fun close() {

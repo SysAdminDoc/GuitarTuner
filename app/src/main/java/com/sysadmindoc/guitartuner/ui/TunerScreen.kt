@@ -1,6 +1,7 @@
 package com.sysadmindoc.guitartuner.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
+import com.sysadmindoc.guitartuner.settings.StartupTuningMode
+import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
+import com.sysadmindoc.guitartuner.tuning.TuningDefinition
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
 import java.util.Locale
 import kotlin.math.abs
@@ -39,8 +43,12 @@ import kotlin.math.abs
 fun TunerScreen(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    activeTuning: TuningDefinition,
+    preferences: StoredTunerPreferences,
     onPrimaryAction: () -> Unit,
     onStop: () -> Unit,
+    onStartupModeSelected: (StartupTuningMode) -> Unit,
+    onSetFavoriteTuning: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -53,7 +61,7 @@ fun TunerScreen(
                 .fillMaxSize()
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,6 +97,13 @@ fun TunerScreen(
                 }
             }
 
+            StartupTuningPanel(
+                activeTuning = activeTuning,
+                preferences = preferences,
+                onStartupModeSelected = onStartupModeSelected,
+                onSetFavoriteTuning = onSetFavoriteTuning,
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -109,6 +124,93 @@ fun TunerScreen(
                     Text("Stop")
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun StartupTuningPanel(
+    activeTuning: TuningDefinition,
+    preferences: StoredTunerPreferences,
+    onStartupModeSelected: (StartupTuningMode) -> Unit,
+    onSetFavoriteTuning: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        tonalElevation = 1.dp,
+        color = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Tuning",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = activeTuning.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                for (mode in StartupTuningMode.entries) {
+                    ModeButton(
+                        mode = mode,
+                        selected = preferences.startupMode == mode,
+                        onClick = { onStartupModeSelected(mode) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+            OutlinedButton(
+                onClick = onSetFavoriteTuning,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+            ) {
+                Text("Set favorite")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModeButton(
+    mode: StartupTuningMode,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(8.dp)
+    val contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = contentPadding,
+        ) {
+            Text(mode.label(), maxLines = 1)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = contentPadding,
+        ) {
+            Text(mode.label(), maxLines = 1)
         }
     }
 }
@@ -250,3 +352,9 @@ private fun formatOneDecimal(value: Double): String =
 
 private fun formatSignedOneDecimal(value: Double): String =
     String.format(Locale.US, "%+.1f", value)
+
+private fun StartupTuningMode.label(): String = when (this) {
+    StartupTuningMode.StandardDefault -> "Standard"
+    StartupTuningMode.LastUsed -> "Last"
+    StartupTuningMode.Favorite -> "Favorite"
+}

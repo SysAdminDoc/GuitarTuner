@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,8 +21,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sysadmindoc.guitartuner.audio.AudioCaptureController
+import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
+import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
+import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
+import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.ui.TunerScreen
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +46,22 @@ private fun TunerRoute() {
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val controller = remember(scope) { AudioCaptureController(scope = scope) }
+    val preferencesRepository = remember(context.applicationContext) {
+        TunerPreferencesRepository(context.applicationContext.tunerPreferencesDataStore)
+    }
+    val preferences by preferencesRepository.preferences.collectAsStateWithLifecycle(
+        initialValue = StoredTunerPreferences(),
+    )
+    val activeTuning = remember(preferences) {
+        GuitarTunings.find(preferences.startupTuningId())
+    }
     val state by controller.state.collectAsStateWithLifecycle()
     var hasAudioPermission by remember { mutableStateOf(context.hasAudioPermission()) }
+
+    LaunchedEffect(activeTuning.id) {
+        controller.setTuning(activeTuning.strings)
+        preferencesRepository.rememberLastUsedTuning(activeTuning.id)
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -77,6 +97,8 @@ private fun TunerRoute() {
     TunerScreen(
         state = state,
         hasAudioPermission = hasAudioPermission,
+        activeTuning = activeTuning,
+        preferences = preferences,
         onPrimaryAction = {
             when {
                 !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -85,6 +107,12 @@ private fun TunerRoute() {
             }
         },
         onStop = controller::stop,
+        onStartupModeSelected = { mode ->
+            scope.launch { preferencesRepository.setStartupMode(mode) }
+        },
+        onSetFavoriteTuning = {
+            scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
+        },
     )
 }
 
