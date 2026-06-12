@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 3 - Pitch Detection Engine
 
-- [ ] Add smoothing across stable frames after pluck attack.
 - [ ] Handle low-E octave errors and weak fundamentals.
 - [ ] Expose pitch result as frequency, nearest note, cents offset, confidence, and signal state.
 

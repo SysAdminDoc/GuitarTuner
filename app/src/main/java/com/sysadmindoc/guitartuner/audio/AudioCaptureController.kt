@@ -9,6 +9,7 @@ import com.sysadmindoc.guitartuner.pitch.SignalStatus
 import com.sysadmindoc.guitartuner.pitch.YinPitchDetector
 import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.MeasurementFreeze
+import com.sysadmindoc.guitartuner.tuning.StableMeasurementSmoother
 import com.sysadmindoc.guitartuner.tuning.StandardGuitarTuning
 import com.sysadmindoc.guitartuner.tuning.TuningAnalyzer
 import java.io.Closeable
@@ -39,6 +40,7 @@ class AudioCaptureController(
     private var freezeAfterDecay: Boolean = false
 
     private val measurementFreeze = MeasurementFreeze()
+    private val measurementSmoother = StableMeasurementSmoother()
 
     private var captureJob: Job? = null
 
@@ -65,6 +67,7 @@ class AudioCaptureController(
                 job.cancelAndJoin()
             }
         }
+        measurementSmoother.reset()
         _state.value = _state.value.copy(isListening = false)
     }
 
@@ -77,6 +80,7 @@ class AudioCaptureController(
 
     fun setTuning(strings: List<GuitarString>) {
         tuningAnalyzer = TuningAnalyzer(strings)
+        measurementSmoother.reset()
     }
 
     fun setFreezeAfterDecay(enabled: Boolean) {
@@ -114,9 +118,10 @@ class AudioCaptureController(
                 }
 
                 val estimate = pitchDetector.detect(samples, SampleRate)
+                val measurement = measurementSmoother.apply(tuningAnalyzer.analyze(estimate))
                 val measurementFrame = measurementFreeze.apply(
                     estimate = estimate,
-                    measurement = tuningAnalyzer.analyze(estimate),
+                    measurement = measurement,
                     enabled = freezeAfterDecay,
                 )
                 _state.value = TunerSessionState(

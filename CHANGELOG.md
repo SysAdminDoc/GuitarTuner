@@ -20,3 +20,4 @@
 - Added a JVM boundary test that keeps core pitch, tuning, and settings packages free of phone UI dependencies for later Wear reuse.
 - Added an explicit high-noise audio state alongside silence, clipping, permission denial, and no-string feedback.
 - Verified debug microphone capture startup on a connected Samsung SM-S938B with adb install, `RECORD_AUDIO` grant, foreground launch, active Pause/Stop UI, and an empty crash buffer.
+- Added stable-frame smoothing after pluck attack to reduce jumpy cents/frequency feedback without smearing target-string changes.
