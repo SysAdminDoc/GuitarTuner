@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P3 — Keep Wear OS as architecture-ready, not MVP UI
-  Why: Choona proves Wear value, but the current repo has no phone app; shared core should make a later watch module possible without shipping watch UI now.
-  Evidence: RESEARCH.md; Choona README; Choona PR #68/#70.
-  Touches: `pitch`, `tuning`, `settings`, Gradle module boundaries.
-  Acceptance: Core pitch/tuning/settings packages have no phone-only UI dependencies; no Wear module is added before phone MVP acceptance passes.
-  Complexity: S
-
 ## MVP Acceptance Criteria
 
 - The app can tune standard acoustic guitar strings from E2 through E4.
