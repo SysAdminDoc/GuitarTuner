@@ -26,45 +26,26 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Scaffold Milestones
 
-### Phase 1 - Android Project Skeleton
-
-- [ ] Generate Gradle Android application project.
-- [ ] Configure Kotlin, Compose, Material 3, and minSdk 26.
-- [ ] Add release build settings with R8 and resource shrinking.
-- [ ] Add deterministic package name and app version constants.
-- [ ] Add launcher icon placeholders.
-- [ ] Verify clean debug and release builds.
-
 ### Phase 2 - Audio Capture Foundation
 
-- [ ] Add `RECORD_AUDIO` permission and runtime permission flow.
-- [ ] Implement an `AudioRecord` capture controller that starts only while tuning.
 - [ ] Add microphone state, permission denial, device-wide mic-toggle/silent-input, clipping, and high-noise states.
-- [ ] Keep audio processing off the UI thread.
 - [ ] Verify capture on an emulator-safe path and at least one physical Android device.
 
 ### Phase 3 - Pitch Detection Engine
 
-- [ ] Evaluate TarsosDSP versus a small in-project YIN or McLeod Pitch Method implementation.
-- [ ] Implement pitch frame processing with confidence scoring.
 - [ ] Add smoothing across stable frames after pluck attack.
 - [ ] Handle low-E octave errors and weak fundamentals.
 - [ ] Expose pitch result as frequency, nearest note, cents offset, confidence, and signal state.
 
 ### Phase 4 - Guitar Tuning Model
 
-- [ ] Add standard tuning data model.
-- [ ] Add nearest-string detection for open guitar strings.
 - [ ] Add guided mode that locks onto one target string at a time.
 - [ ] Add auto mode that selects the most likely strummed string.
-- [ ] Add flat / sharp / in-tune thresholds.
 - [ ] Add A4 calibration setting with 440 Hz default.
 
 ### Phase 5 - Guided Tuning UI
 
 - [ ] Build main tuner screen with large note, string, cents, and confidence readout.
-- [ ] Build needle or strobe-style visual meter.
-- [ ] Add tune-up / tune-down instruction states.
 - [ ] Add step-by-step acoustic guitar walkthrough from low E to high E.
 - [ ] Add peg-direction calibration for left/right guidance.
 - [ ] Add empty, permission-denied, high-noise, clipped-input, and no-string-detected states.
@@ -79,7 +60,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 7 - Verification and Release Prep
 
-- [ ] Add pitch-engine validation with synthetic sine, harmonic-rich, and noisy samples.
 - [ ] Add a small local recorded-guitar fixture set.
 - [ ] Compare tuning results against a known-good tuner.
 - [ ] Capture screenshots for README after UI exists.
@@ -87,41 +67,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 - [ ] Prepare GitHub release workflow after a remote exists.
 
 ## Research-Driven Additions
-
-- [ ] P0 — Lock the DSP dependency and license strategy before Gradle scaffold
-  Why: TarsosDSP is GPL and its v2.5 Android microphone support is disputed, which conflicts with the repo's MIT baseline unless intentionally changed.
-  Evidence: RESEARCH.md; JorenSix/TarsosDSP README; JorenSix/TarsosDSP#213; LICENSE.
-  Touches: `settings.gradle.kts`, `build.gradle.kts`, `app/build.gradle.kts`, `LICENSE`, `README.md`.
-  Acceptance: The scaffold either contains an in-project MIT-compatible YIN/MPM pitch engine or explicitly changes project licensing before any GPL dependency is added.
-  Complexity: M
-
-- [ ] P0 — Add a merged-manifest permission gate
-  Why: The repo promises no network permission and microphone-only access, but no build check can enforce that yet.
-  Evidence: RESEARCH.md; README.md; ROADMAP.md; Android sensitive-permission docs.
-  Touches: `app/src/main/AndroidManifest.xml`, Gradle verification task, CI workflow.
-  Acceptance: A build task fails if the merged manifest contains `INTERNET`, background microphone service declarations, or any dangerous permission other than `RECORD_AUDIO`.
-  Complexity: S
-
-- [ ] P0 — Keep microphone capture lifecycle-bound to visible tuning screens
-  Why: Android microphone foreground services are while-in-use restricted and background capture is unnecessary for this product.
-  Evidence: RESEARCH.md; Android foreground-service microphone docs; Android privacy indicator docs.
-  Touches: `audio/AudioCaptureController`, `ui/tuner`, `AndroidManifest.xml`.
-  Acceptance: Leaving the tuner screen or backgrounding the app stops capture, releases `AudioRecord`, and updates UI state without a background microphone notification.
-  Complexity: M
-
-- [ ] P1 — Split pitch, tuning, audio, settings, and UI boundaries at scaffold time
-  Why: Competitors with Wear/custom tunings share business logic across modules; this repo has no source yet, so boundaries are cheapest before UI code exists.
-  Evidence: RESEARCH.md; Choona PR #61/#68/#70; current repo has no source tree.
-  Touches: `app/src/main/java/.../audio`, `pitch`, `tuning`, `settings`, `ui`.
-  Acceptance: Pitch and tuning logic run in JVM unit tests without Android UI or microphone dependencies.
-  Complexity: M
-
-- [ ] P1 — Add octave-error regression fixtures for low E and G3/G4 jumps
-  Why: Guitar tuners commonly misread weak fundamentals and octave harmonics; thetwom/Tuner has a live G3/G4 jump report.
-  Evidence: RESEARCH.md; thetwom/Tuner#88; 29a.ch low-E FFT analysis; YIN and MPM papers.
-  Touches: `pitch`, `testFixtures/audio`, JVM tests.
-  Acceptance: Tests cover E2, A2, D3/G3/B3/E4, harmonic-rich low E, and a G3/G4 octave-jump fixture with stable target-string output.
-  Complexity: M
 
 - [ ] P1 — Add accessible semantics for the live tuning meter
   Why: A live visual meter is central UI, but color/needle-only feedback excludes TalkBack and color-blind users.
