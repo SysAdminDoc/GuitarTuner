@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,13 +34,16 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
+import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
+import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.util.Locale
 import kotlin.math.abs
 
@@ -66,87 +70,114 @@ fun TunerScreen(
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val wideLayout = maxWidth >= 720.dp
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(18.dp),
+            ) {
+                TunerHeader(state = state, hasAudioPermission = hasAudioPermission)
+
+                if (wideLayout) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(18.dp),
+                        verticalAlignment = Alignment.Top,
+                    ) {
+                        TunerMeterPanel(
+                            state = state,
+                            modifier = Modifier.weight(1f),
+                        )
+                        StartupTuningPanel(
+                            activeTuning = activeTuning,
+                            tunings = tunings,
+                            preferences = preferences,
+                            onStartupModeSelected = onStartupModeSelected,
+                            onSetFavoriteTuning = onSetFavoriteTuning,
+                            onTuningSelected = onTuningSelected,
+                            onImportTunings = onImportTunings,
+                            onExportTunings = onExportTunings,
+                            tuningFileMessage = tuningFileMessage,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                } else {
+                    TunerMeterPanel(
+                        state = state,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    StartupTuningPanel(
+                        activeTuning = activeTuning,
+                        tunings = tunings,
+                        preferences = preferences,
+                        onStartupModeSelected = onStartupModeSelected,
+                        onSetFavoriteTuning = onSetFavoriteTuning,
+                        onTuningSelected = onTuningSelected,
+                        onImportTunings = onImportTunings,
+                        onExportTunings = onExportTunings,
+                        tuningFileMessage = tuningFileMessage,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
+                TunerActions(
+                    state = state,
+                    hasAudioPermission = hasAudioPermission,
+                    onPrimaryAction = onPrimaryAction,
+                    onStop = onStop,
+                    onShowPrivacy = onShowPrivacy,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TunerHeader(
+    state: TunerSessionState,
+    hasAudioPermission: Boolean,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = statusText(state, hasAudioPermission),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun TunerMeterPanel(
+    state: TunerSessionState,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        tonalElevation = 2.dp,
+        color = MaterialTheme.colorScheme.surface,
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 24.dp),
+            modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = statusText(state, hasAudioPermission),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-            }
-
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-                tonalElevation = 2.dp,
-                color = MaterialTheme.colorScheme.surface,
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(18.dp),
-                ) {
-                    TargetString(state)
-                    CentsMeter(state)
-                    FrequencyReadout(state)
-                }
-            }
-
-            StartupTuningPanel(
-                activeTuning = activeTuning,
-                tunings = tunings,
-                preferences = preferences,
-                onStartupModeSelected = onStartupModeSelected,
-                onSetFavoriteTuning = onSetFavoriteTuning,
-                onTuningSelected = onTuningSelected,
-                onImportTunings = onImportTunings,
-                onExportTunings = onExportTunings,
-                tuningFileMessage = tuningFileMessage,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Button(
-                    onClick = onPrimaryAction,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text(primaryActionLabel(state, hasAudioPermission))
-                }
-                OutlinedButton(
-                    onClick = onStop,
-                    enabled = state.isListening,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text(stringResource(R.string.action_stop))
-                }
-            }
-            OutlinedButton(
-                onClick = onShowPrivacy,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
-            ) {
-                Text(stringResource(R.string.action_privacy))
-            }
+            TargetString(state)
+            CentsMeter(state)
+            FrequencyReadout(state)
         }
     }
 }
@@ -162,10 +193,11 @@ private fun StartupTuningPanel(
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
     tuningFileMessage: TuningFileMessage?,
+    modifier: Modifier = Modifier,
 ) {
     val hasCustomTunings = tunings.any { !it.isBuiltIn }
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         tonalElevation = 1.dp,
         color = MaterialTheme.colorScheme.surface,
@@ -244,6 +276,43 @@ private fun StartupTuningPanel(
             }
             TuningFileMessageText(tuningFileMessage)
         }
+    }
+}
+
+@Composable
+private fun TunerActions(
+    state: TunerSessionState,
+    hasAudioPermission: Boolean,
+    onPrimaryAction: () -> Unit,
+    onStop: () -> Unit,
+    onShowPrivacy: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Button(
+            onClick = onPrimaryAction,
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Text(primaryActionLabel(state, hasAudioPermission))
+        }
+        OutlinedButton(
+            onClick = onStop,
+            enabled = state.isListening,
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Text(stringResource(R.string.action_stop))
+        }
+    }
+    OutlinedButton(
+        onClick = onShowPrivacy,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+    ) {
+        Text(stringResource(R.string.action_privacy))
     }
 }
 
@@ -477,4 +546,31 @@ private fun StartupTuningMode.label(): String = when (this) {
     StartupTuningMode.StandardDefault -> stringResource(R.string.startup_standard)
     StartupTuningMode.LastUsed -> stringResource(R.string.startup_last)
     StartupTuningMode.Favorite -> stringResource(R.string.startup_favorite)
+}
+
+@Preview(name = "Phone portrait", widthDp = 360, heightDp = 740)
+@Preview(name = "Phone landscape", widthDp = 840, heightDp = 360)
+@Preview(name = "Split screen", widthDp = 320, heightDp = 600)
+@Preview(name = "Tablet", widthDp = 900, heightDp = 1100)
+@Preview(name = "Foldable", widthDp = 673, heightDp = 841)
+@Composable
+private fun TunerScreenPreview() {
+    GuitarTunerTheme {
+        TunerScreen(
+            state = TunerSessionState(),
+            hasAudioPermission = true,
+            activeTuning = GuitarTunings.standard,
+            tunings = GuitarTunings.builtIns,
+            preferences = StoredTunerPreferences(),
+            onPrimaryAction = {},
+            onStop = {},
+            onStartupModeSelected = {},
+            onSetFavoriteTuning = {},
+            onTuningSelected = {},
+            onImportTunings = {},
+            onExportTunings = {},
+            tuningFileMessage = null,
+            onShowPrivacy = {},
+        )
+    }
 }

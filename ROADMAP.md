@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P2 — Add adaptive layout support for tablets and foldables
-  Why: Choona supports multi-window/large screens, and Android's adaptive guidance says apps should handle resizing and larger displays.
-  Evidence: RESEARCH.md; Choona README; Android adaptive Compose docs.
-  Touches: `ui/tuner`, `ui/settings`, Compose previews/tests.
-  Acceptance: Main tuner and settings screens render without clipping in phone portrait, phone landscape, split-screen, tablet, and foldable-width previews.
-  Complexity: M
-
 - [ ] P3 — Add optional measurement freeze after note decay
   Why: Bill Farmer users requested automatic display lock after a tone ends, and CarlTune-style workflows help users read cents/frequency after plucking.
   Evidence: RESEARCH.md; billthefarmer/tuner#65; CarlTune Play listing.
