@@ -2,7 +2,7 @@
 
 Project version: GuitarTuner v0.0.1
 
-This roadmap is the scaffold plan for building an offline, open-source Android acoustic guitar tuner. The first implementation target is standard six-string acoustic guitar tuning by microphone.
+This roadmap contains incomplete work only. GuitarTuner is an offline, open-source Android acoustic guitar tuner. The first implementation target is standard six-string acoustic guitar tuning by microphone.
 
 ## Product Constraints
 
@@ -26,15 +26,6 @@ This roadmap is the scaffold plan for building an offline, open-source Android a
 
 ## Scaffold Milestones
 
-### Phase 0 - Repo Baseline
-
-- [x] Create local repository folder.
-- [x] Add MIT license.
-- [x] Add Android-focused `.gitignore`.
-- [x] Add README with version, license, and platform badges.
-- [x] Add changelog.
-- [x] Add this scaffold roadmap.
-
 ### Phase 1 - Android Project Skeleton
 
 - [ ] Generate Gradle Android application project.
@@ -47,8 +38,8 @@ This roadmap is the scaffold plan for building an offline, open-source Android a
 ### Phase 2 - Audio Capture Foundation
 
 - [ ] Add `RECORD_AUDIO` permission and runtime permission flow.
-- [ ] Implement an `AudioRecord` capture service that starts only while tuning.
-- [ ] Add microphone state, permission denial, muted-input, clipping, and high-noise states.
+- [ ] Implement an `AudioRecord` capture controller that starts only while tuning.
+- [ ] Add microphone state, permission denial, device-wide mic-toggle/silent-input, clipping, and high-noise states.
 - [ ] Keep audio processing off the UI thread.
 - [ ] Verify capture on an emulator-safe path and at least one physical Android device.
 
@@ -94,6 +85,106 @@ This roadmap is the scaffold plan for building an offline, open-source Android a
 - [ ] Capture screenshots for README after UI exists.
 - [ ] Add signed release build documentation.
 - [ ] Prepare GitHub release workflow after a remote exists.
+
+## Research-Driven Additions
+
+- [ ] P0 — Lock the DSP dependency and license strategy before Gradle scaffold
+  Why: TarsosDSP is GPL and its v2.5 Android microphone support is disputed, which conflicts with the repo's MIT baseline unless intentionally changed.
+  Evidence: RESEARCH.md; JorenSix/TarsosDSP README; JorenSix/TarsosDSP#213; LICENSE.
+  Touches: `settings.gradle.kts`, `build.gradle.kts`, `app/build.gradle.kts`, `LICENSE`, `README.md`.
+  Acceptance: The scaffold either contains an in-project MIT-compatible YIN/MPM pitch engine or explicitly changes project licensing before any GPL dependency is added.
+  Complexity: M
+
+- [ ] P0 — Add a merged-manifest permission gate
+  Why: The repo promises no network permission and microphone-only access, but no build check can enforce that yet.
+  Evidence: RESEARCH.md; README.md; ROADMAP.md; Android sensitive-permission docs.
+  Touches: `app/src/main/AndroidManifest.xml`, Gradle verification task, CI workflow.
+  Acceptance: A build task fails if the merged manifest contains `INTERNET`, background microphone service declarations, or any dangerous permission other than `RECORD_AUDIO`.
+  Complexity: S
+
+- [ ] P0 — Keep microphone capture lifecycle-bound to visible tuning screens
+  Why: Android microphone foreground services are while-in-use restricted and background capture is unnecessary for this product.
+  Evidence: RESEARCH.md; Android foreground-service microphone docs; Android privacy indicator docs.
+  Touches: `audio/AudioCaptureController`, `ui/tuner`, `AndroidManifest.xml`.
+  Acceptance: Leaving the tuner screen or backgrounding the app stops capture, releases `AudioRecord`, and updates UI state without a background microphone notification.
+  Complexity: M
+
+- [ ] P1 — Split pitch, tuning, audio, settings, and UI boundaries at scaffold time
+  Why: Competitors with Wear/custom tunings share business logic across modules; this repo has no source yet, so boundaries are cheapest before UI code exists.
+  Evidence: RESEARCH.md; Choona PR #61/#68/#70; current repo has no source tree.
+  Touches: `app/src/main/java/.../audio`, `pitch`, `tuning`, `settings`, `ui`.
+  Acceptance: Pitch and tuning logic run in JVM unit tests without Android UI or microphone dependencies.
+  Complexity: M
+
+- [ ] P1 — Add octave-error regression fixtures for low E and G3/G4 jumps
+  Why: Guitar tuners commonly misread weak fundamentals and octave harmonics; thetwom/Tuner has a live G3/G4 jump report.
+  Evidence: RESEARCH.md; thetwom/Tuner#88; 29a.ch low-E FFT analysis; YIN and MPM papers.
+  Touches: `pitch`, `testFixtures/audio`, JVM tests.
+  Acceptance: Tests cover E2, A2, D3/G3/B3/E4, harmonic-rich low E, and a G3/G4 octave-jump fixture with stable target-string output.
+  Complexity: M
+
+- [ ] P1 — Add accessible semantics for the live tuning meter
+  Why: A live visual meter is central UI, but color/needle-only feedback excludes TalkBack and color-blind users.
+  Evidence: RESEARCH.md; Android Compose accessibility docs; existing Phase 5 meter goal.
+  Touches: `ui/tuner`, Compose semantics tests, string resources.
+  Acceptance: TalkBack announces string, note, cents bucket, and tune-up/tune-down state without repeating on every audio frame.
+  Complexity: M
+
+- [ ] P1 — Add last-used and favorite tuning startup behavior
+  Why: Choona users requested custom/default startup tuning, and competitors reduce friction by reopening the expected tuning.
+  Evidence: RESEARCH.md; Choona README; Choona issue #34; Choona PR #49/#70.
+  Touches: `settings`, `tuning`, `ui/tuning-selector`.
+  Acceptance: User can choose standard default, last-used tuning, or a favorite tuning to open at app start.
+  Complexity: M
+
+- [ ] P1 — Add in-app privacy rationale and Play Data Safety draft
+  Why: Google Play requires a privacy policy even for apps that collect no data, and microphone access needs clear in-app explanation.
+  Evidence: RESEARCH.md; Google Play User Data policy; Android sensitive-permission rationale docs.
+  Touches: `ui/permission`, `README.md`, `app/src/main/res/values/strings.xml`.
+  Acceptance: App contains a privacy screen stating local-only audio processing, no network, no storage of audio, retention policy, and contact placeholder.
+  Complexity: S
+
+- [ ] P2 — Add custom tuning import/export
+  Why: Community discussion around common tunings points to import/export as a lighter alternative to endless built-in presets.
+  Evidence: RESEARCH.md; thetwom/Tuner#77; Choona tuning editor work; Bill Farmer custom temperament file import.
+  Touches: `tuning`, `settings`, `ui/tuning-editor`, storage access flow.
+  Acceptance: A user can export custom tunings to a JSON file and import the same file on another install with validation errors shown inline.
+  Complexity: L
+
+- [ ] P2 — Add localization-ready strings and first translation pass
+  Why: Tunerly supports multiple languages and F-Droid users expect localizable OSS apps; this repo currently has no resource plan.
+  Evidence: RESEARCH.md; Tunerly README; Android resource conventions.
+  Touches: `app/src/main/res/values/strings.xml`, `values-es`, `values-de`, Compose UI text.
+  Acceptance: No hardcoded user-facing strings remain in Compose code, and at least Spanish and German resource files exist for core tuner states.
+  Complexity: M
+
+- [ ] P2 — Add clean tagged release and reproducible-build checklist
+  Why: Choona's IzzyOnDroid report shows dirty or unreproducible APK artifacts damage trust for OSS Android tuners.
+  Evidence: RESEARCH.md; Choona issue #51; F-Droid reproducibility pages.
+  Touches: `.github/workflows/release.yml`, Gradle release config, `README.md`.
+  Acceptance: Release workflow builds from a clean checkout, publishes signed APK/AAB checksums, and documents exact JDK/Gradle/AGP versions.
+  Complexity: L
+
+- [ ] P2 — Add adaptive layout support for tablets and foldables
+  Why: Choona supports multi-window/large screens, and Android's adaptive guidance says apps should handle resizing and larger displays.
+  Evidence: RESEARCH.md; Choona README; Android adaptive Compose docs.
+  Touches: `ui/tuner`, `ui/settings`, Compose previews/tests.
+  Acceptance: Main tuner and settings screens render without clipping in phone portrait, phone landscape, split-screen, tablet, and foldable-width previews.
+  Complexity: M
+
+- [ ] P3 — Add optional measurement freeze after note decay
+  Why: Bill Farmer users requested automatic display lock after a tone ends, and CarlTune-style workflows help users read cents/frequency after plucking.
+  Evidence: RESEARCH.md; billthefarmer/tuner#65; CarlTune Play listing.
+  Touches: `pitch`, `ui/tuner`, `settings`.
+  Acceptance: When enabled, the last stable pitch remains visible after decay until a new confident note is detected.
+  Complexity: M
+
+- [ ] P3 — Keep Wear OS as architecture-ready, not MVP UI
+  Why: Choona proves Wear value, but the current repo has no phone app; shared core should make a later watch module possible without shipping watch UI now.
+  Evidence: RESEARCH.md; Choona README; Choona PR #68/#70.
+  Touches: `pitch`, `tuning`, `settings`, Gradle module boundaries.
+  Acceptance: Core pitch/tuning/settings packages have no phone-only UI dependencies; no Wear module is added before phone MVP acceptance passes.
+  Complexity: S
 
 ## MVP Acceptance Criteria
 
