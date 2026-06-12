@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -25,6 +26,7 @@ import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
 import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
+import com.sysadmindoc.guitartuner.ui.PrivacyScreen
 import com.sysadmindoc.guitartuner.ui.TunerScreen
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import kotlinx.coroutines.launch
@@ -46,6 +48,7 @@ private fun TunerRoute() {
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val controller = remember(scope) { AudioCaptureController(scope = scope) }
+    var showPrivacy by rememberSaveable { mutableStateOf(false) }
     val preferencesRepository = remember(context.applicationContext) {
         TunerPreferencesRepository(context.applicationContext.tunerPreferencesDataStore)
     }
@@ -94,26 +97,31 @@ private fun TunerRoute() {
         }
     }
 
-    TunerScreen(
-        state = state,
-        hasAudioPermission = hasAudioPermission,
-        activeTuning = activeTuning,
-        preferences = preferences,
-        onPrimaryAction = {
-            when {
-                !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                state.isListening -> controller.stop()
-                else -> controller.start()
-            }
-        },
-        onStop = controller::stop,
-        onStartupModeSelected = { mode ->
-            scope.launch { preferencesRepository.setStartupMode(mode) }
-        },
-        onSetFavoriteTuning = {
-            scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
-        },
-    )
+    if (showPrivacy) {
+        PrivacyScreen(onBack = { showPrivacy = false })
+    } else {
+        TunerScreen(
+            state = state,
+            hasAudioPermission = hasAudioPermission,
+            activeTuning = activeTuning,
+            preferences = preferences,
+            onPrimaryAction = {
+                when {
+                    !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    state.isListening -> controller.stop()
+                    else -> controller.start()
+                }
+            },
+            onStop = controller::stop,
+            onStartupModeSelected = { mode ->
+                scope.launch { preferencesRepository.setStartupMode(mode) }
+            },
+            onSetFavoriteTuning = {
+                scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
+            },
+            onShowPrivacy = { showPrivacy = true },
+        )
+    }
 }
 
 private fun Context.hasAudioPermission(): Boolean =

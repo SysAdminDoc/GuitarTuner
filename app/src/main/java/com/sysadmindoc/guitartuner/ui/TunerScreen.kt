@@ -1,6 +1,8 @@
 package com.sysadmindoc.guitartuner.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +51,7 @@ fun TunerScreen(
     onStop: () -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onShowPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -59,6 +62,7 @@ fun TunerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -123,6 +127,13 @@ fun TunerScreen(
                 ) {
                     Text("Stop")
                 }
+            }
+            OutlinedButton(
+                onClick = onShowPrivacy,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+            ) {
+                Text("Privacy")
             }
         }
     }

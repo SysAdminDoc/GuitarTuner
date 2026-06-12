@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P1 — Add in-app privacy rationale and Play Data Safety draft
-  Why: Google Play requires a privacy policy even for apps that collect no data, and microphone access needs clear in-app explanation.
-  Evidence: RESEARCH.md; Google Play User Data policy; Android sensitive-permission rationale docs.
-  Touches: `ui/permission`, `README.md`, `app/src/main/res/values/strings.xml`.
-  Acceptance: App contains a privacy screen stating local-only audio processing, no network, no storage of audio, retention policy, and contact placeholder.
-  Complexity: S
-
 - [ ] P2 — Add custom tuning import/export
   Why: Community discussion around common tunings points to import/export as a lighter alternative to endless built-in presets.
   Evidence: RESEARCH.md; thetwom/Tuner#77; Choona tuning editor work; Bill Farmer custom temperament file import.

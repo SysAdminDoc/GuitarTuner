@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GuitarTuner</string>
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_summary">GuitarTuner processes microphone audio locally for tuning only.</string>
+    <string name="privacy_done">Done</string>
+    <string-array name="privacy_points">
+        <item>Audio is analyzed on this device while the tuner is visible.</item>
+        <item>Audio samples are not saved, exported, or uploaded.</item>
+        <item>The app declares microphone permission only and has no network permission.</item>
+        <item>Startup tuning preferences stay on this device until app data is cleared or the app is uninstalled.</item>
+        <item>Contact: replace-before-release@example.com.</item>
+    </string-array>
 </resources>

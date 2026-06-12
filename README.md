@@ -39,6 +39,14 @@ GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch de
 
 The Android manifest declares `RECORD_AUDIO` only. The app has no network permission, no background microphone service, and no audio upload path.
 
+## Play Data Safety Draft
+
+- Data collected: none transmitted off device.
+- Data shared: none.
+- Audio: microphone samples are processed ephemerally on device for tuning, not stored, exported, or uploaded.
+- App activity and settings: startup tuning preferences are stored locally only and are deleted when app data is cleared or the app is uninstalled.
+- Network: the app declares no network permission.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
