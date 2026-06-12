@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -58,6 +59,7 @@ fun TunerScreen(
     onStop: () -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
@@ -98,6 +100,7 @@ fun TunerScreen(
                             preferences = preferences,
                             onStartupModeSelected = onStartupModeSelected,
                             onSetFavoriteTuning = onSetFavoriteTuning,
+                            onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                             onTuningSelected = onTuningSelected,
                             onImportTunings = onImportTunings,
                             onExportTunings = onExportTunings,
@@ -116,6 +119,7 @@ fun TunerScreen(
                         preferences = preferences,
                         onStartupModeSelected = onStartupModeSelected,
                         onSetFavoriteTuning = onSetFavoriteTuning,
+                        onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                         onTuningSelected = onTuningSelected,
                         onImportTunings = onImportTunings,
                         onExportTunings = onExportTunings,
@@ -189,6 +193,7 @@ private fun StartupTuningPanel(
     preferences: StoredTunerPreferences,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
@@ -253,6 +258,20 @@ private fun StartupTuningPanel(
                 shape = RoundedCornerShape(8.dp),
             ) {
                 Text(stringResource(R.string.action_set_favorite))
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.setting_freeze_last_note),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Checkbox(
+                    checked = preferences.freezeAfterDecay,
+                    onCheckedChange = onFreezeAfterDecayChanged,
+                )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -512,6 +531,7 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
     state.errorMessage != null -> state.errorMessage
     !hasAudioPermission -> stringResource(R.string.status_permission_required)
     !state.isListening -> stringResource(R.string.status_ready)
+    state.isFrozen -> stringResource(R.string.status_frozen)
     state.measurement.status == TuningStatus.WaitingForSignal -> stringResource(R.string.status_listening)
     state.measurement.status == TuningStatus.SignalClipping -> stringResource(R.string.status_input_clipping)
     state.measurement.status == TuningStatus.NoStringDetected -> stringResource(R.string.status_no_string_detected)
@@ -566,6 +586,7 @@ private fun TunerScreenPreview() {
             onStop = {},
             onStartupModeSelected = {},
             onSetFavoriteTuning = {},
+            onFreezeAfterDecayChanged = {},
             onTuningSelected = {},
             onImportTunings = {},
             onExportTunings = {},

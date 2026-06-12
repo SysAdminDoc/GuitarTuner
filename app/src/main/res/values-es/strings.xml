@@ -4,6 +4,7 @@
     <string name="status_permission_required">Se requiere permiso de microfono</string>
     <string name="status_ready">Listo</string>
     <string name="status_listening">Escuchando</string>
+    <string name="status_frozen">Congelado</string>
     <string name="status_input_clipping">La entrada esta saturada</string>
     <string name="status_no_string_detected">No se detecto una cuerda de guitarra</string>
     <string name="status_detected">Detectado</string>
@@ -22,6 +23,7 @@
     <string name="action_import">Importar</string>
     <string name="action_export">Exportar</string>
     <string name="action_privacy">Privacidad</string>
+    <string name="setting_freeze_last_note">Congelar ultima nota</string>
     <string name="startup_standard">Estandar</string>
     <string name="startup_last">Ultima</string>
     <string name="startup_favorite">Favorita</string>

@@ -16,3 +16,4 @@
 - Added localization-ready tuner strings with initial Spanish and German resources.
 - Added env-driven release signing config and a tagged GitHub Actions release workflow with SHA-256 checksums.
 - Added adaptive single-column and wide two-column tuner layouts with phone, split-screen, tablet, and foldable Compose previews.
+- Added an optional freeze-last-note setting that keeps the last stable measurement visible after note decay.

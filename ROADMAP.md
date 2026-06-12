@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P3 — Add optional measurement freeze after note decay
-  Why: Bill Farmer users requested automatic display lock after a tone ends, and CarlTune-style workflows help users read cents/frequency after plucking.
-  Evidence: RESEARCH.md; billthefarmer/tuner#65; CarlTune Play listing.
-  Touches: `pitch`, `ui/tuner`, `settings`.
-  Acceptance: When enabled, the last stable pitch remains visible after decay until a new confident note is detected.
-  Complexity: M
-
 - [ ] P3 — Keep Wear OS as architecture-ready, not MVP UI
   Why: Choona proves Wear value, but the current repo has no phone app; shared core should make a later watch module possible without shipping watch UI now.
   Evidence: RESEARCH.md; Choona README; Choona PR #68/#70.

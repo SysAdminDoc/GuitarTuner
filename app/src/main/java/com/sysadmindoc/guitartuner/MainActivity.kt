@@ -91,6 +91,10 @@ private fun TunerRoute() {
         preferencesRepository.rememberLastUsedTuning(activeTuning.id)
     }
 
+    LaunchedEffect(preferences.freezeAfterDecay) {
+        controller.setFreezeAfterDecay(preferences.freezeAfterDecay)
+    }
+
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
     ) { uri ->
@@ -182,6 +186,9 @@ private fun TunerRoute() {
             },
             onSetFavoriteTuning = {
                 scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
+            },
+            onFreezeAfterDecayChanged = { enabled ->
+                scope.launch { preferencesRepository.setFreezeAfterDecay(enabled) }
             },
             onTuningSelected = { tuning ->
                 selectedTuningId = tuning.id

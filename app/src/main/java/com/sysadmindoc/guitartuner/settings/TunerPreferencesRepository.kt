@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
@@ -33,6 +34,7 @@ class TunerPreferencesRepository(
                 startupMode = storedPreferences[StartupModeKey].toStartupMode(),
                 lastUsedTuningId = storedPreferences[LastUsedTuningKey] ?: GuitarTunings.StandardId,
                 favoriteTuningId = storedPreferences[FavoriteTuningKey] ?: GuitarTunings.StandardId,
+                freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
             )
         }
 
@@ -55,6 +57,12 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setFreezeAfterDecay(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[FreezeAfterDecayKey] = enabled
+        }
+    }
+
     private fun String?.toStartupMode(): StartupTuningMode =
         StartupTuningMode.entries.firstOrNull { it.name == this } ?: StartupTuningMode.StandardDefault
 
@@ -62,5 +70,6 @@ class TunerPreferencesRepository(
         val StartupModeKey = stringPreferencesKey("startup_mode")
         val LastUsedTuningKey = stringPreferencesKey("last_used_tuning_id")
         val FavoriteTuningKey = stringPreferencesKey("favorite_tuning_id")
+        val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
     }
 }

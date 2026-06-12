@@ -4,6 +4,7 @@
     <string name="status_permission_required">Microphone permission required</string>
     <string name="status_ready">Ready</string>
     <string name="status_listening">Listening</string>
+    <string name="status_frozen">Frozen</string>
     <string name="status_input_clipping">Input is clipping</string>
     <string name="status_no_string_detected">No guitar string detected</string>
     <string name="status_detected">Detected</string>
@@ -22,6 +23,7 @@
     <string name="action_import">Import</string>
     <string name="action_export">Export</string>
     <string name="action_privacy">Privacy</string>
+    <string name="setting_freeze_last_note">Freeze last note</string>
     <string name="startup_standard">Standard</string>
     <string name="startup_last">Last</string>
     <string name="startup_favorite">Favorite</string>

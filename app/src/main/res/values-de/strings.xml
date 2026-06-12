@@ -4,6 +4,7 @@
     <string name="status_permission_required">Mikrofonberechtigung erforderlich</string>
     <string name="status_ready">Bereit</string>
     <string name="status_listening">Hoert zu</string>
+    <string name="status_frozen">Eingefroren</string>
     <string name="status_input_clipping">Eingang uebersteuert</string>
     <string name="status_no_string_detected">Keine Gitarrensaite erkannt</string>
     <string name="status_detected">Erkannt</string>
@@ -22,6 +23,7 @@
     <string name="action_import">Importieren</string>
     <string name="action_export">Exportieren</string>
     <string name="action_privacy">Datenschutz</string>
+    <string name="setting_freeze_last_note">Letzte Note einfrieren</string>
     <string name="startup_standard">Standard</string>
     <string name="startup_last">Letzte</string>
     <string name="startup_favorite">Favorit</string>
