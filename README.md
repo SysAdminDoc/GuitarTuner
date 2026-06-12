@@ -44,7 +44,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 
 ## Repository Status
 
-GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, and JVM tests for standard-string and octave-error coverage. Emulator visual QA is still pending because local `adb devices` did not return a usable target.
+GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string and octave-error coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
 ## Privacy Baseline
 
