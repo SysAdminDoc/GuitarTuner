@@ -1,0 +1,36 @@
+# Android / Gradle
+.gradle/
+build/
+captures/
+.cxx/
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+
+# Kotlin / Java
+out/
+*.class
+
+# Keystores and signing
+*.jks
+*.keystore
+*.p12
+keystore.properties
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Local agent / working files
+CLAUDE.md
+CODEX_CHANGELOG.md
+.claude/
+*.bak

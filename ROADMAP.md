@@ -1,0 +1,105 @@
+# GuitarTuner Roadmap
+
+Project version: GuitarTuner v0.0.1
+
+This roadmap is the scaffold plan for building an offline, open-source Android acoustic guitar tuner. The first implementation target is standard six-string acoustic guitar tuning by microphone.
+
+## Product Constraints
+
+- Android-first, native Kotlin and Jetpack Compose.
+- Minimum SDK 26.
+- No network permission.
+- Microphone permission only when the tuner is active.
+- AMOLED dark theme by default, plus light theme when practical.
+- Beginner guidance must use tune-up / tune-down as the source of truth; left/right peg guidance must be configurable because headstock layout and string winding direction vary.
+
+## Target Standard Tuning
+
+| String | Note | Frequency |
+|---|---:|---:|
+| 6 | E2 | 82.41 Hz |
+| 5 | A2 | 110.00 Hz |
+| 4 | D3 | 146.83 Hz |
+| 3 | G3 | 196.00 Hz |
+| 2 | B3 | 246.94 Hz |
+| 1 | E4 | 329.63 Hz |
+
+## Scaffold Milestones
+
+### Phase 0 - Repo Baseline
+
+- [x] Create local repository folder.
+- [x] Add MIT license.
+- [x] Add Android-focused `.gitignore`.
+- [x] Add README with version, license, and platform badges.
+- [x] Add changelog.
+- [x] Add this scaffold roadmap.
+
+### Phase 1 - Android Project Skeleton
+
+- [ ] Generate Gradle Android application project.
+- [ ] Configure Kotlin, Compose, Material 3, and minSdk 26.
+- [ ] Add release build settings with R8 and resource shrinking.
+- [ ] Add deterministic package name and app version constants.
+- [ ] Add launcher icon placeholders.
+- [ ] Verify clean debug and release builds.
+
+### Phase 2 - Audio Capture Foundation
+
+- [ ] Add `RECORD_AUDIO` permission and runtime permission flow.
+- [ ] Implement an `AudioRecord` capture service that starts only while tuning.
+- [ ] Add microphone state, permission denial, muted-input, clipping, and high-noise states.
+- [ ] Keep audio processing off the UI thread.
+- [ ] Verify capture on an emulator-safe path and at least one physical Android device.
+
+### Phase 3 - Pitch Detection Engine
+
+- [ ] Evaluate TarsosDSP versus a small in-project YIN or McLeod Pitch Method implementation.
+- [ ] Implement pitch frame processing with confidence scoring.
+- [ ] Add smoothing across stable frames after pluck attack.
+- [ ] Handle low-E octave errors and weak fundamentals.
+- [ ] Expose pitch result as frequency, nearest note, cents offset, confidence, and signal state.
+
+### Phase 4 - Guitar Tuning Model
+
+- [ ] Add standard tuning data model.
+- [ ] Add nearest-string detection for open guitar strings.
+- [ ] Add guided mode that locks onto one target string at a time.
+- [ ] Add auto mode that selects the most likely strummed string.
+- [ ] Add flat / sharp / in-tune thresholds.
+- [ ] Add A4 calibration setting with 440 Hz default.
+
+### Phase 5 - Guided Tuning UI
+
+- [ ] Build main tuner screen with large note, string, cents, and confidence readout.
+- [ ] Build needle or strobe-style visual meter.
+- [ ] Add tune-up / tune-down instruction states.
+- [ ] Add step-by-step acoustic guitar walkthrough from low E to high E.
+- [ ] Add peg-direction calibration for left/right guidance.
+- [ ] Add empty, permission-denied, high-noise, clipped-input, and no-string-detected states.
+
+### Phase 6 - Settings and Tunings
+
+- [ ] Add standard, half-step down, drop D, open G, DADGAD, and custom tuning support.
+- [ ] Add cents tolerance setting.
+- [ ] Add sensitivity / noise gate setting.
+- [ ] Add theme setting.
+- [ ] Add privacy note explaining that audio never leaves the device.
+
+### Phase 7 - Verification and Release Prep
+
+- [ ] Add pitch-engine validation with synthetic sine, harmonic-rich, and noisy samples.
+- [ ] Add a small local recorded-guitar fixture set.
+- [ ] Compare tuning results against a known-good tuner.
+- [ ] Capture screenshots for README after UI exists.
+- [ ] Add signed release build documentation.
+- [ ] Prepare GitHub release workflow after a remote exists.
+
+## MVP Acceptance Criteria
+
+- The app can tune standard acoustic guitar strings from E2 through E4.
+- The app can automatically identify the strummed open string when reasonably close to target.
+- Guided mode avoids dangerous or ambiguous string misidentification.
+- The UI clearly tells the user whether to tune up, tune down, or stop.
+- Left/right peg instructions are not shown until the user completes peg-direction setup.
+- The app works fully offline and requests no permission except microphone access.
