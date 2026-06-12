@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P2 — Add custom tuning import/export
-  Why: Community discussion around common tunings points to import/export as a lighter alternative to endless built-in presets.
-  Evidence: RESEARCH.md; thetwom/Tuner#77; Choona tuning editor work; Bill Farmer custom temperament file import.
-  Touches: `tuning`, `settings`, `ui/tuning-editor`, storage access flow.
-  Acceptance: A user can export custom tunings to a JSON file and import the same file on another install with validation errors shown inline.
-  Complexity: L
-
 - [ ] P2 — Add localization-ready strings and first translation pass
   Why: Tunerly supports multiple languages and F-Droid users expect localizable OSS apps; this repo currently has no resource plan.
   Evidence: RESEARCH.md; Tunerly README; Android resource conventions.

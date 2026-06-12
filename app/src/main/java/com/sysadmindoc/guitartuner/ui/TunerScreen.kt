@@ -46,11 +46,16 @@ fun TunerScreen(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
     activeTuning: TuningDefinition,
+    tunings: List<TuningDefinition>,
     preferences: StoredTunerPreferences,
     onPrimaryAction: () -> Unit,
     onStop: () -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onTuningSelected: (TuningDefinition) -> Unit,
+    onImportTunings: () -> Unit,
+    onExportTunings: () -> Unit,
+    tuningFileMessage: String?,
     onShowPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -103,9 +108,14 @@ fun TunerScreen(
 
             StartupTuningPanel(
                 activeTuning = activeTuning,
+                tunings = tunings,
                 preferences = preferences,
                 onStartupModeSelected = onStartupModeSelected,
                 onSetFavoriteTuning = onSetFavoriteTuning,
+                onTuningSelected = onTuningSelected,
+                onImportTunings = onImportTunings,
+                onExportTunings = onExportTunings,
+                tuningFileMessage = tuningFileMessage,
             )
 
             Row(
@@ -142,10 +152,16 @@ fun TunerScreen(
 @Composable
 private fun StartupTuningPanel(
     activeTuning: TuningDefinition,
+    tunings: List<TuningDefinition>,
     preferences: StoredTunerPreferences,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onTuningSelected: (TuningDefinition) -> Unit,
+    onImportTunings: () -> Unit,
+    onExportTunings: () -> Unit,
+    tuningFileMessage: String?,
 ) {
+    val hasCustomTunings = tunings.any { !it.isBuiltIn }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -172,6 +188,18 @@ private fun StartupTuningPanel(
                     fontWeight = FontWeight.SemiBold,
                 )
             }
+            Text(
+                text = "Available tunings",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            for (tuning in tunings) {
+                TuningChoiceButton(
+                    tuning = tuning,
+                    selected = tuning.id == activeTuning.id,
+                    onClick = { onTuningSelected(tuning) },
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -192,6 +220,59 @@ private fun StartupTuningPanel(
             ) {
                 Text("Set favorite")
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedButton(
+                    onClick = onImportTunings,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Text("Import")
+                }
+                OutlinedButton(
+                    onClick = onExportTunings,
+                    enabled = hasCustomTunings,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Text("Export")
+                }
+            }
+            tuningFileMessage?.let { message ->
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TuningChoiceButton(
+    tuning: TuningDefinition,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val label = if (tuning.isBuiltIn) tuning.name else "${tuning.name} custom"
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Text(label)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Text(label)
         }
     }
 }

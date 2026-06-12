@@ -3,6 +3,7 @@ package com.sysadmindoc.guitartuner
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -22,14 +23,19 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sysadmindoc.guitartuner.audio.AudioCaptureController
+import com.sysadmindoc.guitartuner.settings.CustomTuningRepository
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
 import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
+import com.sysadmindoc.guitartuner.tuning.CustomTuningJsonCodec
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
 import com.sysadmindoc.guitartuner.ui.TunerScreen
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
+import java.io.IOException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,21 +55,69 @@ private fun TunerRoute() {
     val scope = rememberCoroutineScope()
     val controller = remember(scope) { AudioCaptureController(scope = scope) }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
+    var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
+    var tuningFileMessage by rememberSaveable { mutableStateOf<String?>(null) }
     val preferencesRepository = remember(context.applicationContext) {
         TunerPreferencesRepository(context.applicationContext.tunerPreferencesDataStore)
+    }
+    val customTuningRepository = remember(context.applicationContext) {
+        CustomTuningRepository(context.applicationContext.tunerPreferencesDataStore)
     }
     val preferences by preferencesRepository.preferences.collectAsStateWithLifecycle(
         initialValue = StoredTunerPreferences(),
     )
-    val activeTuning = remember(preferences) {
-        GuitarTunings.find(preferences.startupTuningId())
+    val customTunings by customTuningRepository.customTunings.collectAsStateWithLifecycle(
+        initialValue = emptyList(),
+    )
+    val tuningCatalog = remember(customTunings) {
+        GuitarTunings.catalog(customTunings)
+    }
+    val startupTuningId = preferences.startupTuningId()
+    val activeTuning = remember(tuningCatalog, selectedTuningId, startupTuningId) {
+        tuningCatalog.find(selectedTuningId ?: startupTuningId)
     }
     val state by controller.state.collectAsStateWithLifecycle()
     var hasAudioPermission by remember { mutableStateOf(context.hasAudioPermission()) }
 
+    LaunchedEffect(startupTuningId, tuningCatalog) {
+        if (selectedTuningId == null || tuningCatalog.tunings.none { it.id == selectedTuningId }) {
+            selectedTuningId = startupTuningId
+        }
+    }
+
     LaunchedEffect(activeTuning.id) {
         controller.setTuning(activeTuning.strings)
         preferencesRepository.rememberLastUsedTuning(activeTuning.id)
+    }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val source = context.readTextFromUri(uri)
+            val result = customTuningRepository.replaceFromJson(source)
+            tuningFileMessage = if (result.errors.isEmpty()) {
+                "Imported ${result.tunings.size} custom tuning(s)"
+            } else {
+                result.errors.joinToString(separator = "\n")
+            }
+        }
+    }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val customOnly = tuningCatalog.tunings.filterNot { it.isBuiltIn }
+            if (customOnly.isEmpty()) {
+                tuningFileMessage = "No custom tunings to export"
+                return@launch
+            }
+            context.writeTextToUri(uri, CustomTuningJsonCodec.encode(customOnly))
+            tuningFileMessage = "Exported ${customOnly.size} custom tuning(s)"
+        }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -104,6 +158,7 @@ private fun TunerRoute() {
             state = state,
             hasAudioPermission = hasAudioPermission,
             activeTuning = activeTuning,
+            tunings = tuningCatalog.tunings,
             preferences = preferences,
             onPrimaryAction = {
                 when {
@@ -114,11 +169,30 @@ private fun TunerRoute() {
             },
             onStop = controller::stop,
             onStartupModeSelected = { mode ->
+                selectedTuningId = when (mode) {
+                    com.sysadmindoc.guitartuner.settings.StartupTuningMode.StandardDefault ->
+                        GuitarTunings.StandardId
+                    com.sysadmindoc.guitartuner.settings.StartupTuningMode.LastUsed ->
+                        preferences.lastUsedTuningId
+                    com.sysadmindoc.guitartuner.settings.StartupTuningMode.Favorite ->
+                        preferences.favoriteTuningId
+                }
                 scope.launch { preferencesRepository.setStartupMode(mode) }
             },
             onSetFavoriteTuning = {
                 scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
             },
+            onTuningSelected = { tuning ->
+                selectedTuningId = tuning.id
+                scope.launch { preferencesRepository.rememberLastUsedTuning(tuning.id) }
+            },
+            onImportTunings = {
+                importLauncher.launch(arrayOf("application/json", "text/json", "text/plain"))
+            },
+            onExportTunings = {
+                exportLauncher.launch("guitartuner-custom-tunings.json")
+            },
+            tuningFileMessage = tuningFileMessage,
             onShowPrivacy = { showPrivacy = true },
         )
     }
@@ -126,3 +200,16 @@ private fun TunerRoute() {
 
 private fun Context.hasAudioPermission(): Boolean =
     checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
+private suspend fun Context.readTextFromUri(uri: Uri): String = withContext(Dispatchers.IO) {
+    contentResolver.openInputStream(uri)?.bufferedReader().use { reader ->
+        reader?.readText() ?: throw IOException("Could not open selected tuning file.")
+    }
+}
+
+private suspend fun Context.writeTextToUri(uri: Uri, text: String) = withContext(Dispatchers.IO) {
+    contentResolver.openOutputStream(uri)?.bufferedWriter().use { writer ->
+        val output = writer ?: throw IOException("Could not open export destination.")
+        output.write(text)
+    }
+}

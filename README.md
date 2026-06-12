@@ -39,6 +39,30 @@ GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch de
 
 The Android manifest declares `RECORD_AUDIO` only. The app has no network permission, no background microphone service, and no audio upload path.
 
+## Custom Tuning JSON
+
+The Import button accepts a JSON file shaped like this:
+
+```json
+{
+  "schemaVersion": 1,
+  "tunings": [
+    {
+      "id": "open_g",
+      "name": "Open G",
+      "strings": [
+        { "stringNumber": 6, "name": "D", "note": "D2", "frequencyHz": 73.42 },
+        { "stringNumber": 5, "name": "G", "note": "G2", "frequencyHz": 98.0 },
+        { "stringNumber": 4, "name": "D", "note": "D3", "frequencyHz": 146.83 },
+        { "stringNumber": 3, "name": "G", "note": "G3", "frequencyHz": 196.0 },
+        { "stringNumber": 2, "name": "B", "note": "B3", "frequencyHz": 246.94 },
+        { "stringNumber": 1, "name": "D", "note": "D4", "frequencyHz": 293.66 }
+      ]
+    }
+  ]
+}
+```
+
 ## Play Data Safety Draft
 
 - Data collected: none transmitted off device.

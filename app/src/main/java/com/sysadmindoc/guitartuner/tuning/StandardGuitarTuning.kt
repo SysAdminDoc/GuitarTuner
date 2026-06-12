@@ -15,6 +15,7 @@ data class TuningDefinition(
     val id: String,
     val name: String,
     val strings: List<GuitarString>,
+    val isBuiltIn: Boolean,
 )
 
 object GuitarTunings {
@@ -24,10 +25,22 @@ object GuitarTunings {
         id = StandardId,
         name = "Standard",
         strings = StandardGuitarTuning.strings,
+        isBuiltIn = true,
     )
 
     val builtIns: List<TuningDefinition> = listOf(standard)
 
+    fun catalog(customTunings: List<TuningDefinition>): TuningCatalog =
+        TuningCatalog(
+            builtIns + customTunings.filterNot { custom ->
+                builtIns.any { builtIn -> builtIn.id == custom.id }
+            },
+        )
+}
+
+data class TuningCatalog(
+    val tunings: List<TuningDefinition>,
+) {
     fun find(id: String): TuningDefinition =
-        builtIns.firstOrNull { it.id == id } ?: standard
+        tunings.firstOrNull { it.id == id } ?: GuitarTunings.standard
 }

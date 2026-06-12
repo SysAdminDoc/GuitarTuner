@@ -12,3 +12,4 @@
 - Added live tuning meter accessibility descriptions with stable cents buckets for TalkBack.
 - Added persisted startup tuning behavior for standard, last-used, and favorite tuning modes.
 - Added an in-app privacy screen and README Play Data Safety draft for local-only microphone processing.
+- Added custom tuning JSON import/export with validation and persisted custom tuning selection.
