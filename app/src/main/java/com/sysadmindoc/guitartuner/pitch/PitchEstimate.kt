@@ -21,6 +21,7 @@ data class PitchEstimate(
 enum class SignalStatus {
     Silence,
     Clipping,
+    HighNoise,
     Unstable,
     Detected,
 }

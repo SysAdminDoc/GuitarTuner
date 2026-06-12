@@ -6,11 +6,13 @@
     <string name="status_listening">Listening</string>
     <string name="status_frozen">Frozen</string>
     <string name="status_input_clipping">Input is clipping</string>
+    <string name="status_high_noise">High noise</string>
     <string name="status_no_string_detected">No guitar string detected</string>
     <string name="status_detected">Detected</string>
     <string name="target_waiting_for_string">Waiting for string</string>
     <string name="guidance_strum_open_string">Strum an open string</string>
     <string name="guidance_play_softer">Play softer</string>
+    <string name="guidance_reduce_noise">Reduce noise</string>
     <string name="guidance_try_one_string">Try one string</string>
     <string name="guidance_tune_up">Tune up</string>
     <string name="guidance_tune_down">Tune down</string>

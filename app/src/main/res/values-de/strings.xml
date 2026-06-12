@@ -6,11 +6,13 @@
     <string name="status_listening">Hoert zu</string>
     <string name="status_frozen">Eingefroren</string>
     <string name="status_input_clipping">Eingang uebersteuert</string>
+    <string name="status_high_noise">Hohe Geraeusche</string>
     <string name="status_no_string_detected">Keine Gitarrensaite erkannt</string>
     <string name="status_detected">Erkannt</string>
     <string name="target_waiting_for_string">Wartet auf Saite</string>
     <string name="guidance_strum_open_string">Leere Saite anschlagen</string>
     <string name="guidance_play_softer">Leiser spielen</string>
+    <string name="guidance_reduce_noise">Geraeusche reduzieren</string>
     <string name="guidance_try_one_string">Eine Saite versuchen</string>
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>

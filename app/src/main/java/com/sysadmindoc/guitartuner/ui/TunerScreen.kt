@@ -534,6 +534,7 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
     state.isFrozen -> stringResource(R.string.status_frozen)
     state.measurement.status == TuningStatus.WaitingForSignal -> stringResource(R.string.status_listening)
     state.measurement.status == TuningStatus.SignalClipping -> stringResource(R.string.status_input_clipping)
+    state.measurement.status == TuningStatus.HighNoise -> stringResource(R.string.status_high_noise)
     state.measurement.status == TuningStatus.NoStringDetected -> stringResource(R.string.status_no_string_detected)
     else -> stringResource(R.string.status_detected)
 }
@@ -549,6 +550,7 @@ private fun primaryActionLabel(state: TunerSessionState, hasAudioPermission: Boo
 private fun guidanceLabel(status: TuningStatus): String = when (status) {
     TuningStatus.WaitingForSignal -> stringResource(R.string.guidance_strum_open_string)
     TuningStatus.SignalClipping -> stringResource(R.string.guidance_play_softer)
+    TuningStatus.HighNoise -> stringResource(R.string.guidance_reduce_noise)
     TuningStatus.NoStringDetected -> stringResource(R.string.guidance_try_one_string)
     TuningStatus.TuneUp -> stringResource(R.string.guidance_tune_up)
     TuningStatus.TuneDown -> stringResource(R.string.guidance_tune_down)

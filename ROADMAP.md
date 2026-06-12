@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 2 - Audio Capture Foundation
 
-- [ ] Add microphone state, permission denial, device-wide mic-toggle/silent-input, clipping, and high-noise states.
 - [ ] Verify capture on an emulator-safe path and at least one physical Android device.
 
 ### Phase 3 - Pitch Detection Engine

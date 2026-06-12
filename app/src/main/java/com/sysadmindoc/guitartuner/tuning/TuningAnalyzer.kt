@@ -14,6 +14,7 @@ class TuningAnalyzer(
         val frequency = estimate.frequencyHz
         return when {
             estimate.status == SignalStatus.Clipping -> TuningMeasurement.signalClipping()
+            estimate.status == SignalStatus.HighNoise -> TuningMeasurement.highNoise()
             estimate.status == SignalStatus.Silence -> TuningMeasurement.waiting()
             frequency == null || estimate.status == SignalStatus.Unstable -> TuningMeasurement.noStringDetected()
             else -> analyzeFrequency(frequency, estimate.confidence)
@@ -65,6 +66,8 @@ data class TuningMeasurement(
 
         fun signalClipping(): TuningMeasurement = TuningMeasurement(status = TuningStatus.SignalClipping)
 
+        fun highNoise(): TuningMeasurement = TuningMeasurement(status = TuningStatus.HighNoise)
+
         fun noStringDetected(
             frequencyHz: Double? = null,
             confidence: Double = 0.0,
@@ -98,6 +101,7 @@ data class TuningMeasurement(
 enum class TuningStatus {
     WaitingForSignal,
     SignalClipping,
+    HighNoise,
     NoStringDetected,
     TuneUp,
     TuneDown,

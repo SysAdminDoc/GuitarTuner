@@ -8,6 +8,7 @@ data class PitchDetectorConfig(
     val minFrequencyHz: Double = 70.0,
     val maxFrequencyHz: Double = 450.0,
     val silenceRms: Double = 0.008,
+    val highNoiseRms: Double = 0.04,
     val clippingRatio: Double = 0.02,
     val yinThreshold: Double = 0.15,
     val minConfidence: Double = 0.70,
@@ -62,7 +63,7 @@ class YinPitchDetector(
                 confidence = 0.0,
                 rms = rms,
                 clipping = false,
-                status = SignalStatus.Unstable,
+                status = if (rms >= config.highNoiseRms) SignalStatus.HighNoise else SignalStatus.Unstable,
             )
         }
 

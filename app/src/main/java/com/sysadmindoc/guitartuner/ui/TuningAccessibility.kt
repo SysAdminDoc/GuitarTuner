@@ -21,6 +21,7 @@ fun tuningMeterAccessibility(measurement: TuningMeasurement): TuningAccessibilit
     val stateDescription = when (measurement.status) {
         TuningStatus.WaitingForSignal -> "Waiting for a detected guitar string"
         TuningStatus.SignalClipping -> "Input is clipping; play softer"
+        TuningStatus.HighNoise -> "Background noise is too high"
         TuningStatus.NoStringDetected -> "No guitar string detected"
         TuningStatus.InTune -> if (stringLabel == null) {
             "In tune"

@@ -80,6 +80,19 @@ class YinPitchDetectorTest {
         assertEquals(null, estimate.frequencyHz)
     }
 
+    @Test
+    fun reportsHighNoiseForLoudUnpitchedInput() {
+        val random = Random(11)
+        val noise = FloatArray(4096) {
+            ((random.nextDouble() * 2.0 - 1.0) * 0.35).toFloat()
+        }
+
+        val estimate = detector.detect(noise, SampleRate)
+
+        assertEquals(SignalStatus.HighNoise, estimate.status)
+        assertEquals(null, estimate.frequencyHz)
+    }
+
     private fun guitarLikeSignal(
         frequencyHz: Double,
         secondHarmonicLevel: Double,

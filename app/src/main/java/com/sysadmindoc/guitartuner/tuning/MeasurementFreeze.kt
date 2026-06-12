@@ -42,6 +42,7 @@ class MeasurementFreeze {
 
         TuningStatus.WaitingForSignal,
         TuningStatus.SignalClipping,
+        TuningStatus.HighNoise,
         TuningStatus.NoStringDetected,
         -> false
     }

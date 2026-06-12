@@ -45,6 +45,21 @@ class TuningAnalyzerTest {
         assertEquals("Low E", measurement.target?.name)
     }
 
+    @Test
+    fun mapsHighNoiseEstimateToHighNoiseState() {
+        val measurement = analyzer.analyze(
+            PitchEstimate(
+                frequencyHz = null,
+                confidence = 0.0,
+                rms = 0.2,
+                clipping = false,
+                status = SignalStatus.HighNoise,
+            ),
+        )
+
+        assertEquals(TuningStatus.HighNoise, measurement.status)
+    }
+
     private fun detectedPitch(frequencyHz: Double): PitchEstimate = PitchEstimate(
         frequencyHz = frequencyHz,
         confidence = 0.95,
