@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -137,13 +138,7 @@ private fun TargetString(state: TunerSessionState) {
 private fun CentsMeter(state: TunerSessionState) {
     val cents = state.measurement.cents
     val boundedCents = (cents ?: 0.0).coerceIn(-50.0, 50.0)
-    val semanticCents = boundedCents.toFloat()
-    val meterDescription = when {
-        cents == null -> "Tuning meter waiting for a detected guitar string"
-        abs(cents) <= 5.0 -> "String is in tune"
-        cents < 0.0 -> "String is flat by ${formatOneDecimal(abs(cents))} cents"
-        else -> "String is sharp by ${formatOneDecimal(abs(cents))} cents"
-    }
+    val accessibility = tuningMeterAccessibility(state.measurement)
     val trackColor = MaterialTheme.colorScheme.outline
     val centerColor = MaterialTheme.colorScheme.primary
     val markerColor = MaterialTheme.colorScheme.tertiary
@@ -153,8 +148,9 @@ private fun CentsMeter(state: TunerSessionState) {
             .fillMaxWidth()
             .height(96.dp)
             .semantics {
-                contentDescription = meterDescription
-                progressBarRangeInfo = ProgressBarRangeInfo(semanticCents, -50f..50f)
+                contentDescription = accessibility.contentDescription
+                stateDescription = accessibility.stateDescription
+                progressBarRangeInfo = ProgressBarRangeInfo(accessibility.progressCents, -50f..50f)
             },
         contentAlignment = Alignment.Center,
     ) {

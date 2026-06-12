@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P1 — Add accessible semantics for the live tuning meter
-  Why: A live visual meter is central UI, but color/needle-only feedback excludes TalkBack and color-blind users.
-  Evidence: RESEARCH.md; Android Compose accessibility docs; existing Phase 5 meter goal.
-  Touches: `ui/tuner`, Compose semantics tests, string resources.
-  Acceptance: TalkBack announces string, note, cents bucket, and tune-up/tune-down state without repeating on every audio frame.
-  Complexity: M
-
 - [ ] P1 — Add last-used and favorite tuning startup behavior
   Why: Choona users requested custom/default startup tuning, and competitors reduce friction by reopening the expected tuning.
   Evidence: RESEARCH.md; Choona README; Choona issue #34; Choona PR #49/#70.
