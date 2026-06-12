@@ -22,6 +22,9 @@ Requirements:
 
 - JDK 21.
 - Android SDK platform 36.
+- Gradle 9.5.1 wrapper.
+- Android Gradle Plugin 9.2.1.
+- Kotlin/Compose plugin 2.3.21.
 
 PowerShell:
 
@@ -30,6 +33,14 @@ $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat check assembleDebug assembleRelease
 ```
+
+## Release Checklist
+
+- Build from a clean tag named `v*`.
+- Set signing secrets before pushing a release tag: `ANDROID_SIGNING_KEYSTORE_BASE64`, `GUITARTUNER_KEYSTORE_PASSWORD`, `GUITARTUNER_KEY_ALIAS`, and `GUITARTUNER_KEY_PASSWORD`.
+- Run `.\gradlew.bat check assembleRelease bundleRelease --no-daemon --no-configuration-cache`.
+- Publish the generated APK/AAB plus `SHA256SUMS.txt` from `.github/workflows/release.yml`.
+- Do not publish artifacts from a dirty worktree or from an untagged local build.
 
 ## Repository Status
 

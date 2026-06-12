@@ -68,13 +68,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-- [ ] P2 — Add clean tagged release and reproducible-build checklist
-  Why: Choona's IzzyOnDroid report shows dirty or unreproducible APK artifacts damage trust for OSS Android tuners.
-  Evidence: RESEARCH.md; Choona issue #51; F-Droid reproducibility pages.
-  Touches: `.github/workflows/release.yml`, Gradle release config, `README.md`.
-  Acceptance: Release workflow builds from a clean checkout, publishes signed APK/AAB checksums, and documents exact JDK/Gradle/AGP versions.
-  Complexity: L
-
 - [ ] P2 — Add adaptive layout support for tablets and foldables
   Why: Choona supports multi-window/large screens, and Android's adaptive guidance says apps should handle resizing and larger displays.
   Evidence: RESEARCH.md; Choona README; Android adaptive Compose docs.

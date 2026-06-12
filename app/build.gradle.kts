@@ -32,12 +32,37 @@ android {
         compose = true
     }
 
+    val releaseKeystorePath = providers.environmentVariable("GUITARTUNER_KEYSTORE_PATH")
+    val releaseKeystorePassword = providers.environmentVariable("GUITARTUNER_KEYSTORE_PASSWORD")
+    val releaseKeyAlias = providers.environmentVariable("GUITARTUNER_KEY_ALIAS")
+    val releaseKeyPassword = providers.environmentVariable("GUITARTUNER_KEY_PASSWORD")
+    val hasReleaseSigning = listOf(
+        releaseKeystorePath,
+        releaseKeystorePassword,
+        releaseKeyAlias,
+        releaseKeyPassword,
+    ).all { it.isPresent }
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(releaseKeystorePath.get())
+                storePassword = releaseKeystorePassword.get()
+                keyAlias = releaseKeyAlias.get()
+                keyPassword = releaseKeyPassword.get()
+            }
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
         }
 
         release {
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

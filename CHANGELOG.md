@@ -14,3 +14,4 @@
 - Added an in-app privacy screen and README Play Data Safety draft for local-only microphone processing.
 - Added custom tuning JSON import/export with validation and persisted custom tuning selection.
 - Added localization-ready tuner strings with initial Spanish and German resources.
+- Added env-driven release signing config and a tagged GitHub Actions release workflow with SHA-256 checksums.

@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  android-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout clean tag
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Require signing secrets for tags
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+          GUITARTUNER_KEYSTORE_PASSWORD: ${{ secrets.GUITARTUNER_KEYSTORE_PASSWORD }}
+          GUITARTUNER_KEY_ALIAS: ${{ secrets.GUITARTUNER_KEY_ALIAS }}
+          GUITARTUNER_KEY_PASSWORD: ${{ secrets.GUITARTUNER_KEY_PASSWORD }}
+        run: |
+          test -n "$ANDROID_SIGNING_KEYSTORE_BASE64"
+          test -n "$GUITARTUNER_KEYSTORE_PASSWORD"
+          test -n "$GUITARTUNER_KEY_ALIAS"
+          test -n "$GUITARTUNER_KEY_PASSWORD"
+
+      - name: Decode signing keystore
+        if: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 != '' }}
+        env:
+          ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+          GUITARTUNER_KEYSTORE_PASSWORD: ${{ secrets.GUITARTUNER_KEYSTORE_PASSWORD }}
+          GUITARTUNER_KEY_ALIAS: ${{ secrets.GUITARTUNER_KEY_ALIAS }}
+          GUITARTUNER_KEY_PASSWORD: ${{ secrets.GUITARTUNER_KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/guitartuner-release.jks"
+          echo "GUITARTUNER_KEYSTORE_PATH=$RUNNER_TEMP/guitartuner-release.jks" >> "$GITHUB_ENV"
+          echo "GUITARTUNER_KEYSTORE_PASSWORD=$GUITARTUNER_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "GUITARTUNER_KEY_ALIAS=$GUITARTUNER_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "GUITARTUNER_KEY_PASSWORD=$GUITARTUNER_KEY_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Build clean release artifacts
+        run: ./gradlew check assembleRelease bundleRelease --no-daemon --no-configuration-cache
+
+      - name: Generate SHA-256 checksums
+        run: |
+          mkdir -p release-artifacts
+          find app/build/outputs -type f \( -name "*.apk" -o -name "*.aab" \) -print0 |
+            xargs -0 -I{} cp {} release-artifacts/
+          (cd release-artifacts && sha256sum * > SHA256SUMS.txt)
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: guitartuner-release
+          path: release-artifacts/
+          if-no-files-found: error
