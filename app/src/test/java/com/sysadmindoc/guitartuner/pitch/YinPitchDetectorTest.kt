@@ -1,6 +1,8 @@
 package com.sysadmindoc.guitartuner.pitch
 
 import com.sysadmindoc.guitartuner.tuning.StandardGuitarTuning
+import com.sysadmindoc.guitartuner.tuning.TuningAnalyzer
+import com.sysadmindoc.guitartuner.tuning.TuningStatus
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
@@ -73,6 +75,26 @@ class YinPitchDetectorTest {
     }
 
     @Test
+    fun analyzerCorrectsWeakLowEFundamentalWhenSecondHarmonicDominates() {
+        val estimate = detector.detect(
+            samples = guitarLikeSignal(
+                frequencyHz = 82.41,
+                fundamentalLevel = 0.18,
+                secondHarmonicLevel = 1.0,
+                noiseLevel = 0.02,
+            ),
+            sampleRate = SampleRate,
+        )
+
+        val measurement = TuningAnalyzer(StandardGuitarTuning.strings).analyze(estimate)
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("Low E", measurement.target?.name)
+        assertNotNull(measurement.frequencyHz)
+        assertTrue(abs(measurement.frequencyHz!! - 82.41) < 1.5)
+    }
+
+    @Test
     fun reportsSilenceForQuietInput() {
         val estimate = detector.detect(FloatArray(4096), SampleRate)
 
@@ -97,12 +119,13 @@ class YinPitchDetectorTest {
         frequencyHz: Double,
         secondHarmonicLevel: Double,
         noiseLevel: Double = 0.0,
+        fundamentalLevel: Double = 1.0,
     ): FloatArray {
         val length = (SampleRate * 0.35).toInt()
         val random = Random(7)
         return FloatArray(length) { index ->
             val time = index / SampleRate.toDouble()
-            val fundamental = sin(2.0 * PI * frequencyHz * time)
+            val fundamental = sin(2.0 * PI * frequencyHz * time) * fundamentalLevel
             val harmonic = sin(2.0 * PI * frequencyHz * 2.0 * time) * secondHarmonicLevel
             val noise = (random.nextDouble() * 2.0 - 1.0) * noiseLevel
             ((fundamental + harmonic + noise) * 0.58).toFloat()

@@ -9,6 +9,7 @@ class TuningAnalyzer(
     private val strings: List<GuitarString>,
     private val inTuneCents: Double = 5.0,
     private val maxAutoDetectCents: Double = 250.0,
+    private val octaveCorrectionMinImprovementCents: Double = 80.0,
 ) {
     fun analyze(estimate: PitchEstimate): TuningMeasurement {
         val frequency = estimate.frequencyHz
@@ -22,26 +23,52 @@ class TuningAnalyzer(
     }
 
     private fun analyzeFrequency(frequencyHz: Double, confidence: Double): TuningMeasurement {
-        val nearest = strings.minBy { string ->
-            abs(centsBetween(frequencyHz, string.frequencyHz))
-        }
-        val cents = centsBetween(frequencyHz, nearest.frequencyHz)
-        if (abs(cents) > maxAutoDetectCents) {
+        val candidate = resolveSecondHarmonicCandidate(frequencyHz)
+        if (abs(candidate.cents) > maxAutoDetectCents) {
             return TuningMeasurement.noStringDetected(frequencyHz = frequencyHz, confidence = confidence)
         }
 
         val direction = when {
-            abs(cents) <= inTuneCents -> TuningDirection.InTune
-            cents < 0.0 -> TuningDirection.TuneUp
+            abs(candidate.cents) <= inTuneCents -> TuningDirection.InTune
+            candidate.cents < 0.0 -> TuningDirection.TuneUp
             else -> TuningDirection.TuneDown
         }
 
         return TuningMeasurement.detected(
-            target = nearest,
-            frequencyHz = frequencyHz,
-            cents = cents,
+            target = candidate.string,
+            frequencyHz = candidate.frequencyHz,
+            cents = candidate.cents,
             confidence = confidence,
             direction = direction,
+        )
+    }
+
+    private fun resolveSecondHarmonicCandidate(frequencyHz: Double): FrequencyCandidate {
+        val rawCandidate = candidateFor(frequencyHz)
+        val halfFrequency = frequencyHz / 2.0
+        val minimumSupportedFrequency = strings.minOf { it.frequencyHz } * 0.75
+        if (halfFrequency < minimumSupportedFrequency) {
+            return rawCandidate
+        }
+
+        val halfCandidate = candidateFor(halfFrequency)
+        val rawDistance = abs(rawCandidate.cents)
+        val halfDistance = abs(halfCandidate.cents)
+        return if (rawDistance - halfDistance >= octaveCorrectionMinImprovementCents) {
+            halfCandidate
+        } else {
+            rawCandidate
+        }
+    }
+
+    private fun candidateFor(frequencyHz: Double): FrequencyCandidate {
+        val nearest = strings.minBy { string ->
+            abs(centsBetween(frequencyHz, string.frequencyHz))
+        }
+        return FrequencyCandidate(
+            frequencyHz = frequencyHz,
+            string = nearest,
+            cents = centsBetween(frequencyHz, nearest.frequencyHz),
         )
     }
 
@@ -52,6 +79,12 @@ class TuningAnalyzer(
         const val CentsPerOctave = 1200.0
     }
 }
+
+private data class FrequencyCandidate(
+    val frequencyHz: Double,
+    val string: GuitarString,
+    val cents: Double,
+)
 
 data class TuningMeasurement(
     val status: TuningStatus,

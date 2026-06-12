@@ -30,6 +30,36 @@ class TuningAnalyzerTest {
     }
 
     @Test
+    fun correctsLowESecondHarmonicToFundamental() {
+        val measurement = analyzer.analyze(detectedPitch(164.82))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("Low E", measurement.target?.name)
+        assertTrue(kotlin.math.abs((measurement.frequencyHz ?: 0.0) - 82.41) < 0.01)
+        assertTrue(kotlin.math.abs(measurement.cents ?: 99.0) < 0.5)
+    }
+
+    @Test
+    fun correctsASecondHarmonicToFundamental() {
+        val measurement = analyzer.analyze(detectedPitch(220.0))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("A", measurement.target?.name)
+        assertTrue(kotlin.math.abs((measurement.frequencyHz ?: 0.0) - 110.0) < 0.01)
+        assertTrue(kotlin.math.abs(measurement.cents ?: 99.0) < 0.5)
+    }
+
+    @Test
+    fun keepsTrueDStringAtFundamental() {
+        val measurement = analyzer.analyze(detectedPitch(146.83))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("D", measurement.target?.name)
+        assertTrue(kotlin.math.abs((measurement.frequencyHz ?: 0.0) - 146.83) < 0.01)
+        assertTrue(kotlin.math.abs(measurement.cents ?: 99.0) < 0.5)
+    }
+
+    @Test
     fun reportsTuneUpWhenStringIsFlat() {
         val measurement = analyzer.analyze(detectedPitch(80.0))
 
