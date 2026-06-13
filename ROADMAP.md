@@ -24,9 +24,218 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 | 2 | B3 | 246.94 Hz |
 | 1 | E4 | 329.63 Hz |
 
-## Scaffold Milestones
-
 ## Research-Driven Additions
+
+### P0
+
+- [ ] P0 — Crash-proof custom tuning import/export
+  Why: `readTextFromUri`/`writeTextToUri` throw IOException/SecurityException inside uncaught coroutines; an unreadable or revoked SAF URI crashes the app.
+  Evidence: MainActivity.kt:127-151, 262-273 (verified by code read).
+  Touches: MainActivity.kt, ui/TuningFileMessage.kt, strings.xml (+de/es).
+  Acceptance: importing a denied/corrupt/revoked URI shows a TuningFileMessage error; no crash; JVM test covers the failure path.
+  Complexity: S
+
+- [ ] P0 — Negotiate sample rate 48 kHz-first with 44.1 kHz fallback
+  Why: capture hardcodes a 44.1 kHz request and throws if unsupported; modern devices are natively 48 kHz so every session pays the platform resampler.
+  Evidence: AudioCaptureController.kt:232-239, 316-322; detector already consumes the actual rate (line 213-214); Android sampling guidance + sevagh/pitch-detection issue 63 buffer data.
+  Touches: AudioCaptureController.kt, YinPitchDetectorTest.kt (48 kHz fixture frames).
+  Acceptance: recorder opens at 48 kHz where supported, falls back to 44.1 kHz; pitch regression tests pass at both rates.
+  Complexity: S
+
+- [ ] P0 — Prefer UNPROCESSED audio source when the device declares support
+  Why: UNPROCESSED (no AGC/noise-suppression — the documented tuner source) is currently tried last and never property-gated; VOICE_RECOGNITION's processing distorts amplitude and harmonics.
+  Evidence: AudioCaptureController.kt:242-251; AudioManager PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED docs; google/oboe issues 1006/1074 (silent-UNPROCESSED devices).
+  Touches: AudioCaptureController.kt.
+  Acceptance: when the property reports support, UNPROCESSED is selected; if it yields only zero frames for ~1 s the controller falls back to the next source automatically; selected source still shown in diagnostics.
+  Complexity: M
+
+- [ ] P0 — Detect microphone loss to another app (concurrent-capture zeros)
+  Why: Android 10+ silences the losing capture app with zero-filled buffers instead of an error; the tuner currently shows generic "no sound" guidance and looks broken.
+  Evidence: AudioCaptureController.kt:163-196; developer.android.com/guide/topics/media/sharing-audio-input.
+  Touches: AudioCaptureController.kt, TunerSessionState.kt, TunerScreen.kt, strings.xml (+de/es).
+  Acceptance: sustained zero input after live input while listening surfaces a distinct "another app may be using the microphone" state with recovery guidance.
+  Complexity: M
+
+- [ ] P0 — Complete the runtime permission flow
+  Why: no rationale handling and no settings deep-link after permanent denial leaves a button that appears dead; the denial error message also lingers after the user grants permission from Settings.
+  Evidence: MainActivity.kt:153-162, 164-182, 196-201; AudioCaptureController.kt:89-94; Android requesting-permissions guidance.
+  Touches: MainActivity.kt, AudioCaptureController.kt, TunerScreen.kt, strings.xml (+de/es).
+  Acceptance: rationale shown via shouldShowRequestPermissionRationale; permanent denial offers an app-settings deep-link; returning with permission granted clears the stale error and one tap starts listening.
+  Complexity: S
+
+- [ ] P0 — Octave-jump hysteresis and pitch-candidate weighting
+  Why: hard second-harmonic halving still allows G3/G4 flips and wrong-string latching — the largest complaint class in competitor trackers (Moekadu #88: 17 comments, #114, #72).
+  Evidence: tuning/TuningAnalyzer.kt (0.75 floor heuristic), pitch/YinPitchDetector.kt; pYIN (Mauch & Dixon 2014) candidate-probability stage; thetwom/Tuner issues 88/114/72.
+  Touches: YinPitchDetector.kt (emit ranked candidates), TuningAnalyzer.kt, StableMeasurementSmoother.kt, new octave-flip WAV fixtures.
+  Acceptance: G-string fixture with weak fundamental no longer flips octave between consecutive frames; switching strings still re-locks within ~2 frames; existing fixture suite stays green.
+  Complexity: M
+
+### P1
+
+- [ ] P1 — String-break overshoot warning
+  Why: beginners snap high-E/B strings following tuners when the detected pitch is an octave or several semitones above target; no competitor warns; fits guided beginner-first philosophy.
+  Evidence: StringJoy tension data (octave-up E is inside break range), Steam Rocksmith thread (string broke following tuner), Quora GuitarTuna high-E breakage.
+  Touches: TuningAnalyzer.kt (overshoot threshold vs target), PitchResult.kt, TunerScreen.kt, strings.xml (+de/es).
+  Acceptance: detected pitch sustained more than ~300 cents above the selected/guided target shows a hard "STOP — tune down, string at risk" state (distinct color + haptic) instead of plain tune-down.
+  Complexity: S
+
+- [ ] P1 — Haptic in-tune confirmation
+  Why: confirms lock without staring at the screen (loud stages, accessibility); BOSS accu-pitch beep is the praised hardware equivalent; pure quick win.
+  Evidence: developer.android.com haptics APIs (HapticFeedbackConstants.CONFIRM / VibrationEffect primitives); BOSS Tuner accu-pitch.
+  Touches: TunerScreen.kt (or state holder), TunerSettings.kt + TunerPreferencesRepository.kt (toggle), strings.xml.
+  Acceptance: entering the in-tune band fires a single confirm haptic (no continuous buzzing); setting persists; off by default honored.
+  Complexity: S
+
+- [ ] P1 — Localize user-facing error strings out of the audio controller
+  Why: hardcoded English errors leak into UI state while de/es resources exist — the i18n story is otherwise complete.
+  Evidence: AudioCaptureController.kt:92, 141, 201, 238, 278, 299-305; values-de/strings.xml, values-es/strings.xml.
+  Touches: AudioCaptureController.kt (error codes instead of strings), TunerSessionState.kt, TunerScreen.kt, strings.xml (+de/es).
+  Acceptance: controller emits typed error states; all user-visible text resolves through resources; de/es translations added.
+  Complexity: S
+
+- [ ] P1 — Unify silence thresholds between input level and detector
+  Why: UI "effectively silent" (RMS 0.0002) and detector silence gate (0.0015) disagree, producing contradictory feedback near the boundary.
+  Evidence: TunerSessionState.kt:62-64 vs pitch/PitchDetectorConfig silenceRms default.
+  Touches: TunerSessionState.kt, YinPitchDetector.kt config, AudioInputLevelTest.kt.
+  Acceptance: one shared constant (or derived pair with documented ratio) drives both; UI never claims silence while the detector reports a pitch.
+  Complexity: S
+
+- [ ] P1 — Chromatic mode
+  Why: table stakes — every maintained competitor has it (Choona shipped v1.5.0, Moekadu, billthefarmer); detects any note rather than nearest string.
+  Evidence: Choona v1.5.0 release notes; Moekadu F-Droid description; JusTune HN thread requests.
+  Touches: TuningAnalyzer.kt / new ChromaticAnalyzer, TuningMode enum, TunerScreen.kt mode selector, strings.xml (+de/es), tests.
+  Acceptance: chromatic mode shows nearest chromatic note + cents for any pitch in 70-450 Hz (range widened as needed); Auto/Guided behavior unchanged.
+  Complexity: M
+
+- [ ] P1 — Reference tone playback
+  Why: lets users tune by ear and verify the target; Choona ships it; Moekadu issue #55 shows open demand; needs no new permission.
+  Evidence: Choona README feature list; thetwom/Tuner issue 55.
+  Touches: new audio/TonePlayer.kt (AudioTrack sine/Karplus-strong), TunerScreen.kt per-string play affordance, capture pause-during-playback logic.
+  Acceptance: tapping a string target plays its frequency (A4-calibrated); capture suspends during playback and resumes after; works offline.
+  Complexity: M
+
+- [ ] P1 — Non-visual tuning: TalkBack live region + spoken state mode
+  Why: no first-class accessible tuner exists on Android (blind guitarists are pointed to a $0.99 iOS app); meter semantics exist but nothing announces state transitions.
+  Evidence: AFB AccessWorld on HotPaw Talking Tuner; recurring AppleVis request threads; ui/TuningAccessibility.kt already buckets cents.
+  Touches: TunerScreen.kt (liveRegion = Polite on the stable readout), TuningAccessibility.kt, optional TextToSpeech mode behind a setting, TunerPreferencesRepository.kt.
+  Acceptance: TalkBack announces debounced transitions ("E2, 15 cents flat" → "E2, in tune") without per-frame chatter; optional spoken mode works with TalkBack off; haptic channel distinguishes sharp/flat.
+  Complexity: M
+
+- [ ] P1 — Minimum 48dp touch targets for stepper controls
+  Why: numeric setting steppers use compact padding likely under 48dp; small targets are a recurring competitor accessibility complaint.
+  Evidence: TunerScreen.kt NumericSettingRow compact button padding; thetwom/Tuner issue 35.
+  Touches: TunerScreen.kt.
+  Acceptance: all interactive elements measure ≥48x48dp (verified with layout bounds/accessibility scanner).
+  Complexity: S
+
+- [ ] P1 — Fastlane metadata and IzzyOnDroid submission, then F-Droid
+  Why: distribution beyond GitHub is how OSS tuners reach users; IzzyOnDroid auto-ingests fastlane from GitHub releases; F-Droid needs a fdroiddata MR with tag-based auto-updates.
+  Evidence: izzyondroid.org fastlane docs; f-droid.org Inclusion How-To; Choona and Moekadu metadata layouts.
+  Touches: new fastlane/metadata/android/en-US/ (short_description ≤80 chars, full_description, icon, phoneScreenshots, changelogs/<versionCode>.txt), README badges.
+  Acceptance: repo carries valid fastlane metadata; IzzyOnDroid listing live after first tagged signed release; fdroiddata MR submitted with UpdateCheckMode: Tags.
+  Complexity: M
+
+### P2
+
+- [ ] P2 — Microphone input device picker
+  Why: Bluetooth earbud mics ruin tuning; requested independently in two competitor trackers and shipped by no one — cheap differentiator.
+  Evidence: Choona issue 78; thetwom/Tuner issue 65; AudioRecord.setPreferredDevice API.
+  Touches: AudioCaptureController.kt (AudioDeviceInfo enumeration + setPreferredDevice), TunerScreen.kt settings section, TunerPreferencesRepository.kt.
+  Acceptance: settings list available input devices; selection persists; diagnostics row shows the active device; default remains auto.
+  Complexity: M
+
+- [ ] P2 — Bass and ukulele presets with per-instrument detection range
+  Why: most-requested preset expansion across competitor trackers; requires widening the fixed 70-450 Hz detection window per instrument (bass E1 = 41.2 Hz).
+  Evidence: Choona issues 74/72; Tunerly issue 43; PitchDetectorConfig min/maxFrequencyHz.
+  Touches: StandardGuitarTuning.kt/GuitarTunings.kt (instrument field), PitchDetectorConfig wiring per tuning, TunerScreen.kt selector, fixtures for E1/A1.
+  Acceptance: bass standard and ukulele standard presets tune correctly end-to-end; guitar detection unaffected; fixture tests cover the new ranges.
+  Complexity: M
+
+- [ ] P2 — Detect A4 calibration from a live reference tone
+  Why: matches Moekadu v8.2.0; tuning to a piano/band reference is the real calibration workflow, not typing Hz.
+  Evidence: Codeberg thetwom/Tuner v8.2.0 release notes; Moekadu issue 100 (cents-based calibration demand).
+  Touches: TunerScreen.kt A4 settings row ("measure" action), reuse of live PitchEstimate, TunerPreferencesRepository.kt.
+  Acceptance: "Measure A4" listens, locks on a stable tone near A4, and offers to apply the measured Hz; manual stepper still works.
+  Complexity: M
+
+- [ ] P2 — Sub-cent refinement via single-bin-DFT phase tracking
+  Why: phase difference across hops at the detected fundamental yields sub-cent precision on E2 without longer windows; the technique behind software strobe tuners.
+  Evidence: dsego/strobe-tuner design notes; 29a.ch/2020 guitar tuner write-up; billthefarmer/ctuner FFT-phase approach.
+  Touches: pitch/ new PhaseRefiner.kt fed by YIN coarse estimate, AudioCaptureController.kt pipeline, fixture accuracy assertions tightened.
+  Acceptance: fixture suite shows ≤1-cent error on E2-E4 steady tones (current tolerance documented as baseline); latency unchanged.
+  Complexity: M
+
+- [ ] P2 — Optional strobe precision view
+  Why: precision-view differentiation with a real demand signal (analog/needle alternatives requested in Moekadu #102); phase-accumulator Canvas is cheap once cents offset exists.
+  Evidence: dsego/strobe-tuner phase-comparator design; Peterson strobe UX reputation; Moekadu issue 102.
+  Touches: TunerScreen.kt (new meter style + setting), theme tokens; draw-phase-only state reads.
+  Acceptance: strobe band drifts direction/speed proportional to cents and freezes when in tune; toggleable; default meter unchanged.
+  Complexity: L
+
+- [ ] P2 — Split TunerScreen.kt and extract a testable state holder
+  Why: 1300-line screen file plus a 200-line route composable doing permission flow, SAF I/O, and preference plumbing blocks UI testing and invites regressions as P1 features land.
+  Evidence: ui/TunerScreen.kt (~50 KB); MainActivity.kt:52-257.
+  Touches: ui/ (meter, guided panel, settings sections, diagnostics files), new TunerStateHolder/ViewModel, MainActivity.kt.
+  Acceptance: no file over ~400 lines in ui/; permission/import/export logic unit-tested; behavior identical (screenshots re-captured).
+  Complexity: M
+
+- [ ] P2 — Capture-loop, alternate-tuning, and noise fixture tests
+  Why: AudioCaptureController logic (source fallback, zero-frame handling, frame assembly) and non-standard tunings have zero automated coverage; noise robustness is asserted only by one synthetic case.
+  Evidence: app/src/test/ inventory (no controller tests; guitar-fixtures/ holds standard tuning only).
+  Touches: test/ new AudioCaptureController tests (recorder abstraction), WAV fixtures for Drop D/DADGAD and chatter/white-noise/impulse profiles.
+  Acceptance: gradlew check exercises controller frame assembly and fallback paths; alternate-tuning and noise fixtures gate regressions.
+  Complexity: M
+
+- [ ] P2 — Gradle dependency verification and repository lockdown
+  Why: MavenGate-class build-time attacks are the realistic attack surface for a no-network app; verification metadata + FAIL_ON_PROJECT_REPOS is cheap insurance that matches the privacy positioning.
+  Evidence: Oversecured MavenGate write-up; Gradle dependency-verification docs; settings.gradle.kts currently lacks both.
+  Touches: settings.gradle.kts, gradle/verification-metadata.xml.
+  Acceptance: builds fail on unverified artifacts or project-declared repos; CI green.
+  Complexity: S
+
+- [ ] P2 — Reproducible release build configuration
+  Why: F-Droid reproducible verification lets the app ship developer-signed; also strengthens the GitHub SHA256SUMS story.
+  Evidence: f-droid.org/docs/Reproducible_Builds (PNG crunching, generatedDensities, vcsInfo, R8 core-count nondeterminism).
+  Touches: app/build.gradle.kts (cruncherEnabled=false, vectorDrawables.generatedDensities=[], vcsInfo off), .github/workflows/release.yml (pinned toolchain).
+  Acceptance: two clean builds of the same tag on different machines produce byte-identical APKs apart from signature.
+  Complexity: M
+
+- [ ] P2 — Baseline profile for cold start
+  Why: a tuner is a 30-second utility — cold start is the UX; baseline profiles cut startup 15-40% in published case studies.
+  Evidence: developer.android.com baseline profiles overview + Todoist/Duolingo case studies.
+  Touches: new baselineprofile module (Macrobenchmark generator), app/build.gradle.kts.
+  Acceptance: profile generated and bundled in release; macrobenchmark shows measurable cold-start improvement on a physical device.
+  Complexity: S
+
+- [ ] P2 — Per-app language picker
+  Why: de/es translations exist but users can't select them independently of system language; Moekadu shipped this (v9.1.0) for the same reason.
+  Evidence: Codeberg thetwom/Tuner v9.1.0; androidx per-app language (LocaleConfig) docs.
+  Touches: AndroidManifest.xml (localeConfig), res/xml/locales_config.xml, settings section in TunerScreen.kt.
+  Acceptance: in-app language choice among en/de/es persists and survives restart on API 26+ (AppCompatDelegate fallback below 33).
+  Complexity: S
+
+### P3
+
+- [ ] P3 — New-string stretch-and-settle mode
+  Why: new strings drift flat for days; the tune→stretch→retune cycle is standard advice no app operationalizes; extends Guided mode naturally.
+  Evidence: Guitar World / Haze Guitars string-stretching guidance; JustinGuitar beginner confusion threads.
+  Touches: GuidedTuningWalkthrough.kt (stretch cycle variant), TunerScreen.kt, strings.xml (+de/es).
+  Acceptance: optional "new strings" walkthrough runs ≥2 full passes, tracks per-string drift between passes, and reports when drift falls inside tolerance.
+  Complexity: M
+
+- [ ] P3 — Distraction-free playing mode
+  Why: minimal full-screen sharp/flat indication for intonation practice; open demand in Moekadu #103; cheap once chromatic mode exists.
+  Evidence: thetwom/Tuner issue 103.
+  Touches: TunerScreen.kt (fullscreen meter variant), depends on chromatic mode.
+  Acceptance: a fullscreen mode shows only note + direction arrow + in-tune color state with screen kept on.
+  Complexity: S
+
+- [ ] P3 — Wear OS tuner app
+  Why: Choona proves demand and the CoreBoundaryTest already keeps pitch/tuning/settings UI-free for reuse; watch mic tuning is a genuine leapfrog surface.
+  Evidence: Choona v1.6.1 Wear beta (shared lib/ + wear/ modules); androidx.wear.compose material3 1.5.0 stable.
+  Touches: new wear/ module, shared core extraction into a library module, release workflow artifacts.
+  Acceptance: watch app detects strings and shows tune-up/down with EdgeButton/ArcProgressIndicator UI; phone app unaffected.
+  Complexity: XL
 
 ## MVP Acceptance Criteria
 
