@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -42,7 +43,9 @@ import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
+import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
+import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.util.Locale
@@ -54,9 +57,13 @@ fun TunerScreen(
     hasAudioPermission: Boolean,
     activeTuning: TuningDefinition,
     tunings: List<TuningDefinition>,
+    tuningMode: TuningMode,
+    guidedStringNumber: Int,
     preferences: StoredTunerPreferences,
     onPrimaryAction: () -> Unit,
     onStop: () -> Unit,
+    onTuningModeSelected: (TuningMode) -> Unit,
+    onGuidedStringSelected: (Int) -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
@@ -72,7 +79,11 @@ fun TunerScreen(
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding(),
+        ) {
             val wideLayout = maxWidth >= 720.dp
             Column(
                 modifier = Modifier
@@ -97,7 +108,11 @@ fun TunerScreen(
                         StartupTuningPanel(
                             activeTuning = activeTuning,
                             tunings = tunings,
+                            tuningMode = tuningMode,
+                            guidedStringNumber = guidedStringNumber,
                             preferences = preferences,
+                            onTuningModeSelected = onTuningModeSelected,
+                            onGuidedStringSelected = onGuidedStringSelected,
                             onStartupModeSelected = onStartupModeSelected,
                             onSetFavoriteTuning = onSetFavoriteTuning,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
@@ -116,7 +131,11 @@ fun TunerScreen(
                     StartupTuningPanel(
                         activeTuning = activeTuning,
                         tunings = tunings,
+                        tuningMode = tuningMode,
+                        guidedStringNumber = guidedStringNumber,
                         preferences = preferences,
+                        onTuningModeSelected = onTuningModeSelected,
+                        onGuidedStringSelected = onGuidedStringSelected,
                         onStartupModeSelected = onStartupModeSelected,
                         onSetFavoriteTuning = onSetFavoriteTuning,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
@@ -190,7 +209,11 @@ private fun TunerMeterPanel(
 private fun StartupTuningPanel(
     activeTuning: TuningDefinition,
     tunings: List<TuningDefinition>,
+    tuningMode: TuningMode,
+    guidedStringNumber: Int,
     preferences: StoredTunerPreferences,
+    onTuningModeSelected: (TuningMode) -> Unit,
+    onGuidedStringSelected: (Int) -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
@@ -239,12 +262,59 @@ private fun StartupTuningPanel(
                     onClick = { onTuningSelected(tuning) },
                 )
             }
+            Text(
+                text = stringResource(R.string.label_mode),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TuningModeButton(
+                    label = stringResource(R.string.mode_guided),
+                    selected = tuningMode == TuningMode.Guided,
+                    onClick = { onTuningModeSelected(TuningMode.Guided) },
+                    modifier = Modifier.weight(1f),
+                )
+                TuningModeButton(
+                    label = stringResource(R.string.mode_auto),
+                    selected = tuningMode == TuningMode.Auto,
+                    onClick = { onTuningModeSelected(TuningMode.Auto) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            if (tuningMode == TuningMode.Guided) {
+                Text(
+                    text = stringResource(R.string.label_guided_string),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                for (row in activeTuning.strings.chunked(3)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        for (string in row) {
+                            GuidedStringButton(
+                                string = string,
+                                selected = string.stringNumber == guidedStringNumber,
+                                onClick = { onGuidedStringSelected(string.stringNumber) },
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                        repeat(3 - row.size) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 for (mode in StartupTuningMode.entries) {
-                    ModeButton(
+                    StartupModeButton(
                         mode = mode,
                         selected = preferences.startupMode == mode,
                         onClick = { onStartupModeSelected(mode) },
@@ -382,7 +452,7 @@ private fun TuningChoiceButton(
 }
 
 @Composable
-private fun ModeButton(
+private fun StartupModeButton(
     mode: StartupTuningMode,
     selected: Boolean,
     onClick: () -> Unit,
@@ -407,6 +477,63 @@ private fun ModeButton(
             contentPadding = contentPadding,
         ) {
             Text(mode.label(), maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun TuningModeButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(8.dp)
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+        ) {
+            Text(label, maxLines = 1)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+        ) {
+            Text(label, maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun GuidedStringButton(
+    string: GuitarString,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(8.dp)
+    val label = "${string.stringNumber} ${string.scientificPitch}"
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+        ) {
+            Text(label, maxLines = 1)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+        ) {
+            Text(label, maxLines = 1)
         }
     }
 }
@@ -584,9 +711,13 @@ private fun TunerScreenPreview() {
             hasAudioPermission = true,
             activeTuning = GuitarTunings.standard,
             tunings = GuitarTunings.builtIns,
+            tuningMode = TuningMode.Guided,
+            guidedStringNumber = 6,
             preferences = StoredTunerPreferences(),
             onPrimaryAction = {},
             onStop = {},
+            onTuningModeSelected = {},
+            onGuidedStringSelected = {},
             onStartupModeSelected = {},
             onSetFavoriteTuning = {},
             onFreezeAfterDecayChanged = {},

@@ -50,6 +50,40 @@ class TuningAnalyzerTest {
     }
 
     @Test
+    fun guidedModeLocksOntoSelectedString() {
+        val guidedLowE = TuningAnalyzer(
+            strings = StandardGuitarTuning.strings,
+            targetSelection = TuningTargetSelection.guided(6),
+        )
+
+        val measurement = guidedLowE.analyze(detectedPitch(80.0))
+
+        assertEquals(TuningStatus.TuneUp, measurement.status)
+        assertEquals("Low E", measurement.target?.name)
+    }
+
+    @Test
+    fun guidedModeRejectsWrongOpenString() {
+        val guidedLowE = TuningAnalyzer(
+            strings = StandardGuitarTuning.strings,
+            targetSelection = TuningTargetSelection.guided(6),
+        )
+
+        val measurement = guidedLowE.analyze(detectedPitch(110.0))
+
+        assertEquals(TuningStatus.NoStringDetected, measurement.status)
+        assertEquals(null, measurement.target)
+    }
+
+    @Test
+    fun autoModeSelectsNearestStrummedString() {
+        val measurement = analyzer.analyze(detectedPitch(110.0))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("A", measurement.target?.name)
+    }
+
+    @Test
     fun keepsTrueDStringAtFundamental() {
         val measurement = analyzer.analyze(detectedPitch(146.83))
 

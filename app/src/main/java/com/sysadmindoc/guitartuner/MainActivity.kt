@@ -29,6 +29,8 @@ import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
 import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.CustomTuningJsonCodec
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
+import com.sysadmindoc.guitartuner.tuning.TuningMode
+import com.sysadmindoc.guitartuner.tuning.TuningTargetSelection
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
 import com.sysadmindoc.guitartuner.ui.TuningFileMessage
 import com.sysadmindoc.guitartuner.ui.TunerScreen
@@ -57,6 +59,8 @@ private fun TunerRoute() {
     val controller = remember(scope) { AudioCaptureController(scope = scope) }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
     var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
+    var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Guided) }
+    var guidedStringNumber by rememberSaveable { mutableStateOf(6) }
     var tuningFileMessage by remember { mutableStateOf<TuningFileMessage?>(null) }
     val preferencesRepository = remember(context.applicationContext) {
         TunerPreferencesRepository(context.applicationContext.tunerPreferencesDataStore)
@@ -89,6 +93,18 @@ private fun TunerRoute() {
     LaunchedEffect(activeTuning.id) {
         controller.setTuning(activeTuning.strings)
         preferencesRepository.rememberLastUsedTuning(activeTuning.id)
+        if (activeTuning.strings.none { it.stringNumber == guidedStringNumber }) {
+            guidedStringNumber = activeTuning.strings.firstOrNull()?.stringNumber ?: guidedStringNumber
+        }
+    }
+
+    LaunchedEffect(activeTuning.id, tuningMode, guidedStringNumber) {
+        controller.setTargetSelection(
+            when (tuningMode) {
+                TuningMode.Auto -> TuningTargetSelection.auto()
+                TuningMode.Guided -> TuningTargetSelection.guided(guidedStringNumber)
+            },
+        )
     }
 
     LaunchedEffect(preferences.freezeAfterDecay) {
@@ -164,6 +180,8 @@ private fun TunerRoute() {
             hasAudioPermission = hasAudioPermission,
             activeTuning = activeTuning,
             tunings = tuningCatalog.tunings,
+            tuningMode = tuningMode,
+            guidedStringNumber = guidedStringNumber,
             preferences = preferences,
             onPrimaryAction = {
                 when {
@@ -173,6 +191,12 @@ private fun TunerRoute() {
                 }
             },
             onStop = controller::stop,
+            onTuningModeSelected = { mode ->
+                tuningMode = mode
+            },
+            onGuidedStringSelected = { stringNumber ->
+                guidedStringNumber = stringNumber
+            },
             onStartupModeSelected = { mode ->
                 selectedTuningId = when (mode) {
                     com.sysadmindoc.guitartuner.settings.StartupTuningMode.StandardDefault ->

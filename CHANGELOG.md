@@ -23,3 +23,4 @@
 - Added stable-frame smoothing after pluck attack to reduce jumpy cents/frequency feedback without smearing target-string changes.
 - Added second-harmonic octave correction so weak-fundamental guitar strings map back to the intended open string instead of a nearby higher string.
 - Added an explicit `PitchResult` contract exposing frequency, nearest note, cents offset, confidence, and signal state.
+- Added Guided and Auto tuning modes, including a guided string selector that locks analysis to one target string and an auto path that keeps nearest-string detection.

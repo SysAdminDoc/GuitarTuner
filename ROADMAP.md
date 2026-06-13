@@ -28,8 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 4 - Guitar Tuning Model
 
-- [ ] Add guided mode that locks onto one target string at a time.
-- [ ] Add auto mode that selects the most likely strummed string.
 - [ ] Add A4 calibration setting with 440 Hz default.
 
 ### Phase 5 - Guided Tuning UI

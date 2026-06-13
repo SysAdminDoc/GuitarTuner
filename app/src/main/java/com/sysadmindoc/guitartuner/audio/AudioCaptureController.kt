@@ -12,6 +12,7 @@ import com.sysadmindoc.guitartuner.tuning.MeasurementFreeze
 import com.sysadmindoc.guitartuner.tuning.StableMeasurementSmoother
 import com.sysadmindoc.guitartuner.tuning.StandardGuitarTuning
 import com.sysadmindoc.guitartuner.tuning.TuningAnalyzer
+import com.sysadmindoc.guitartuner.tuning.TuningTargetSelection
 import java.io.Closeable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +35,13 @@ class AudioCaptureController(
     val state: StateFlow<TunerSessionState> = _state.asStateFlow()
 
     @Volatile
-    private var tuningAnalyzer: TuningAnalyzer = TuningAnalyzer(initialStrings)
+    private var currentStrings: List<GuitarString> = initialStrings
+
+    @Volatile
+    private var targetSelection: TuningTargetSelection = TuningTargetSelection.auto()
+
+    @Volatile
+    private var tuningAnalyzer: TuningAnalyzer = TuningAnalyzer(currentStrings, targetSelection)
 
     @Volatile
     private var freezeAfterDecay: Boolean = false
@@ -79,7 +86,17 @@ class AudioCaptureController(
     }
 
     fun setTuning(strings: List<GuitarString>) {
-        tuningAnalyzer = TuningAnalyzer(strings)
+        currentStrings = strings
+        rebuildAnalyzer()
+    }
+
+    fun setTargetSelection(selection: TuningTargetSelection) {
+        targetSelection = selection
+        rebuildAnalyzer()
+    }
+
+    private fun rebuildAnalyzer() {
+        tuningAnalyzer = TuningAnalyzer(currentStrings, targetSelection)
         measurementSmoother.reset()
     }
 

@@ -7,8 +7,10 @@ import kotlin.math.ln
 
 class TuningAnalyzer(
     private val strings: List<GuitarString>,
+    private val targetSelection: TuningTargetSelection = TuningTargetSelection.auto(),
     private val inTuneCents: Double = 5.0,
     private val maxAutoDetectCents: Double = 250.0,
+    private val maxGuidedDetectCents: Double = 300.0,
     private val octaveCorrectionMinImprovementCents: Double = 80.0,
 ) {
     fun analyze(estimate: PitchEstimate): TuningMeasurement {
@@ -24,7 +26,11 @@ class TuningAnalyzer(
 
     private fun analyzeFrequency(frequencyHz: Double, confidence: Double): TuningMeasurement {
         val candidate = resolveSecondHarmonicCandidate(frequencyHz)
-        if (abs(candidate.cents) > maxAutoDetectCents) {
+        val maxDetectCents = when (targetSelection.mode) {
+            TuningMode.Auto -> maxAutoDetectCents
+            TuningMode.Guided -> maxGuidedDetectCents
+        }
+        if (abs(candidate.cents) > maxDetectCents) {
             return TuningMeasurement.noStringDetected(frequencyHz = frequencyHz, confidence = confidence)
         }
 
@@ -62,7 +68,8 @@ class TuningAnalyzer(
     }
 
     private fun candidateFor(frequencyHz: Double): FrequencyCandidate {
-        val nearest = strings.minBy { string ->
+        val candidateStrings = targetSelection.selectedStrings(strings)
+        val nearest = candidateStrings.minBy { string ->
             abs(centsBetween(frequencyHz, string.frequencyHz))
         }
         return FrequencyCandidate(

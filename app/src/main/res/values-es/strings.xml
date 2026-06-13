@@ -31,6 +31,10 @@
     <string name="startup_favorite">Favorita</string>
     <string name="label_tuning">Afinacion</string>
     <string name="label_available_tunings">Afinaciones disponibles</string>
+    <string name="label_mode">Modo</string>
+    <string name="mode_auto">Auto</string>
+    <string name="mode_guided">Guiado</string>
+    <string name="label_guided_string">Cuerda guiada</string>
     <string name="tuning_custom_suffix">%1$s personalizada</string>
     <string name="frequency_placeholder">-- Hz</string>
     <string name="frequency_value">%1$s Hz</string>
