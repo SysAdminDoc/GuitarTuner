@@ -111,6 +111,7 @@ fun TunerScreen(
                     ) {
                         TunerMeterPanel(
                             state = state,
+                            hasAudioPermission = hasAudioPermission,
                             pegTurnDirections = preferences.pegTurnDirections,
                             modifier = Modifier.weight(1f),
                         )
@@ -137,6 +138,7 @@ fun TunerScreen(
                 } else {
                     TunerMeterPanel(
                         state = state,
+                        hasAudioPermission = hasAudioPermission,
                         pegTurnDirections = preferences.pegTurnDirections,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -199,6 +201,7 @@ private fun TunerHeader(
 @Composable
 private fun TunerMeterPanel(
     state: TunerSessionState,
+    hasAudioPermission: Boolean,
     pegTurnDirections: Map<Int, PegTurnDirection>,
     modifier: Modifier = Modifier,
 ) {
@@ -217,6 +220,7 @@ private fun TunerMeterPanel(
             CentsMeter(state)
             FrequencyReadout(
                 state = state,
+                hasAudioPermission = hasAudioPermission,
                 pegTurnDirections = pegTurnDirections,
             )
         }
@@ -760,6 +764,7 @@ private fun CentsMeter(state: TunerSessionState) {
 @Composable
 private fun FrequencyReadout(
     state: TunerSessionState,
+    hasAudioPermission: Boolean,
     pegTurnDirections: Map<Int, PegTurnDirection>,
 ) {
     val measurement = state.measurement
@@ -773,7 +778,8 @@ private fun FrequencyReadout(
     ) {
         Text(
             text = guidanceLabel(
-                status = measurement.status,
+                state = state,
+                hasAudioPermission = hasAudioPermission,
                 turnDirection = measurement.turnDirection(pegTurnDirections),
             ),
             style = MaterialTheme.typography.headlineSmall,
@@ -821,8 +827,8 @@ private fun FrequencyReadout(
 
 @Composable
 private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): String = when {
-    state.errorMessage != null -> state.errorMessage
     !hasAudioPermission -> stringResource(R.string.status_permission_required)
+    state.errorMessage != null -> state.errorMessage
     !state.isListening -> stringResource(R.string.status_ready)
     state.isFrozen -> stringResource(R.string.status_frozen)
     state.measurement.status == TuningStatus.WaitingForSignal -> stringResource(R.string.status_listening)
@@ -841,9 +847,14 @@ private fun primaryActionLabel(state: TunerSessionState, hasAudioPermission: Boo
 
 @Composable
 private fun guidanceLabel(
-    status: TuningStatus,
+    state: TunerSessionState,
+    hasAudioPermission: Boolean,
     turnDirection: PegTurnDirection?,
 ): String {
+    if (!hasAudioPermission) return stringResource(R.string.guidance_allow_mic)
+    if (!state.isListening) return stringResource(R.string.guidance_start_listening)
+
+    val status = state.measurement.status
     val base = when (status) {
         TuningStatus.WaitingForSignal -> stringResource(R.string.guidance_strum_open_string)
         TuningStatus.SignalClipping -> stringResource(R.string.guidance_play_softer)

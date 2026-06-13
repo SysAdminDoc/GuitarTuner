@@ -14,6 +14,8 @@
     <string name="guidance_play_softer">Toca mas suave</string>
     <string name="guidance_reduce_noise">Reduce el ruido</string>
     <string name="guidance_try_one_string">Prueba una cuerda</string>
+    <string name="guidance_start_listening">Toca Iniciar para escuchar</string>
+    <string name="guidance_allow_mic">Permite microfono para afinar</string>
     <string name="guidance_tune_up">Sube la afinacion</string>
     <string name="guidance_tune_down">Baja la afinacion</string>
     <string name="guidance_in_tune">Afinada</string>

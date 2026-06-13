@@ -14,6 +14,8 @@
     <string name="guidance_play_softer">Play softer</string>
     <string name="guidance_reduce_noise">Reduce noise</string>
     <string name="guidance_try_one_string">Try one string</string>
+    <string name="guidance_start_listening">Tap Start to listen</string>
+    <string name="guidance_allow_mic">Allow mic to start tuning</string>
     <string name="guidance_tune_up">Tune up</string>
     <string name="guidance_tune_down">Tune down</string>
     <string name="guidance_in_tune">In tune</string>

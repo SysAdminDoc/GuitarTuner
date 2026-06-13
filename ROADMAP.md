@@ -26,10 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Scaffold Milestones
 
-### Phase 5 - Guided Tuning UI
-
-- [ ] Add empty, permission-denied, high-noise, clipped-input, and no-string-detected states.
-
 ### Phase 6 - Settings and Tunings
 
 - [ ] Add standard, half-step down, drop D, open G, DADGAD, and custom tuning support.

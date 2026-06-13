@@ -58,6 +58,10 @@ class TuningAccessibilityTest {
             tuningMeterAccessibility(TuningMeasurement.signalClipping()).stateDescription,
         )
         assertEquals(
+            "Background noise is too high",
+            tuningMeterAccessibility(TuningMeasurement.highNoise()).stateDescription,
+        )
+        assertEquals(
             "No guitar string detected",
             tuningMeterAccessibility(TuningMeasurement.noStringDetected()).stateDescription,
         )

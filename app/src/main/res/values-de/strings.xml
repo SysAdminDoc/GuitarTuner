@@ -14,6 +14,8 @@
     <string name="guidance_play_softer">Leiser spielen</string>
     <string name="guidance_reduce_noise">Geraeusche reduzieren</string>
     <string name="guidance_try_one_string">Eine Saite versuchen</string>
+    <string name="guidance_start_listening">Zum Hoeren Start tippen</string>
+    <string name="guidance_allow_mic">Mikrofon erlauben zum Stimmen</string>
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>
     <string name="guidance_in_tune">Gestimmt</string>
