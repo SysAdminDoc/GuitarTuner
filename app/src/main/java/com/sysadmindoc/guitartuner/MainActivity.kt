@@ -57,7 +57,7 @@ private fun TunerRoute() {
     val controller = remember(scope) { AudioCaptureController(scope = scope) }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
     var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
-    var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Guided) }
+    var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Auto) }
     var guidedStringNumber by rememberSaveable { mutableStateOf(6) }
     var tuningFileMessage by remember { mutableStateOf<TuningFileMessage?>(null) }
     val preferencesRepository = remember(context.applicationContext) {

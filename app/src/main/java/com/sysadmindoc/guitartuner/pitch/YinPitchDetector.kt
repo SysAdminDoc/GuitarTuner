@@ -7,7 +7,7 @@ import kotlin.math.sqrt
 data class PitchDetectorConfig(
     val minFrequencyHz: Double = 70.0,
     val maxFrequencyHz: Double = 450.0,
-    val silenceRms: Double = 0.008,
+    val silenceRms: Double = 0.003,
     val highNoiseRms: Double = 0.04,
     val clippingRatio: Double = 0.02,
     val yinThreshold: Double = 0.15,

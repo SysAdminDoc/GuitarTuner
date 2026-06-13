@@ -346,15 +346,15 @@ private fun StartupTuningPanel(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     TuningModeButton(
-                        label = stringResource(R.string.mode_guided),
-                        selected = tuningMode == TuningMode.Guided,
-                        onClick = { onTuningModeSelected(TuningMode.Guided) },
-                        modifier = Modifier.weight(1f),
-                    )
-                    TuningModeButton(
                         label = stringResource(R.string.mode_auto),
                         selected = tuningMode == TuningMode.Auto,
                         onClick = { onTuningModeSelected(TuningMode.Auto) },
+                        modifier = Modifier.weight(1f),
+                    )
+                    TuningModeButton(
+                        label = stringResource(R.string.mode_guided),
+                        selected = tuningMode == TuningMode.Guided,
+                        onClick = { onTuningModeSelected(TuningMode.Guided) },
                         modifier = Modifier.weight(1f),
                     )
                 }

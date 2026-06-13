@@ -11,7 +11,7 @@ class TunerSettingsTest {
 
         assertEquals(440.0, settings.calibration.a4Hz, 0.0)
         assertEquals(5.0, settings.centsTolerance, 0.0)
-        assertEquals(0.008, settings.noiseGateRms, 0.0)
+        assertEquals(0.003, settings.noiseGateRms, 0.0)
         assertEquals(ThemeMode.System, settings.themeMode)
     }
 
@@ -21,7 +21,7 @@ class TunerSettingsTest {
 
         assertEquals(440.0, preferences.a4Hz, 0.0)
         assertEquals(5.0, preferences.centsTolerance, 0.0)
-        assertEquals(0.008, preferences.noiseGateRms, 0.0)
+        assertEquals(0.003, preferences.noiseGateRms, 0.0)
         assertEquals(ThemeMode.System, preferences.themeMode)
     }
 

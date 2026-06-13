@@ -145,6 +145,7 @@ class AudioCaptureController(
 
         try {
             recorder.startRecording()
+            val recorderSampleRate = recorder.sampleRate.takeIf { it > 0 } ?: SampleRate
             val buffer = ShortArray(FrameSize)
             while (scope.isActive && captureJob?.isActive == true) {
                 val read = recorder.read(buffer, 0, buffer.size, AudioRecord.READ_BLOCKING)
@@ -154,7 +155,7 @@ class AudioCaptureController(
                     samples[index] = buffer[index] / Short.MAX_VALUE.toFloat()
                 }
 
-                val estimate = pitchDetector.detect(samples, SampleRate)
+                val estimate = pitchDetector.detect(samples, recorderSampleRate)
                 val measurement = measurementSmoother.apply(tuningAnalyzer.analyze(estimate))
                 val measurementFrame = measurementFreeze.apply(
                     estimate = estimate,
@@ -198,10 +199,10 @@ class AudioCaptureController(
 
         val bufferBytes = maxOf(minimumBuffer, FrameSize * Short.SIZE_BYTES * 2)
         val sources = buildList {
+            add(MediaRecorder.AudioSource.MIC)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 add(MediaRecorder.AudioSource.UNPROCESSED)
             }
-            add(MediaRecorder.AudioSource.MIC)
         }
 
         for (source in sources) {

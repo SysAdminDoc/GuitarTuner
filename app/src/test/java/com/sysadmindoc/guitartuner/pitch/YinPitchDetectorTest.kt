@@ -61,6 +61,23 @@ class YinPitchDetectorTest {
     }
 
     @Test
+    fun detectsQuietPhoneDistanceAString() {
+        val estimate = detector.detect(
+            samples = guitarLikeSignal(
+                frequencyHz = 110.0,
+                secondHarmonicLevel = 0.006,
+                noiseLevel = 0.001,
+                fundamentalLevel = 0.012,
+            ),
+            sampleRate = SampleRate,
+        )
+
+        assertEquals(SignalStatus.Detected, estimate.status)
+        val frequencyHz = requireNotNull(estimate.frequencyHz)
+        assertTrue(abs(frequencyHz - 110.0) < 1.5)
+    }
+
+    @Test
     fun avoidsG3ToG4OctaveJumpWhenSecondHarmonicIsPresent() {
         val estimate = detector.detect(
             samples = guitarLikeSignal(frequencyHz = 196.0, secondHarmonicLevel = 0.40),

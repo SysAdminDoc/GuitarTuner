@@ -42,7 +42,7 @@
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Rauschschwelle</string>
     <string name="section_tuning_helper">Stimmung waehlen, bevor das Hoeren startet.</string>
-    <string name="section_mode_helper">Gefuehrt ist am sichersten fuer Anfaenger; Auto hoert auf die naechste Saite.</string>
+    <string name="section_mode_helper">Auto erkennt die angeschlagene leere Saite; Gefuehrt geht Saite fuer Saite vor.</string>
     <string name="section_defaults">Standardwerte</string>
     <string name="section_defaults_helper">Startverhalten und Anzeigeoptionen waehlen.</string>
     <string name="section_precision">Praezision</string>

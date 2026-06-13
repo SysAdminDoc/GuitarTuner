@@ -42,7 +42,7 @@
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Noise gate</string>
     <string name="section_tuning_helper">Choose the tuning before you start listening.</string>
-    <string name="section_mode_helper">Guided mode is safest for beginners; Auto listens for the nearest string.</string>
+    <string name="section_mode_helper">Auto detects whichever open string you play; Guided walks one string at a time.</string>
     <string name="section_defaults">Defaults</string>
     <string name="section_defaults_helper">Pick startup behavior and display preferences.</string>
     <string name="section_precision">Precision</string>

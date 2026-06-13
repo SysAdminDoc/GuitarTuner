@@ -11,8 +11,8 @@ GuitarTuner is an open-source Android app for tuning an acoustic guitar by sound
 - Native Android app with Kotlin, Jetpack Compose, and Material 3.
 - Offline-first design with no network permission.
 - Microphone-only pitch detection using lifecycle-bound Android `AudioRecord` capture.
-- Guided standard-tuning workflow for acoustic guitar.
-- Automatic standard-string detection with confidence and signal feedback.
+- Auto-first standard-string detection with confidence and signal feedback.
+- Guided standard-tuning workflow for acoustic guitar when the player wants a step-by-step path.
 - Clear tune-up / tune-down guidance with optional peg-direction calibration.
 - AMOLED dark theme by default with an accessible light theme.
 
@@ -78,7 +78,7 @@ The release workflow is ready in this repository, but it only runs after the pro
 
 ## Repository Status
 
-GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Guided and Auto tuning modes, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a polished first-screen action flow, sectioned tuning controls, a first-screen local-audio privacy note, a confidence-aware main tuner readout, explicit signal and permission states, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string, octave-error, and local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
+GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, lower default noise gate for real phone microphones, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Auto and Guided tuning modes, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a polished first-screen action flow, sectioned tuning controls, a first-screen local-audio privacy note, a confidence-aware main tuner readout, explicit signal and permission states, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string, octave-error, quiet-input, and local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
 ## Screenshots
 
