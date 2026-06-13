@@ -47,6 +47,11 @@ object CustomTuningJsonCodec {
                 tunings = emptyList(),
                 errors = listOf("Invalid JSON: ${exception.message ?: "could not parse file"}"),
             )
+        } catch (exception: Exception) {
+            return CustomTuningImportResult(
+                tunings = emptyList(),
+                errors = listOf("Could not read tuning file: ${exception.message ?: "unexpected error"}"),
+            )
         }
 
         val errors = mutableListOf<String>()

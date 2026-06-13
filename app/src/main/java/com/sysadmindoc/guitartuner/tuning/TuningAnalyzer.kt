@@ -89,7 +89,7 @@ class TuningAnalyzer(
         val rawCandidate = candidateFor(frequencyHz)
         val halfFrequency = frequencyHz / 2.0
         val minimumSupportedFrequency = strings.minOf { it.frequencyHz } * 0.75
-        if (halfFrequency < minimumSupportedFrequency) {
+        if (halfFrequency <= minimumSupportedFrequency) {
             return rawCandidate
         }
 

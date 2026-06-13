@@ -24,7 +24,7 @@ class TunerPreferencesRepository(
 ) {
     val preferences: Flow<StoredTunerPreferences> = dataStore.data
         .catch { exception ->
-            if (exception is IOException) {
+            if (exception is IOException || exception is kotlinx.serialization.SerializationException) {
                 emit(emptyPreferences())
             } else {
                 throw exception

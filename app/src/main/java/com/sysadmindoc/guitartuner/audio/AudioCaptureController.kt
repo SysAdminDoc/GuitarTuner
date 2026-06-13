@@ -44,16 +44,9 @@ class AudioCaptureController(
     @Volatile
     private var pitchDetector: YinPitchDetector = initialPitchDetector
 
-    @Volatile
     private var currentStrings: List<GuitarString> = initialStrings
-
-    @Volatile
     private var targetSelection: TuningTargetSelection = TuningTargetSelection.auto()
-
-    @Volatile
     private var centsTolerance: Double = 5.0
-
-    @Volatile
     private var a4Hz: Double = 440.0
 
     @Volatile
@@ -87,14 +80,17 @@ class AudioCaptureController(
 
     fun stop() {
         val job = captureJob
-        captureJob = null
         activeRecord?.safeStop()
         if (job?.isActive == true) {
             scope.launch(dispatcher) {
                 job.cancelAndJoin()
+                captureJob = null
             }
+        } else {
+            captureJob = null
         }
         measurementSmoother.reset()
+        phaseRefiner.reset()
         _state.value = _state.value.copy(isListening = false, micStolen = false)
     }
 
@@ -297,18 +293,25 @@ class AudioCaptureController(
     }
 
     private fun analyzeFrame(samples: FloatArray, sampleRate: Int) {
-        var estimate = pitchDetector.detect(samples, sampleRate)
+        val detector = pitchDetector
+        val analyzer = tuningAnalyzer
+        val freeze = freezeAfterDecay
+
+        var estimate = detector.detect(samples, sampleRate)
         if (estimate.frequencyHz != null && estimate.status == SignalStatus.Detected) {
-            val refined = phaseRefiner.refine(samples, estimate.frequencyHz!!)
-            estimate = estimate.copy(frequencyHz = refined)
+            val coarse = estimate.frequencyHz!!
+            val refined = phaseRefiner.refine(samples, coarse)
+            if (refined > 0 && refined < detector.config.maxFrequencyHz * 2) {
+                estimate = estimate.copy(frequencyHz = refined)
+            }
         } else {
             phaseRefiner.reset()
         }
-        val measurement = measurementSmoother.apply(tuningAnalyzer.analyze(estimate))
+        val measurement = measurementSmoother.apply(analyzer.analyze(estimate))
         val measurementFrame = measurementFreeze.apply(
             estimate = estimate,
             measurement = measurement,
-            enabled = freezeAfterDecay,
+            enabled = freeze,
         )
         _state.value = _state.value.copy(
             isListening = true,

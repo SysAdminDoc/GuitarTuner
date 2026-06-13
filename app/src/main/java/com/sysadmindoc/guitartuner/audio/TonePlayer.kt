@@ -35,18 +35,23 @@ class TonePlayer {
             .setTransferMode(AudioTrack.MODE_STATIC)
             .build()
 
-        audioTrack.write(samples, 0, samples.size)
-        audioTrack.setNotificationMarkerPosition(samples.size)
         audioTrack.setPlaybackPositionUpdateListener(object : AudioTrack.OnPlaybackPositionUpdateListener {
             override fun onMarkerReached(t: AudioTrack) {
-                t.stop()
-                t.release()
+                try { t.stop() } catch (_: IllegalStateException) {}
+                try { t.release() } catch (_: RuntimeException) {}
                 if (track === t) track = null
             }
             override fun onPeriodicNotification(t: AudioTrack) {}
         })
         track = audioTrack
-        audioTrack.play()
+        try {
+            audioTrack.write(samples, 0, samples.size)
+            audioTrack.setNotificationMarkerPosition(samples.size)
+            audioTrack.play()
+        } catch (_: RuntimeException) {
+            track = null
+            try { audioTrack.release() } catch (_: RuntimeException) {}
+        }
     }
 
     fun stop() {

@@ -1361,10 +1361,6 @@ private fun FrequencyReadout(
 private fun audioErrorText(error: AudioError): String = when (error) {
     AudioError.MicInitFailed -> stringResource(R.string.error_mic_init)
     AudioError.CaptureStopped -> stringResource(R.string.error_capture_stopped)
-    AudioError.DeadObject -> stringResource(R.string.error_capture_stopped)
-    AudioError.InvalidOperation -> stringResource(R.string.error_capture_stopped)
-    AudioError.BadValue -> stringResource(R.string.error_capture_stopped)
-    AudioError.Unknown -> stringResource(R.string.error_capture_stopped)
 }
 
 @Composable

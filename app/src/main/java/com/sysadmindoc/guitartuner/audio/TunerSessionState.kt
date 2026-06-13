@@ -89,8 +89,4 @@ data class InputDeviceInfo(
 enum class AudioError {
     MicInitFailed,
     CaptureStopped,
-    DeadObject,
-    InvalidOperation,
-    BadValue,
-    Unknown,
 }

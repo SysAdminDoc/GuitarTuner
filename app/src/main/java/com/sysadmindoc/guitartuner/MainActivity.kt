@@ -149,6 +149,10 @@ private fun TunerRoute() {
         scope.launch {
             try {
                 val source = context.readTextFromUri(uri)
+                if (source.length > MaxImportFileSize) {
+                    tuningFileMessage = TuningFileMessage.ReadError
+                    return@launch
+                }
                 val result = customTuningRepository.replaceFromJson(source)
                 tuningFileMessage = if (result.errors.isEmpty()) {
                     TuningFileMessage.Imported(result.tunings.size)
@@ -223,8 +227,8 @@ private fun TunerRoute() {
         lifecycle.addObserver(observer)
         onDispose {
             lifecycle.removeObserver(observer)
-            tonePlayer.stop()
             controller.close()
+            tonePlayer.stop()
         }
     }
 
@@ -286,7 +290,8 @@ private fun TunerRoute() {
                 },
                 onMeasureA4 = {
                     val freq = state.pitchEstimate.frequencyHz
-                    if (freq != null && freq in 400.0..480.0) {
+                    val confidence = state.pitchEstimate.confidence
+                    if (freq != null && freq in 400.0..480.0 && confidence >= 0.8) {
                         val rounded = kotlin.math.round(freq).coerceIn(400.0, 480.0)
                         scope.launch { preferencesRepository.setA4Hz(rounded) }
                     }
@@ -345,3 +350,5 @@ private suspend fun Context.writeTextToUri(uri: Uri, text: String) = withContext
         output.write(text)
     }
 }
+
+private const val MaxImportFileSize = 512_000
