@@ -77,32 +77,11 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: gradlew check exercises controller frame assembly and fallback paths; alternate-tuning and noise fixtures gate regressions.
   Complexity: M
 
-- [ ] P2 — Gradle dependency verification and repository lockdown
-  Why: MavenGate-class build-time attacks are the realistic attack surface for a no-network app; verification metadata + FAIL_ON_PROJECT_REPOS is cheap insurance that matches the privacy positioning.
-  Evidence: Oversecured MavenGate write-up; Gradle dependency-verification docs; settings.gradle.kts currently lacks both.
-  Touches: settings.gradle.kts, gradle/verification-metadata.xml.
-  Acceptance: builds fail on unverified artifacts or project-declared repos; CI green.
-  Complexity: S
-
-- [ ] P2 — Reproducible release build configuration
-  Why: F-Droid reproducible verification lets the app ship developer-signed; also strengthens the GitHub SHA256SUMS story.
-  Evidence: f-droid.org/docs/Reproducible_Builds (PNG crunching, generatedDensities, vcsInfo, R8 core-count nondeterminism).
-  Touches: app/build.gradle.kts (cruncherEnabled=false, vectorDrawables.generatedDensities=[], vcsInfo off), .github/workflows/release.yml (pinned toolchain).
-  Acceptance: two clean builds of the same tag on different machines produce byte-identical APKs apart from signature.
-  Complexity: M
-
 - [ ] P2 — Baseline profile for cold start
   Why: a tuner is a 30-second utility — cold start is the UX; baseline profiles cut startup 15-40% in published case studies.
   Evidence: developer.android.com baseline profiles overview + Todoist/Duolingo case studies.
   Touches: new baselineprofile module (Macrobenchmark generator), app/build.gradle.kts.
   Acceptance: profile generated and bundled in release; macrobenchmark shows measurable cold-start improvement on a physical device.
-  Complexity: S
-
-- [ ] P2 — Per-app language picker
-  Why: de/es translations exist but users can't select them independently of system language; Moekadu shipped this (v9.1.0) for the same reason.
-  Evidence: Codeberg thetwom/Tuner v9.1.0; androidx per-app language (LocaleConfig) docs.
-  Touches: AndroidManifest.xml (localeConfig), res/xml/locales_config.xml, settings section in TunerScreen.kt.
-  Acceptance: in-app language choice among en/de/es persists and survives restart on API 26+ (AppCompatDelegate fallback below 33).
   Complexity: S
 
 ### P3
