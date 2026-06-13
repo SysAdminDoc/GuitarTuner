@@ -5,6 +5,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
+import com.sysadmindoc.guitartuner.pitch.PitchDetectorConfig
 import com.sysadmindoc.guitartuner.pitch.SignalStatus
 import com.sysadmindoc.guitartuner.pitch.YinPitchDetector
 import com.sysadmindoc.guitartuner.tuning.GuitarString
@@ -28,11 +29,14 @@ import kotlinx.coroutines.launch
 class AudioCaptureController(
     private val scope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    private val pitchDetector: YinPitchDetector = YinPitchDetector(),
+    initialPitchDetector: YinPitchDetector = YinPitchDetector(),
     initialStrings: List<GuitarString> = StandardGuitarTuning.strings,
 ) : Closeable {
     private val _state = MutableStateFlow(TunerSessionState())
     val state: StateFlow<TunerSessionState> = _state.asStateFlow()
+
+    @Volatile
+    private var pitchDetector: YinPitchDetector = initialPitchDetector
 
     @Volatile
     private var currentStrings: List<GuitarString> = initialStrings
@@ -101,6 +105,10 @@ class AudioCaptureController(
     fun setCentsTolerance(cents: Double) {
         centsTolerance = cents
         rebuildAnalyzer()
+    }
+
+    fun setNoiseGateRms(rms: Double) {
+        pitchDetector = YinPitchDetector(PitchDetectorConfig(silenceRms = rms))
     }
 
     private fun rebuildAnalyzer() {

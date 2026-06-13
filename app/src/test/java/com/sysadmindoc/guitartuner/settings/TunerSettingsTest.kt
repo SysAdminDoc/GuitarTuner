@@ -21,6 +21,7 @@ class TunerSettingsTest {
 
         assertEquals(440.0, preferences.a4Hz, 0.0)
         assertEquals(5.0, preferences.centsTolerance, 0.0)
+        assertEquals(0.008, preferences.noiseGateRms, 0.0)
     }
 
     @Test
@@ -44,6 +45,16 @@ class TunerSettingsTest {
         }
         assertThrows(IllegalArgumentException::class.java) {
             StoredTunerPreferences(centsTolerance = 40.0)
+        }
+    }
+
+    @Test
+    fun rejectsUnusableNoiseGate() {
+        assertThrows(IllegalArgumentException::class.java) {
+            TunerSettings(noiseGateRms = 0.001)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            StoredTunerPreferences(noiseGateRms = 0.050)
         }
     }
 }

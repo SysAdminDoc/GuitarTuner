@@ -38,6 +38,7 @@ class TunerPreferencesRepository(
                 freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
                 a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
                 centsTolerance = storedPreferences[CentsToleranceKey].sanitizeCentsTolerance(),
+                noiseGateRms = storedPreferences[NoiseGateRmsKey].sanitizeNoiseGateRms(),
                 pegTurnDirections = decodePegTurnDirections(storedPreferences[PegDirectionsKey]),
             )
         }
@@ -81,6 +82,13 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setNoiseGateRms(noiseGateRms: Double) {
+        require(noiseGateRms in 0.002..0.030) { "Noise gate must stay within 0.002 and 0.030 RMS." }
+        dataStore.edit { preferences ->
+            preferences[NoiseGateRmsKey] = noiseGateRms
+        }
+    }
+
     suspend fun setPegTurnDirection(
         stringNumber: Int,
         direction: PegTurnDirection,
@@ -101,6 +109,9 @@ class TunerPreferencesRepository(
     private fun Double?.sanitizeCentsTolerance(): Double =
         this?.takeIf { it in 1.0..25.0 } ?: TunerSettings().centsTolerance
 
+    private fun Double?.sanitizeNoiseGateRms(): Double =
+        this?.takeIf { it in 0.002..0.030 } ?: TunerSettings().noiseGateRms
+
     private companion object {
         val StartupModeKey = stringPreferencesKey("startup_mode")
         val LastUsedTuningKey = stringPreferencesKey("last_used_tuning_id")
@@ -108,6 +119,7 @@ class TunerPreferencesRepository(
         val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
         val A4HzKey = doublePreferencesKey("a4_hz")
         val CentsToleranceKey = doublePreferencesKey("cents_tolerance")
+        val NoiseGateRmsKey = doublePreferencesKey("noise_gate_rms")
         val PegDirectionsKey = stringPreferencesKey("peg_directions")
     }
 }

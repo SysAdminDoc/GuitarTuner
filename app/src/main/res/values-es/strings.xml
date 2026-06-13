@@ -32,6 +32,7 @@
     <string name="setting_a4_calibration">Calibracion A4</string>
     <string name="setting_cents_tolerance">Tolerancia en cents</string>
     <string name="cents_tolerance_value">%1$s cents</string>
+    <string name="setting_noise_gate">Puerta de ruido</string>
     <string name="startup_standard">Estandar</string>
     <string name="startup_last">Ultima</string>
     <string name="startup_favorite">Favorita</string>

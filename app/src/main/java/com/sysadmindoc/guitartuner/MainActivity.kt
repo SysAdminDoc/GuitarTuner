@@ -118,6 +118,10 @@ private fun TunerRoute() {
         controller.setCentsTolerance(preferences.centsTolerance)
     }
 
+    LaunchedEffect(preferences.noiseGateRms) {
+        controller.setNoiseGateRms(preferences.noiseGateRms)
+    }
+
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
     ) { uri ->
@@ -226,6 +230,9 @@ private fun TunerRoute() {
             },
             onCentsToleranceChanged = { cents ->
                 scope.launch { preferencesRepository.setCentsTolerance(cents) }
+            },
+            onNoiseGateChanged = { rms ->
+                scope.launch { preferencesRepository.setNoiseGateRms(rms) }
             },
             onPegTurnDirectionChanged = { stringNumber, direction ->
                 scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }

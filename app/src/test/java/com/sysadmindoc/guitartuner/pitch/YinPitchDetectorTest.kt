@@ -103,6 +103,20 @@ class YinPitchDetectorTest {
     }
 
     @Test
+    fun honorsConfiguredNoiseGate() {
+        val quietSignal = guitarLikeSignal(
+            frequencyHz = 110.0,
+            secondHarmonicLevel = 0.0,
+            fundamentalLevel = 0.03,
+        )
+        val gatedDetector = YinPitchDetector(PitchDetectorConfig(silenceRms = 0.05))
+
+        val estimate = gatedDetector.detect(quietSignal, SampleRate)
+
+        assertEquals(SignalStatus.Silence, estimate.status)
+    }
+
+    @Test
     fun reportsHighNoiseForLoudUnpitchedInput() {
         val random = Random(11)
         val noise = FloatArray(4096) {

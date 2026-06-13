@@ -10,6 +10,7 @@ data class TunerSettings(
 ) {
     init {
         require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
+        require(noiseGateRms in 0.002..0.030) { "Noise gate must stay within 0.002 and 0.030 RMS." }
     }
 }
 
@@ -34,11 +35,13 @@ data class StoredTunerPreferences(
     val freezeAfterDecay: Boolean = false,
     val a4Hz: Double = 440.0,
     val centsTolerance: Double = 5.0,
+    val noiseGateRms: Double = 0.008,
     val pegTurnDirections: Map<Int, PegTurnDirection> = emptyMap(),
 ) {
     init {
         PitchCalibration(a4Hz)
         require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
+        require(noiseGateRms in 0.002..0.030) { "Noise gate must stay within 0.002 and 0.030 RMS." }
     }
 
     fun startupTuningId(): String = when (startupMode) {
