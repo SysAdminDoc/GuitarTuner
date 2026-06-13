@@ -93,6 +93,7 @@ fun TunerScreen(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onHapticEnabledChanged: (Boolean) -> Unit,
+    onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
     onNoiseGateChanged: (Double) -> Unit,
@@ -176,6 +177,7 @@ fun TunerScreen(
                             onThemeModeSelected = onThemeModeSelected,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                             onHapticEnabledChanged = onHapticEnabledChanged,
+                            onMeasureA4 = onMeasureA4,
                             onA4CalibrationChanged = onA4CalibrationChanged,
                             onCentsToleranceChanged = onCentsToleranceChanged,
                             onNoiseGateChanged = onNoiseGateChanged,
@@ -218,6 +220,7 @@ fun TunerScreen(
                         onThemeModeSelected = onThemeModeSelected,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                         onHapticEnabledChanged = onHapticEnabledChanged,
+                        onMeasureA4 = onMeasureA4,
                         onA4CalibrationChanged = onA4CalibrationChanged,
                         onCentsToleranceChanged = onCentsToleranceChanged,
                         onNoiseGateChanged = onNoiseGateChanged,
@@ -317,6 +320,7 @@ private fun StartupTuningPanel(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onHapticEnabledChanged: (Boolean) -> Unit,
+    onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
     onNoiseGateChanged: (Double) -> Unit,
@@ -547,6 +551,16 @@ private fun StartupTuningPanel(
                     onDecrease = { onA4CalibrationChanged((preferences.a4Hz - 1.0).coerceAtLeast(400.0)) },
                     onIncrease = { onA4CalibrationChanged((preferences.a4Hz + 1.0).coerceAtMost(480.0)) },
                 )
+                OutlinedButton(
+                    onClick = onMeasureA4,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(minHeight = MinTouchTarget),
+                    shape = PanelShape,
+                    contentPadding = CompactButtonPadding,
+                ) {
+                    Text(stringResource(R.string.action_measure_a4))
+                }
                 NumericSettingRow(
                     label = stringResource(R.string.setting_noise_gate),
                     value = formatFourDecimals(preferences.noiseGateRms),
@@ -1367,6 +1381,7 @@ private fun TunerScreenPreview() {
             onThemeModeSelected = {},
             onFreezeAfterDecayChanged = {},
             onHapticEnabledChanged = {},
+            onMeasureA4 = {},
             onA4CalibrationChanged = {},
             onCentsToleranceChanged = {},
             onNoiseGateChanged = {},

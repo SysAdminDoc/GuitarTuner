@@ -48,6 +48,7 @@
     <string name="setting_freeze_last_note_helper">Keep the last stable pitch visible as the note fades.</string>
     <string name="setting_haptic">Haptic confirmation</string>
     <string name="setting_haptic_helper">Vibrate when a string reaches the in-tune zone.</string>
+    <string name="action_measure_a4">Measure A4 from microphone</string>
     <string name="setting_a4_calibration">A4 calibration</string>
     <string name="setting_cents_tolerance">Cents tolerance</string>
     <string name="cents_tolerance_value">%1$s cents</string>

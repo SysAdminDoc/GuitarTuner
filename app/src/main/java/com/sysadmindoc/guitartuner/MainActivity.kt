@@ -278,6 +278,13 @@ private fun TunerRoute() {
                 onHapticEnabledChanged = { enabled ->
                     scope.launch { preferencesRepository.setHapticEnabled(enabled) }
                 },
+                onMeasureA4 = {
+                    val freq = state.pitchEstimate.frequencyHz
+                    if (freq != null && freq in 400.0..480.0) {
+                        val rounded = kotlin.math.round(freq).coerceIn(400.0, 480.0)
+                        scope.launch { preferencesRepository.setA4Hz(rounded) }
+                    }
+                },
                 onA4CalibrationChanged = { a4Hz ->
                     scope.launch { preferencesRepository.setA4Hz(a4Hz) }
                 },

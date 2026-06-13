@@ -48,6 +48,7 @@
     <string name="setting_freeze_last_note_helper">Mantiene visible el ultimo tono estable mientras la nota se apaga.</string>
     <string name="setting_haptic">Confirmacion haptica</string>
     <string name="setting_haptic_helper">Vibra cuando una cuerda llega a la zona afinada.</string>
+    <string name="action_measure_a4">Medir A4 desde el microfono</string>
     <string name="setting_a4_calibration">Calibracion A4</string>
     <string name="setting_cents_tolerance">Tolerancia en cents</string>
     <string name="cents_tolerance_value">%1$s cents</string>

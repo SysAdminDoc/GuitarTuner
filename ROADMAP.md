@@ -35,20 +35,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: settings list available input devices; selection persists; diagnostics row shows the active device; default remains auto.
   Complexity: M
 
-- [ ] P2 — Bass and ukulele presets with per-instrument detection range
-  Why: most-requested preset expansion across competitor trackers; requires widening the fixed 70-450 Hz detection window per instrument (bass E1 = 41.2 Hz).
-  Evidence: Choona issues 74/72; Tunerly issue 43; PitchDetectorConfig min/maxFrequencyHz.
-  Touches: StandardGuitarTuning.kt/GuitarTunings.kt (instrument field), PitchDetectorConfig wiring per tuning, TunerScreen.kt selector, fixtures for E1/A1.
-  Acceptance: bass standard and ukulele standard presets tune correctly end-to-end; guitar detection unaffected; fixture tests cover the new ranges.
-  Complexity: M
-
-- [ ] P2 — Detect A4 calibration from a live reference tone
-  Why: matches Moekadu v8.2.0; tuning to a piano/band reference is the real calibration workflow, not typing Hz.
-  Evidence: Codeberg thetwom/Tuner v8.2.0 release notes; Moekadu issue 100 (cents-based calibration demand).
-  Touches: TunerScreen.kt A4 settings row ("measure" action), reuse of live PitchEstimate, TunerPreferencesRepository.kt.
-  Acceptance: "Measure A4" listens, locks on a stable tone near A4, and offers to apply the measured Hz; manual stepper still works.
-  Complexity: M
-
 - [ ] P2 — Sub-cent refinement via single-bin-DFT phase tracking
   Why: phase difference across hops at the detected fundamental yields sub-cent precision on E2 without longer windows; the technique behind software strobe tuners.
   Evidence: dsego/strobe-tuner design notes; 29a.ch/2020 guitar tuner write-up; billthefarmer/ctuner FFT-phase approach.
