@@ -65,12 +65,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: optional "new strings" walkthrough runs ≥2 full passes, tracks per-string drift between passes, and reports when drift falls inside tolerance.
   Complexity: M
 
-- [ ] P3 — Distraction-free playing mode
-  Why: minimal full-screen sharp/flat indication for intonation practice; open demand in Moekadu #103; cheap once chromatic mode exists.
-  Evidence: thetwom/Tuner issue 103.
-  Touches: TunerScreen.kt (fullscreen meter variant), depends on chromatic mode.
-  Acceptance: a fullscreen mode shows only note + direction arrow + in-tune color state with screen kept on.
-  Complexity: S
 
 - [ ] P3 — Wear OS tuner app
   Why: Choona proves demand and the CoreBoundaryTest already keeps pitch/tuning/settings UI-free for reuse; watch mic tuning is a genuine leapfrog surface.

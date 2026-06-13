@@ -1,6 +1,7 @@
 package com.sysadmindoc.guitartuner.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import android.view.HapticFeedbackConstants
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.AudioError
 import com.sysadmindoc.guitartuner.audio.InputDeviceInfo
@@ -120,6 +123,16 @@ fun TunerScreen(
         previousInTune = currentlyInTune
     }
 
+    var fullscreenMode by remember { mutableStateOf(false) }
+
+    if (fullscreenMode && state.isListening) {
+        FullscreenTunerView(
+            state = state,
+            onExit = { fullscreenMode = false },
+        )
+        return
+    }
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -165,6 +178,7 @@ fun TunerScreen(
                                 hasAudioPermission = hasAudioPermission,
                                 onPrimaryAction = onPrimaryAction,
                                 onStop = onStop,
+                                onFullscreen = { fullscreenMode = true },
                                 onShowPrivacy = onShowPrivacy,
                             )
                         }
@@ -212,6 +226,7 @@ fun TunerScreen(
                         hasAudioPermission = hasAudioPermission,
                         onPrimaryAction = onPrimaryAction,
                         onStop = onStop,
+                        onFullscreen = { fullscreenMode = true },
                         onShowPrivacy = onShowPrivacy,
                     )
                     StartupTuningPanel(
@@ -245,6 +260,79 @@ fun TunerScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FullscreenTunerView(
+    state: TunerSessionState,
+    onExit: () -> Unit,
+) {
+    val measurement = state.measurement
+    val note = measurement.target?.scientificPitch ?: "--"
+    val backgroundColor = when (measurement.status) {
+        TuningStatus.InTune -> MaterialTheme.colorScheme.primary
+        TuningStatus.Overshoot -> MaterialTheme.colorScheme.error
+        TuningStatus.TuneUp,
+        TuningStatus.TuneDown,
+        -> MaterialTheme.colorScheme.tertiary
+
+        else -> MaterialTheme.colorScheme.background
+    }
+    val contentColor = when (measurement.status) {
+        TuningStatus.InTune -> MaterialTheme.colorScheme.onPrimary
+        TuningStatus.Overshoot -> MaterialTheme.colorScheme.onError
+        TuningStatus.TuneUp,
+        TuningStatus.TuneDown,
+        -> MaterialTheme.colorScheme.onTertiary
+
+        else -> MaterialTheme.colorScheme.onBackground
+    }
+    val directionSymbol = when (measurement.status) {
+        TuningStatus.TuneUp -> "▲"
+        TuningStatus.TuneDown -> "▼"
+        TuningStatus.Overshoot -> "▼▼"
+        TuningStatus.InTune -> "✓"
+        else -> ""
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(onClick = onExit),
+        color = backgroundColor,
+        contentColor = contentColor,
+    ) {
+        KeepScreenOn()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = note,
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Bold,
+                fontSize = 96.sp,
+            )
+            Spacer(Modifier.size(16.dp))
+            Text(
+                text = directionSymbol,
+                style = MaterialTheme.typography.displayMedium,
+                fontSize = 64.sp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun KeepScreenOn() {
+    val view = LocalView.current
+    DisposableEffect(Unit) {
+        view.keepScreenOn = true
+        onDispose { view.keepScreenOn = false }
     }
 }
 
@@ -672,6 +760,7 @@ private fun TunerActions(
     hasAudioPermission: Boolean,
     onPrimaryAction: () -> Unit,
     onStop: () -> Unit,
+    onFullscreen: () -> Unit,
     onShowPrivacy: () -> Unit,
 ) {
     Column(
@@ -696,6 +785,12 @@ private fun TunerActions(
                     shape = PanelShape,
                 ) {
                     Text(stringResource(R.string.action_stop))
+                }
+                OutlinedButton(
+                    onClick = onFullscreen,
+                    shape = PanelShape,
+                ) {
+                    Text(stringResource(R.string.action_fullscreen))
                 }
             }
         } else {

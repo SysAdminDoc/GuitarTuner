@@ -35,6 +35,7 @@
     <string name="action_pause">Hoeren pausieren</string>
     <string name="action_start">Hoeren starten</string>
     <string name="action_stop">Stopp</string>
+    <string name="action_fullscreen">Voll</string>
     <string name="action_set_favorite">Favorit setzen</string>
     <string name="action_play_tone">Spielen</string>
     <string name="action_import">Importieren</string>
