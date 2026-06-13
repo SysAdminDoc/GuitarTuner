@@ -5,6 +5,7 @@
     <string name="status_ready">Listo para afinar</string>
     <string name="status_listening">Escuchando</string>
     <string name="status_mic_silent">Microfono abierto; no llega sonido</string>
+    <string name="status_mic_stolen">Otra app esta usando el microfono</string>
     <string name="status_frozen">Congelado</string>
     <string name="status_input_clipping">La entrada esta saturada</string>
     <string name="status_high_noise">El ruido de fondo es alto</string>
@@ -20,12 +21,15 @@
     <string name="guidance_try_one_string">Toca una cuerda claramente</string>
     <string name="guidance_start_listening">Empieza a escuchar cuando estes listo</string>
     <string name="guidance_allow_mic">Permite acceso al microfono para afinar</string>
+    <string name="guidance_open_settings">Abre Ajustes y permite el acceso al microfono para esta app.</string>
+    <string name="guidance_mic_stolen">Otra app puede estar usando el microfono. Cierrala e intenta de nuevo.</string>
     <string name="guidance_check_mic_input">Toca cerca del telefono; si Mic sigue en 0, revisa el acceso al microfono de Android.</string>
     <string name="guidance_tune_up">Sube la afinacion</string>
     <string name="guidance_tune_down">Baja la afinacion</string>
     <string name="guidance_in_tune">Afinada</string>
     <string name="guidance_with_turn">%1$s - gira %2$s</string>
     <string name="action_allow_mic">Permitir microfono</string>
+    <string name="action_open_settings">Abrir ajustes</string>
     <string name="action_pause">Pausar escucha</string>
     <string name="action_start">Empezar escucha</string>
     <string name="action_stop">Detener</string>
@@ -88,6 +92,8 @@
     <string name="file_imported_tunings">Se importaron %1$d afinacion(es) personalizadas</string>
     <string name="file_exported_tunings">Se exportaron %1$d afinacion(es) personalizadas</string>
     <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>
+    <string name="file_error_read">No se pudo leer el archivo de afinacion.</string>
+    <string name="file_error_write">No se pudo guardar el archivo de afinacion.</string>
     <string name="privacy_title">Privacidad</string>
     <string name="privacy_inline_note">El audio nunca sale de este dispositivo.</string>
     <string name="privacy_summary">GuitarTuner procesa el audio del microfono localmente solo para afinar.</string>

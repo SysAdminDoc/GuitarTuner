@@ -2,9 +2,12 @@ package com.sysadmindoc.guitartuner
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -54,7 +57,13 @@ private fun TunerRoute() {
     val context = androidx.compose.ui.platform.LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
-    val controller = remember(scope) { AudioCaptureController(scope = scope) }
+    val controller = remember(scope) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val supportsUnprocessed = audioManager.getProperty(
+            AudioManager.PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED,
+        ) == "true"
+        AudioCaptureController(scope = scope, supportsUnprocessedSource = supportsUnprocessed)
+    }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
     var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
     var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Auto) }
@@ -125,12 +134,16 @@ private fun TunerRoute() {
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
-            val source = context.readTextFromUri(uri)
-            val result = customTuningRepository.replaceFromJson(source)
-            tuningFileMessage = if (result.errors.isEmpty()) {
-                TuningFileMessage.Imported(result.tunings.size)
-            } else {
-                TuningFileMessage.Error(result.errors.joinToString(separator = "\n"))
+            try {
+                val source = context.readTextFromUri(uri)
+                val result = customTuningRepository.replaceFromJson(source)
+                tuningFileMessage = if (result.errors.isEmpty()) {
+                    TuningFileMessage.Imported(result.tunings.size)
+                } else {
+                    TuningFileMessage.Error(result.errors.joinToString(separator = "\n"))
+                }
+            } catch (_: Exception) {
+                tuningFileMessage = TuningFileMessage.ReadError
             }
         }
     }
@@ -140,23 +153,36 @@ private fun TunerRoute() {
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
-            val customOnly = uncalibratedTuningCatalog.tunings.filterNot { it.isBuiltIn }
-            if (customOnly.isEmpty()) {
-                tuningFileMessage = TuningFileMessage.NoCustomTunings
-                return@launch
+            try {
+                val customOnly = uncalibratedTuningCatalog.tunings.filterNot { it.isBuiltIn }
+                if (customOnly.isEmpty()) {
+                    tuningFileMessage = TuningFileMessage.NoCustomTunings
+                    return@launch
+                }
+                context.writeTextToUri(uri, CustomTuningJsonCodec.encode(customOnly))
+                tuningFileMessage = TuningFileMessage.Exported(customOnly.size)
+            } catch (_: Exception) {
+                tuningFileMessage = TuningFileMessage.WriteError
             }
-            context.writeTextToUri(uri, CustomTuningJsonCodec.encode(customOnly))
-            tuningFileMessage = TuningFileMessage.Exported(customOnly.size)
         }
     }
+
+    val activity = context as? ComponentActivity
+    var permanentlyDenied by rememberSaveable { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { granted ->
         hasAudioPermission = granted
         if (granted) {
+            permanentlyDenied = false
+            controller.clearPermissionError()
             controller.start()
         } else {
+            val shouldShowRationale = activity?.shouldShowRequestPermissionRationale(
+                Manifest.permission.RECORD_AUDIO,
+            ) ?: false
+            permanentlyDenied = !shouldShowRationale
             controller.notePermissionDenied()
         }
     }
@@ -165,7 +191,14 @@ private fun TunerRoute() {
         val lifecycle = lifecycleOwner.lifecycle
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_RESUME -> hasAudioPermission = context.hasAudioPermission()
+                Lifecycle.Event.ON_RESUME -> {
+                    val nowGranted = context.hasAudioPermission()
+                    hasAudioPermission = nowGranted
+                    if (nowGranted && state.permissionError) {
+                        permanentlyDenied = false
+                        controller.clearPermissionError()
+                    }
+                }
                 Lifecycle.Event.ON_PAUSE,
                 Lifecycle.Event.ON_STOP,
                 Lifecycle.Event.ON_DESTROY,
@@ -195,6 +228,13 @@ private fun TunerRoute() {
                 preferences = preferences,
                 onPrimaryAction = {
                     when {
+                        !hasAudioPermission && permanentlyDenied -> {
+                            val intent = Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.fromParts("package", context.packageName, null),
+                            )
+                            context.startActivity(intent)
+                        }
                         !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                         state.isListening -> controller.stop()
                         else -> controller.start()

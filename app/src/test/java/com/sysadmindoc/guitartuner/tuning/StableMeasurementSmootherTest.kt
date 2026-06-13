@@ -47,15 +47,29 @@ class StableMeasurementSmootherTest {
     }
 
     @Test
-    fun resetsOnNonStableMeasurements() {
+    fun holdsOverBriefNonStableFrames() {
         smoother.apply(measurement(82.9, 10.0))
         smoother.apply(measurement(82.7, 7.0))
+        val lastStable = smoother.apply(measurement(82.8, 9.0))
 
-        assertEquals(TuningStatus.HighNoise, smoother.apply(TuningMeasurement.highNoise()).status)
-        val afterNoise = smoother.apply(measurement(82.4, 0.0))
+        val duringHoldover = smoother.apply(TuningMeasurement.highNoise())
+        assertEquals("holdover returns last stable", lastStable.target, duringHoldover.target)
 
-        assertEquals(0.0, afterNoise.cents ?: 99.0, 0.0)
-        assertEquals(TuningStatus.InTune, afterNoise.status)
+        val afterHoldover = smoother.apply(measurement(82.6, 4.0))
+        assertEquals("resumes after holdover", lowE, afterHoldover.target)
+    }
+
+    @Test
+    fun resetsAfterExhaustedHoldover() {
+        smoother.apply(measurement(82.9, 10.0))
+        smoother.apply(measurement(82.7, 7.0))
+        smoother.apply(measurement(82.8, 9.0))
+
+        smoother.apply(TuningMeasurement.highNoise())
+        smoother.apply(TuningMeasurement.highNoise())
+        val thirdNonStable = smoother.apply(TuningMeasurement.highNoise())
+
+        assertEquals(TuningStatus.HighNoise, thirdNonStable.status)
     }
 
     @Test
@@ -67,6 +81,49 @@ class StableMeasurementSmootherTest {
 
         assertEquals(45.0, jump.cents ?: 0.0, 0.0)
         assertEquals(TuningStatus.TuneDown, jump.status)
+    }
+
+    @Test
+    fun resistsOctaveFlipBelowThreshold() {
+        val g3 = GuitarString(stringNumber = 3, name = "G", scientificPitch = "G3", frequencyHz = 196.0)
+        val g4 = GuitarString(stringNumber = 0, name = "G4", scientificPitch = "G4", frequencyHz = 392.0)
+
+        smoother.apply(measurement(196.0, 0.0, g3))
+        smoother.apply(measurement(196.1, 1.0, g3))
+        val lastG3 = smoother.apply(measurement(195.8, -2.0, g3))
+
+        val flip1 = smoother.apply(measurement(392.0, 0.0, g4))
+        assertEquals("first octave flip suppressed", lastG3.target, flip1.target)
+
+        val flip2 = smoother.apply(measurement(392.1, 1.0, g4))
+        assertEquals("second octave flip suppressed", lastG3.target, flip2.target)
+    }
+
+    @Test
+    fun acceptsOctaveFlipAfterThreshold() {
+        val g3 = GuitarString(stringNumber = 3, name = "G", scientificPitch = "G3", frequencyHz = 196.0)
+        val g4 = GuitarString(stringNumber = 0, name = "G4", scientificPitch = "G4", frequencyHz = 392.0)
+
+        smoother.apply(measurement(196.0, 0.0, g3))
+        smoother.apply(measurement(196.1, 1.0, g3))
+        smoother.apply(measurement(195.8, -2.0, g3))
+
+        smoother.apply(measurement(392.0, 0.0, g4))
+        smoother.apply(measurement(392.1, 1.0, g4))
+        val accepted = smoother.apply(measurement(392.2, 2.0, g4))
+
+        assertEquals("octave flip accepted after threshold", g4, accepted.target)
+    }
+
+    @Test
+    fun allowsNonOctaveTargetChangeImmediately() {
+        smoother.apply(measurement(82.9, 10.0))
+        smoother.apply(measurement(82.7, 7.0))
+        smoother.apply(measurement(82.8, 9.0))
+
+        val newTarget = smoother.apply(measurement(110.0, 0.0, aString))
+
+        assertEquals("non-octave target change is immediate", aString, newTarget.target)
     }
 
     private fun measurement(

@@ -32,6 +32,7 @@ class AudioCaptureController(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
     initialPitchDetector: YinPitchDetector = YinPitchDetector(),
     initialStrings: List<GuitarString> = StandardGuitarTuning.strings,
+    private val supportsUnprocessedSource: Boolean = false,
 ) : Closeable {
     private val _state = MutableStateFlow(TunerSessionState())
     val state: StateFlow<TunerSessionState> = _state.asStateFlow()
@@ -83,14 +84,18 @@ class AudioCaptureController(
             }
         }
         measurementSmoother.reset()
-        _state.value = _state.value.copy(isListening = false)
+        _state.value = _state.value.copy(isListening = false, micStolen = false)
     }
 
     fun notePermissionDenied() {
         _state.value = TunerSessionState(
             isListening = false,
-            errorMessage = "Microphone permission is required for offline tuning.",
+            permissionError = true,
         )
+    }
+
+    fun clearPermissionError() {
+        _state.value = _state.value.copy(permissionError = false)
     }
 
     fun setTuning(strings: List<GuitarString>) {
@@ -133,81 +138,132 @@ class AudioCaptureController(
 
     @SuppressLint("MissingPermission")
     private fun runCaptureLoop() {
-        val recorder = try {
-            buildAudioRecord()
-        } catch (exception: RuntimeException) {
-            _state.value = TunerSessionState(
-                isListening = false,
-                errorMessage = exception.message ?: "Could not open the microphone.",
-            )
-            return
-        }
-        activeRecord = recorder
+        val excludedSources = mutableSetOf<Int>()
 
-        try {
-            recorder.startRecording()
-            val recorderSampleRate = recorder.sampleRate.takeIf { it > 0 } ?: SampleRate
-            val sourceLabel = recorder.audioSource.audioSourceLabel()
-            _state.value = _state.value.copy(
-                isListening = true,
-                inputLevel = AudioInputLevel(sourceLabel = sourceLabel, sampleRateHz = recorderSampleRate),
-                errorMessage = null,
-            )
-            Log.i(
-                LogTag,
-                "Started microphone capture source=$sourceLabel sampleRate=$recorderSampleRate bufferFrames=${recorder.bufferSizeInFrames}",
-            )
-            val readBuffer = ShortArray(ReadBufferSize)
-            val frameBuffer = FloatArray(FrameSize)
-            var frameFill = 0
-            while (scope.isActive && captureJob?.isActive == true) {
-                val read = recorder.read(readBuffer, 0, readBuffer.size, AudioRecord.READ_BLOCKING)
-                if (read < 0) {
-                    throw IllegalStateException(readErrorMessage(read))
-                }
-                if (read == 0) continue
+        while (scope.isActive && captureJob?.isActive == true) {
+            val recorder = try {
+                buildAudioRecord(excludedSources)
+            } catch (exception: RuntimeException) {
+                _state.value = TunerSessionState(
+                    isListening = false,
+                    errorMessage = exception.message ?: "Could not open the microphone.",
+                )
+                return
+            }
+            activeRecord = recorder
+            var retryWithNextSource = false
 
+            try {
+                recorder.startRecording()
+                val recorderSampleRate = recorder.sampleRate.takeIf { it > 0 } ?: PreferredSampleRate
+                val sourceLabel = recorder.audioSource.audioSourceLabel()
                 _state.value = _state.value.copy(
                     isListening = true,
-                    inputLevel = AudioInputLevel.fromPcmRead(
-                        samples = readBuffer,
-                        length = read,
-                        previous = _state.value.inputLevel,
-                        sourceLabel = sourceLabel,
-                        sampleRateHz = recorderSampleRate,
-                    ),
+                    inputLevel = AudioInputLevel(sourceLabel = sourceLabel, sampleRateHz = recorderSampleRate),
                     errorMessage = null,
                 )
-
-                for (index in 0 until read) {
-                    frameBuffer[frameFill] = readBuffer[index] / Short.MAX_VALUE.toFloat()
-                    frameFill += 1
-                    if (frameFill == FrameSize) {
-                        analyzeFrame(frameBuffer.copyOf(), recorderSampleRate)
-                        frameBuffer.copyInto(
-                            destination = frameBuffer,
-                            destinationOffset = 0,
-                            startIndex = FrameHopSize,
-                            endIndex = FrameSize,
-                        )
-                        frameFill = FrameSize - FrameHopSize
-                    }
+                Log.i(
+                    LogTag,
+                    "Started microphone capture source=$sourceLabel sampleRate=$recorderSampleRate bufferFrames=${recorder.bufferSizeInFrames}",
+                )
+                retryWithNextSource = captureReadLoop(recorder, recorderSampleRate, sourceLabel)
+                if (retryWithNextSource) {
+                    excludedSources.add(recorder.audioSource)
+                    Log.w(LogTag, "Source $sourceLabel produced only zeros during startup, trying next source.")
+                }
+            } catch (exception: RuntimeException) {
+                _state.value = TunerSessionState(
+                    isListening = false,
+                    pitchEstimate = _state.value.pitchEstimate.copy(status = SignalStatus.Unstable),
+                    errorMessage = exception.message ?: "Microphone capture stopped.",
+                )
+                return
+            } finally {
+                recorder.safeStop()
+                recorder.safeRelease()
+                if (activeRecord === recorder) {
+                    activeRecord = null
                 }
             }
-        } catch (exception: RuntimeException) {
-            _state.value = TunerSessionState(
-                isListening = false,
-                pitchEstimate = _state.value.pitchEstimate.copy(status = SignalStatus.Unstable),
-                errorMessage = exception.message ?: "Microphone capture stopped.",
-            )
-        } finally {
-            recorder.safeStop()
-            recorder.safeRelease()
-            if (activeRecord === recorder) {
-                activeRecord = null
+
+            if (!retryWithNextSource) {
+                _state.value = _state.value.copy(isListening = false)
+                return
             }
-            _state.value = _state.value.copy(isListening = false)
         }
+    }
+
+    private fun captureReadLoop(
+        recorder: AudioRecord,
+        sampleRate: Int,
+        sourceLabel: String,
+    ): Boolean {
+        val readBuffer = ShortArray(ReadBufferSize)
+        val frameBuffer = FloatArray(FrameSize)
+        var frameFill = 0
+        var startupReads = 0
+        var startupHasAudio = false
+        var hadLiveAudio = false
+        var consecutiveZeroReads = 0
+
+        while (scope.isActive && captureJob?.isActive == true) {
+            val read = recorder.read(readBuffer, 0, readBuffer.size, AudioRecord.READ_BLOCKING)
+            if (read < 0) {
+                throw IllegalStateException(readErrorMessage(read))
+            }
+            if (read == 0) continue
+
+            val inputLevel = AudioInputLevel.fromPcmRead(
+                samples = readBuffer,
+                length = read,
+                previous = _state.value.inputLevel,
+                sourceLabel = sourceLabel,
+                sampleRateHz = sampleRate,
+            )
+
+            val isZeroRead = inputLevel.rms < ZeroFrameRms
+            if (isZeroRead) {
+                consecutiveZeroReads++
+            } else {
+                consecutiveZeroReads = 0
+                hadLiveAudio = true
+            }
+
+            startupReads++
+            if (!startupHasAudio && startupReads <= StartupCheckReads) {
+                if (!isZeroRead) {
+                    startupHasAudio = true
+                } else if (startupReads == StartupCheckReads) {
+                    return true
+                }
+            }
+
+            val micStolen = hadLiveAudio && consecutiveZeroReads >= StolenMicZeroReads
+
+            _state.value = _state.value.copy(
+                isListening = true,
+                inputLevel = inputLevel,
+                micStolen = micStolen,
+                errorMessage = null,
+            )
+
+            for (index in 0 until read) {
+                frameBuffer[frameFill] = readBuffer[index] / Short.MAX_VALUE.toFloat()
+                frameFill += 1
+                if (frameFill == FrameSize) {
+                    analyzeFrame(frameBuffer.copyOf(), sampleRate)
+                    frameBuffer.copyInto(
+                        destination = frameBuffer,
+                        destinationOffset = 0,
+                        startIndex = FrameHopSize,
+                        endIndex = FrameSize,
+                    )
+                    frameFill = FrameSize - FrameHopSize
+                }
+            }
+        }
+
+        return false
     }
 
     private fun analyzeFrame(samples: FloatArray, sampleRate: Int) {
@@ -228,51 +284,55 @@ class AudioCaptureController(
     }
 
     @SuppressLint("MissingPermission")
-    private fun buildAudioRecord(): AudioRecord {
-        val minimumBuffer = AudioRecord.getMinBufferSize(
-            SampleRate,
-            AudioFormat.CHANNEL_IN_MONO,
-            AudioFormat.ENCODING_PCM_16BIT,
-        )
-        if (minimumBuffer == AudioRecord.ERROR || minimumBuffer == AudioRecord.ERROR_BAD_VALUE) {
-            throw IllegalStateException("The device does not support 44.1 kHz mono recording.")
-        }
-
-        val bufferBytes = maxOf(minimumBuffer, FrameSize * Short.SIZE_BYTES * 2)
+    private fun buildAudioRecord(excludedSources: Set<Int> = emptySet()): AudioRecord {
+        val sampleRates = listOf(PreferredSampleRate, FallbackSampleRate)
         val sources = buildList {
+            if (supportsUnprocessedSource && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                add(MediaRecorder.AudioSource.UNPROCESSED)
+            }
+            add(MediaRecorder.AudioSource.MIC)
+            add(MediaRecorder.AudioSource.VOICE_RECOGNITION)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 add(MediaRecorder.AudioSource.VOICE_PERFORMANCE)
             }
-            add(MediaRecorder.AudioSource.VOICE_RECOGNITION)
-            add(MediaRecorder.AudioSource.MIC)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                add(MediaRecorder.AudioSource.UNPROCESSED)
-            }
-        }
+        }.filter { it !in excludedSources }
 
-        for (source in sources) {
-            val recorder = try {
-                AudioRecord.Builder()
-                    .setAudioSource(source)
-                    .setAudioFormat(
-                        AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .setSampleRate(SampleRate)
-                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                            .build(),
-                    )
-                    .setBufferSizeInBytes(bufferBytes)
-                    .build()
-            } catch (exception: RuntimeException) {
-                Log.w(LogTag, "Microphone source ${source.audioSourceLabel()} failed to build.", exception)
-                null
-            } ?: continue
-
-            if (recorder.state == AudioRecord.STATE_INITIALIZED) {
-                Log.i(LogTag, "Selected microphone source ${source.audioSourceLabel()}.")
-                return recorder
+        for (sampleRate in sampleRates) {
+            val minimumBuffer = AudioRecord.getMinBufferSize(
+                sampleRate,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+            )
+            if (minimumBuffer == AudioRecord.ERROR || minimumBuffer == AudioRecord.ERROR_BAD_VALUE) {
+                continue
             }
-            recorder.safeRelease()
+
+            val bufferBytes = maxOf(minimumBuffer, FrameSize * Short.SIZE_BYTES * 2)
+
+            for (source in sources) {
+                val recorder = try {
+                    AudioRecord.Builder()
+                        .setAudioSource(source)
+                        .setAudioFormat(
+                            AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(sampleRate)
+                                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                                .build(),
+                        )
+                        .setBufferSizeInBytes(bufferBytes)
+                        .build()
+                } catch (exception: RuntimeException) {
+                    Log.w(LogTag, "Source ${source.audioSourceLabel()} at $sampleRate Hz failed.", exception)
+                    null
+                } ?: continue
+
+                if (recorder.state == AudioRecord.STATE_INITIALIZED) {
+                    Log.i(LogTag, "Selected source ${source.audioSourceLabel()} at $sampleRate Hz.")
+                    return recorder
+                }
+                recorder.safeRelease()
+            }
         }
 
         throw IllegalStateException("Could not initialize the microphone.")
@@ -284,7 +344,6 @@ class AudioCaptureController(
                 stop()
             }
         } catch (_: IllegalStateException) {
-            // Recorder may already be stopped by lifecycle disposal.
         }
     }
 
@@ -292,7 +351,6 @@ class AudioCaptureController(
         try {
             release()
         } catch (_: RuntimeException) {
-            // Release is best-effort during lifecycle shutdown.
         }
     }
 
@@ -315,9 +373,13 @@ class AudioCaptureController(
 
     private companion object {
         const val LogTag = "GuitarTunerAudio"
-        const val SampleRate = 44_100
+        const val PreferredSampleRate = 48_000
+        const val FallbackSampleRate = 44_100
         const val FrameSize = 4_096
         const val FrameHopSize = 2_048
         const val ReadBufferSize = 1_024
+        const val ZeroFrameRms = 0.0001
+        const val StartupCheckReads = 44
+        const val StolenMicZeroReads = 88
     }
 }

@@ -5,6 +5,7 @@
     <string name="status_ready">Bereit zum Stimmen</string>
     <string name="status_listening">Hoert zu</string>
     <string name="status_mic_silent">Mikro offen; kein Ton kommt an</string>
+    <string name="status_mic_stolen">Eine andere App nutzt das Mikrofon</string>
     <string name="status_frozen">Eingefroren</string>
     <string name="status_input_clipping">Eingang uebersteuert</string>
     <string name="status_high_noise">Hintergrundgeraeusch ist hoch</string>
@@ -20,12 +21,15 @@
     <string name="guidance_try_one_string">Eine Saite klar anschlagen</string>
     <string name="guidance_start_listening">Starten, wenn du bereit bist</string>
     <string name="guidance_allow_mic">Mikrofonzugriff zum Stimmen erlauben</string>
+    <string name="guidance_open_settings">Einstellungen oeffnen und Mikrofonzugriff fuer diese App erlauben.</string>
+    <string name="guidance_mic_stolen">Eine andere App nutzt moeglicherweise das Mikrofon. Schliesse sie und versuche es erneut.</string>
     <string name="guidance_check_mic_input">Nah am Telefon anschlagen; wenn Mic bei 0 bleibt, Android-Mikrozugriff pruefen.</string>
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>
     <string name="guidance_in_tune">Gestimmt</string>
     <string name="guidance_with_turn">%1$s - %2$s drehen</string>
     <string name="action_allow_mic">Mikrofon erlauben</string>
+    <string name="action_open_settings">Einstellungen oeffnen</string>
     <string name="action_pause">Hoeren pausieren</string>
     <string name="action_start">Hoeren starten</string>
     <string name="action_stop">Stopp</string>
@@ -88,6 +92,8 @@
     <string name="file_imported_tunings">%1$d benutzerdefinierte Stimmung(en) importiert</string>
     <string name="file_exported_tunings">%1$d benutzerdefinierte Stimmung(en) exportiert</string>
     <string name="file_no_custom_tunings">Keine benutzerdefinierten Stimmungen zum Exportieren</string>
+    <string name="file_error_read">Stimmungsdatei konnte nicht gelesen werden.</string>
+    <string name="file_error_write">Stimmungsdatei konnte nicht gespeichert werden.</string>
     <string name="privacy_title">Datenschutz</string>
     <string name="privacy_inline_note">Audio verlaesst dieses Geraet nie.</string>
     <string name="privacy_summary">GuitarTuner verarbeitet Mikrofon-Audio nur lokal zum Stimmen.</string>

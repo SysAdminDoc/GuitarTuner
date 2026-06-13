@@ -68,6 +68,8 @@ data class AudioInputLevel(
 data class TunerSessionState(
     val isListening: Boolean = false,
     val isFrozen: Boolean = false,
+    val micStolen: Boolean = false,
+    val permissionError: Boolean = false,
     val pitchEstimate: PitchEstimate = PitchEstimate.silence(),
     val measurement: TuningMeasurement = TuningMeasurement.waiting(),
     val inputLevel: AudioInputLevel = AudioInputLevel(),

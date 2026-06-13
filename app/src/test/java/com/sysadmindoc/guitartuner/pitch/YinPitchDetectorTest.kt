@@ -134,6 +134,27 @@ class YinPitchDetectorTest {
     }
 
     @Test
+    fun detectsAllStandardStringsAt48kHz() {
+        for (string in StandardGuitarTuning.strings) {
+            val estimate = detector.detect(
+                samples = guitarLikeSignal(
+                    frequencyHz = string.frequencyHz,
+                    secondHarmonicLevel = 0.18,
+                    sampleRate = SampleRate48k,
+                ),
+                sampleRate = SampleRate48k,
+            )
+
+            assertEquals("${string.scientificPitch} at 48kHz", SignalStatus.Detected, estimate.status)
+            val frequencyHz = requireNotNull(estimate.frequencyHz)
+            assertTrue(
+                "${string.scientificPitch} at 48kHz expected ${string.frequencyHz}, got $frequencyHz",
+                abs(frequencyHz - string.frequencyHz) < 1.5,
+            )
+        }
+    }
+
+    @Test
     fun reportsHighNoiseForLoudUnpitchedInput() {
         val random = Random(11)
         val noise = FloatArray(4096) {
@@ -151,11 +172,12 @@ class YinPitchDetectorTest {
         secondHarmonicLevel: Double,
         noiseLevel: Double = 0.0,
         fundamentalLevel: Double = 1.0,
+        sampleRate: Int = SampleRate,
     ): FloatArray {
-        val length = (SampleRate * 0.35).toInt()
+        val length = (sampleRate * 0.35).toInt()
         val random = Random(7)
         return FloatArray(length) { index ->
-            val time = index / SampleRate.toDouble()
+            val time = index / sampleRate.toDouble()
             val fundamental = sin(2.0 * PI * frequencyHz * time) * fundamentalLevel
             val harmonic = sin(2.0 * PI * frequencyHz * 2.0 * time) * secondHarmonicLevel
             val noise = (random.nextDouble() * 2.0 - 1.0) * noiseLevel
@@ -165,5 +187,6 @@ class YinPitchDetectorTest {
 
     private companion object {
         const val SampleRate = 44_100
+        const val SampleRate48k = 48_000
     }
 }

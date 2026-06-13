@@ -615,8 +615,12 @@ private fun TuningFileMessageText(message: TuningFileMessage?) {
         is TuningFileMessage.Exported -> stringResource(R.string.file_exported_tunings, message.count)
         TuningFileMessage.NoCustomTunings -> stringResource(R.string.file_no_custom_tunings)
         is TuningFileMessage.Error -> message.text
+        TuningFileMessage.ReadError -> stringResource(R.string.file_error_read)
+        TuningFileMessage.WriteError -> stringResource(R.string.file_error_write)
     }
-    val isError = message is TuningFileMessage.Error
+    val isError = message is TuningFileMessage.Error ||
+        message is TuningFileMessage.ReadError ||
+        message is TuningFileMessage.WriteError
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = PanelShape,
@@ -1150,6 +1154,7 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
     state.errorMessage != null -> state.errorMessage
     !state.isListening -> stringResource(R.string.status_ready)
     state.isFrozen -> stringResource(R.string.status_frozen)
+    state.micStolen -> stringResource(R.string.status_mic_stolen)
     state.inputLevel.isEffectivelySilent &&
         state.measurement.status == TuningStatus.WaitingForSignal ->
         stringResource(R.string.status_mic_silent)
@@ -1162,6 +1167,7 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
 
 @Composable
 private fun primaryActionLabel(state: TunerSessionState, hasAudioPermission: Boolean): String = when {
+    !hasAudioPermission && state.permissionError -> stringResource(R.string.action_open_settings)
     !hasAudioPermission -> stringResource(R.string.action_allow_mic)
     state.isListening -> stringResource(R.string.action_pause)
     else -> stringResource(R.string.action_start)
@@ -1174,8 +1180,12 @@ private fun guidanceLabel(
     turnDirection: PegTurnDirection?,
     guidedTarget: GuitarString?,
 ): String {
+    if (!hasAudioPermission && state.permissionError) return stringResource(R.string.guidance_open_settings)
     if (!hasAudioPermission) return stringResource(R.string.guidance_allow_mic)
     if (!state.isListening) return stringResource(R.string.guidance_start_listening)
+    if (state.micStolen) {
+        return stringResource(R.string.guidance_mic_stolen)
+    }
     if (
         state.inputLevel.isEffectivelySilent &&
         state.measurement.status == TuningStatus.WaitingForSignal
