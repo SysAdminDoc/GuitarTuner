@@ -59,6 +59,9 @@
     <string name="section_defaults_helper">Startverhalten und Anzeigeoptionen waehlen.</string>
     <string name="section_precision">Praezision</string>
     <string name="section_precision_helper">Kalibrierung nur anpassen, wenn eine andere Referenz gebraucht wird.</string>
+    <string name="section_input_device">Mikrofon</string>
+    <string name="section_input_device_helper">Waehle ein Eingangsgeraet oder lass die App entscheiden.</string>
+    <string name="input_device_auto">Auto</string>
     <string name="section_files">Stimmungsdateien</string>
     <string name="section_files_helper">Benutzerdefinierte Stimmungen als JSON importieren oder exportieren.</string>
     <string name="state_selected">Ausgewaehlt</string>

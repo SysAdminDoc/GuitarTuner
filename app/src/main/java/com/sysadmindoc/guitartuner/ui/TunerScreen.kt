@@ -52,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.AudioError
+import com.sysadmindoc.guitartuner.audio.InputDeviceInfo
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
@@ -102,6 +103,9 @@ fun TunerScreen(
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
     tuningFileMessage: TuningFileMessage?,
+    inputDevices: List<InputDeviceInfo>,
+    selectedDeviceId: Int?,
+    onInputDeviceSelected: (Int?) -> Unit,
     onPlayTone: (Double) -> Unit,
     onShowPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
@@ -185,6 +189,9 @@ fun TunerScreen(
                             onTuningSelected = onTuningSelected,
                             onImportTunings = onImportTunings,
                             onExportTunings = onExportTunings,
+                            inputDevices = inputDevices,
+                            selectedDeviceId = selectedDeviceId,
+                            onInputDeviceSelected = onInputDeviceSelected,
                             onPlayTone = onPlayTone,
                             tuningFileMessage = tuningFileMessage,
                             modifier = Modifier.weight(1f),
@@ -228,6 +235,9 @@ fun TunerScreen(
                         onTuningSelected = onTuningSelected,
                         onImportTunings = onImportTunings,
                         onExportTunings = onExportTunings,
+                        inputDevices = inputDevices,
+                        selectedDeviceId = selectedDeviceId,
+                        onInputDeviceSelected = onInputDeviceSelected,
                         onPlayTone = onPlayTone,
                         tuningFileMessage = tuningFileMessage,
                         modifier = Modifier.fillMaxWidth(),
@@ -328,6 +338,9 @@ private fun StartupTuningPanel(
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
+    inputDevices: List<InputDeviceInfo>,
+    selectedDeviceId: Int?,
+    onInputDeviceSelected: (Int?) -> Unit,
     onPlayTone: (Double) -> Unit,
     tuningFileMessage: TuningFileMessage?,
     modifier: Modifier = Modifier,
@@ -592,6 +605,33 @@ private fun StartupTuningPanel(
                         onCentsToleranceChanged((preferences.centsTolerance + 1.0).coerceAtMost(25.0))
                     },
                 )
+            }
+
+            if (inputDevices.isNotEmpty()) {
+                SettingsSection(
+                    title = stringResource(R.string.section_input_device),
+                    helper = stringResource(R.string.section_input_device_helper),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        SelectableOptionButton(
+                            label = stringResource(R.string.input_device_auto),
+                            selected = selectedDeviceId == null,
+                            onClick = { onInputDeviceSelected(null) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    for (device in inputDevices) {
+                        SelectableOptionButton(
+                            label = device.label,
+                            selected = selectedDeviceId == device.id,
+                            onClick = { onInputDeviceSelected(device.id) },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
             }
 
             SettingsSection(
@@ -1389,6 +1429,9 @@ private fun TunerScreenPreview() {
             onTuningSelected = {},
             onImportTunings = {},
             onExportTunings = {},
+            inputDevices = emptyList(),
+            selectedDeviceId = null,
+            onInputDeviceSelected = {},
             onPlayTone = {},
             tuningFileMessage = null,
             onShowPrivacy = {},

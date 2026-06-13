@@ -80,6 +80,12 @@ data class TunerSessionState(
         get() = PitchResult.from(pitchEstimate, measurement)
 }
 
+data class InputDeviceInfo(
+    val id: Int,
+    val label: String,
+    val type: String,
+)
+
 enum class AudioError {
     MicInitFailed,
     CaptureStopped,

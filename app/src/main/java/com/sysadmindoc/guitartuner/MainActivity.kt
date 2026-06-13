@@ -63,7 +63,11 @@ private fun TunerRoute() {
         val supportsUnprocessed = audioManager.getProperty(
             AudioManager.PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED,
         ) == "true"
-        AudioCaptureController(scope = scope, supportsUnprocessedSource = supportsUnprocessed)
+        AudioCaptureController(
+            scope = scope,
+            supportsUnprocessedSource = supportsUnprocessed,
+            audioManager = audioManager,
+        )
     }
     val tonePlayer = remember { TonePlayer() }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
@@ -89,6 +93,8 @@ private fun TunerRoute() {
     val tuningCatalog = remember(customTunings, preferences.a4Hz) {
         GuitarTunings.catalog(customTunings, preferences.a4Hz)
     }
+    var selectedDeviceId by rememberSaveable { mutableStateOf<Int?>(null) }
+    val inputDevices = remember(controller) { controller.availableInputDevices() }
     val startupTuningId = preferences.startupTuningId()
     val activeTuning = remember(tuningCatalog, selectedTuningId, startupTuningId) {
         tuningCatalog.find(selectedTuningId ?: startupTuningId)
@@ -306,6 +312,12 @@ private fun TunerRoute() {
                 },
                 onExportTunings = {
                     exportLauncher.launch("guitartuner-custom-tunings.json")
+                },
+                inputDevices = inputDevices,
+                selectedDeviceId = selectedDeviceId,
+                onInputDeviceSelected = { deviceId ->
+                    selectedDeviceId = deviceId
+                    controller.setPreferredDevice(deviceId)
                 },
                 onPlayTone = { frequencyHz ->
                     controller.stop()

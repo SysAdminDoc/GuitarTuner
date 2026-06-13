@@ -59,6 +59,9 @@
     <string name="section_defaults_helper">Elige el inicio y las preferencias visuales.</string>
     <string name="section_precision">Precision</string>
     <string name="section_precision_helper">Ajusta la calibracion solo si necesitas una referencia no estandar.</string>
+    <string name="section_input_device">Microfono</string>
+    <string name="section_input_device_helper">Elige un dispositivo de entrada o deja que la app decida.</string>
+    <string name="input_device_auto">Auto</string>
     <string name="section_files">Archivos de afinacion</string>
     <string name="section_files_helper">Importa o exporta afinaciones personalizadas como JSON.</string>
     <string name="state_selected">Seleccionado</string>

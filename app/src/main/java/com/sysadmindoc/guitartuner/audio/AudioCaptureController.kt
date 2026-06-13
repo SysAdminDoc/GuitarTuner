@@ -1,7 +1,9 @@
 package com.sysadmindoc.guitartuner.audio
 
 import android.annotation.SuppressLint
+import android.media.AudioDeviceInfo
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
@@ -33,6 +35,7 @@ class AudioCaptureController(
     initialPitchDetector: YinPitchDetector = YinPitchDetector(),
     initialStrings: List<GuitarString> = StandardGuitarTuning.strings,
     private val supportsUnprocessedSource: Boolean = false,
+    private val audioManager: AudioManager? = null,
 ) : Closeable {
     private val _state = MutableStateFlow(TunerSessionState())
     val state: StateFlow<TunerSessionState> = _state.asStateFlow()
@@ -57,6 +60,9 @@ class AudioCaptureController(
 
     @Volatile
     private var freezeAfterDecay: Boolean = false
+
+    @Volatile
+    private var preferredDeviceId: Int? = null
 
     private val measurementFreeze = MeasurementFreeze()
     private val measurementSmoother = StableMeasurementSmoother()
@@ -146,6 +152,10 @@ class AudioCaptureController(
 
     fun setFreezeAfterDecay(enabled: Boolean) {
         freezeAfterDecay = enabled
+    }
+
+    fun setPreferredDevice(deviceId: Int?) {
+        preferredDeviceId = deviceId
     }
 
     override fun close() {
@@ -346,6 +356,7 @@ class AudioCaptureController(
                 } ?: continue
 
                 if (recorder.state == AudioRecord.STATE_INITIALIZED) {
+                    applyPreferredDevice(recorder)
                     Log.i(LogTag, "Selected source ${source.audioSourceLabel()} at $sampleRate Hz.")
                     return recorder
                 }
@@ -354,6 +365,38 @@ class AudioCaptureController(
         }
 
         throw IllegalStateException("Could not initialize the microphone.")
+    }
+
+    fun availableInputDevices(): List<InputDeviceInfo> {
+        val manager = audioManager ?: return emptyList()
+        return manager.getDevices(AudioManager.GET_DEVICES_INPUTS).map { device ->
+            InputDeviceInfo(
+                id = device.id,
+                label = device.productName.toString().ifBlank { deviceTypeLabel(device.type) },
+                type = deviceTypeLabel(device.type),
+            )
+        }
+    }
+
+    private fun applyPreferredDevice(recorder: AudioRecord) {
+        val deviceId = preferredDeviceId ?: return
+        val manager = audioManager ?: return
+        val device = manager.getDevices(AudioManager.GET_DEVICES_INPUTS)
+            .firstOrNull { it.id == deviceId }
+        if (device != null) {
+            recorder.setPreferredDevice(device)
+            Log.i(LogTag, "Set preferred input device: ${device.productName} (id=$deviceId)")
+        }
+    }
+
+    private fun deviceTypeLabel(type: Int): String = when (type) {
+        AudioDeviceInfo.TYPE_BUILTIN_MIC -> "Built-in mic"
+        AudioDeviceInfo.TYPE_WIRED_HEADSET -> "Wired headset"
+        AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "Bluetooth SCO"
+        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "Bluetooth A2DP"
+        AudioDeviceInfo.TYPE_USB_DEVICE -> "USB device"
+        AudioDeviceInfo.TYPE_USB_HEADSET -> "USB headset"
+        else -> "Input $type"
     }
 
     private fun AudioRecord.safeStop() {

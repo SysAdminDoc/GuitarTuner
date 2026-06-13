@@ -28,13 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### P2
 
-- [ ] P2 — Microphone input device picker
-  Why: Bluetooth earbud mics ruin tuning; requested independently in two competitor trackers and shipped by no one — cheap differentiator.
-  Evidence: Choona issue 78; thetwom/Tuner issue 65; AudioRecord.setPreferredDevice API.
-  Touches: AudioCaptureController.kt (AudioDeviceInfo enumeration + setPreferredDevice), TunerScreen.kt settings section, TunerPreferencesRepository.kt.
-  Acceptance: settings list available input devices; selection persists; diagnostics row shows the active device; default remains auto.
-  Complexity: M
-
 - [ ] P2 — Sub-cent refinement via single-bin-DFT phase tracking
   Why: phase difference across hops at the detected fundamental yields sub-cent precision on E2 without longer windows; the technique behind software strobe tuners.
   Evidence: dsego/strobe-tuner design notes; 29a.ch/2020 guitar tuner write-up; billthefarmer/ctuner FFT-phase approach.

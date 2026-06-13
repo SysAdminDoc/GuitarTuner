@@ -59,6 +59,9 @@
     <string name="section_defaults_helper">Pick startup behavior and display preferences.</string>
     <string name="section_precision">Precision</string>
     <string name="section_precision_helper">Adjust calibration only when you need a nonstandard reference.</string>
+    <string name="section_input_device">Microphone</string>
+    <string name="section_input_device_helper">Choose a specific input device or let the app decide.</string>
+    <string name="input_device_auto">Auto</string>
     <string name="section_files">Tuning files</string>
     <string name="section_files_helper">Import or export custom tunings as JSON.</string>
     <string name="state_selected">Selected</string>
