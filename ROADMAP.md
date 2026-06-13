@@ -45,6 +45,11 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Where: docs/screenshots/, fastlane/metadata/android/en-US/images/phoneScreenshots/, README.md.
   Complexity: S
 
+- [ ] P1 — Refresh README feature list and description
+  Why: README doesn't mention chromatic mode, bass/ukulele presets, mic picker, fullscreen mode, haptic confirmation, overshoot warning, phase refinement, reference tone playback, or A4 measurement. Feature list is stale vs shipped code.
+  Where: README.md (Current Direction, Repository Status, features list), fastlane/metadata/android/en-US/full_description.txt.
+  Complexity: S
+
 ### P2
 
 - [ ] P2 — Optional strobe precision view
@@ -61,15 +66,14 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: profile generated and bundled in release; macrobenchmark shows measurable cold-start improvement on a physical device.
   Complexity: S
 
-### P3
-
-- [ ] P3 — New-string stretch-and-settle mode
-  Why: new strings drift flat for days; the tune→stretch→retune cycle is standard advice no app operationalizes; extends Guided mode naturally.
+- [ ] P2 — New-string stretch-and-settle mode
+  Why: new strings drift flat for days; the tune-stretch-retune cycle is standard advice no app operationalizes; extends Guided mode naturally.
   Evidence: Guitar World / Haze Guitars string-stretching guidance; JustinGuitar beginner confusion threads.
   Touches: GuidedTuningWalkthrough.kt (stretch cycle variant), TunerScreen.kt, strings.xml (+de/es).
-  Acceptance: optional "new strings" walkthrough runs ≥2 full passes, tracks per-string drift between passes, and reports when drift falls inside tolerance.
+  Acceptance: optional "new strings" walkthrough runs >=2 full passes, tracks per-string drift between passes, and reports when drift falls inside tolerance.
   Complexity: M
 
+### P3
 
 - [ ] P3 — Wear OS tuner app
   Why: Choona proves demand and the CoreBoundaryTest already keeps pitch/tuning/settings UI-free for reuse; watch mic tuning is a genuine leapfrog surface.
