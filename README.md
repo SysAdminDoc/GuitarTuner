@@ -42,6 +42,38 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 - Publish the generated APK/AAB plus `SHA256SUMS.txt` from `.github/workflows/release.yml`.
 - Do not publish artifacts from a dirty worktree or from an untagged local build.
 
+## Signed Release Builds
+
+Generate a release keystore once and keep it outside the repository. The `.gitignore` blocks common keystore extensions, but the keystore still belongs in a password manager or secrets vault.
+
+```powershell
+keytool -genkeypair -v `
+  -keystore "$env:USERPROFILE\guitartuner-release.jks" `
+  -alias guitartuner `
+  -keyalg RSA `
+  -keysize 4096 `
+  -validity 10000
+```
+
+For a local signed build, export the signing environment variables before running Gradle:
+
+```powershell
+$env:GUITARTUNER_KEYSTORE_PATH = "$env:USERPROFILE\guitartuner-release.jks"
+$env:GUITARTUNER_KEYSTORE_PASSWORD = "<keystore-password>"
+$env:GUITARTUNER_KEY_ALIAS = "guitartuner"
+$env:GUITARTUNER_KEY_PASSWORD = "<key-password>"
+.\gradlew.bat check assembleRelease bundleRelease --no-daemon --no-configuration-cache
+Get-FileHash app\build\outputs\apk\release\app-release.apk -Algorithm SHA256
+```
+
+For GitHub release builds, store the same passwords plus a base64-encoded keystore in repository secrets:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\guitartuner-release.jks")) | Set-Clipboard
+```
+
+Paste that value into `ANDROID_SIGNING_KEYSTORE_BASE64`. The release workflow decodes it on the runner, builds `assembleRelease` and `bundleRelease`, and uploads APK/AAB artifacts with `SHA256SUMS.txt`.
+
 ## Repository Status
 
 GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Guided and Auto tuning modes, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a first-screen local-audio privacy note, a confidence-aware main tuner readout, explicit signal and permission states, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string, octave-error, and local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
