@@ -14,7 +14,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,14 +54,24 @@ fun PrivacyScreen(
             ) {
                 Column(
                     modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    for (item in stringArrayResource(R.array.privacy_points)) {
-                        Text(
-                            text = item,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                    }
+                    PrivacyPoint(
+                        title = stringResource(R.string.privacy_point_local_title),
+                        body = stringResource(R.string.privacy_point_local_body),
+                    )
+                    PrivacyPoint(
+                        title = stringResource(R.string.privacy_point_recordings_title),
+                        body = stringResource(R.string.privacy_point_recordings_body),
+                    )
+                    PrivacyPoint(
+                        title = stringResource(R.string.privacy_point_permissions_title),
+                        body = stringResource(R.string.privacy_point_permissions_body),
+                    )
+                    PrivacyPoint(
+                        title = stringResource(R.string.privacy_point_preferences_title),
+                        body = stringResource(R.string.privacy_point_preferences_body),
+                    )
                 }
             }
             Button(
@@ -73,5 +82,26 @@ fun PrivacyScreen(
                 Text(stringResource(R.string.privacy_done))
             }
         }
+    }
+}
+
+@Composable
+private fun PrivacyPoint(
+    title: String,
+    body: String,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -33,6 +35,7 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,6 +60,9 @@ import com.sysadmindoc.guitartuner.tuning.previousGuidedStringNumber
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.util.Locale
 import kotlin.math.abs
+
+private val PanelShape = RoundedCornerShape(8.dp)
+private val CompactButtonPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
 
 @Composable
 fun TunerScreen(
@@ -113,12 +119,27 @@ fun TunerScreen(
                         horizontalArrangement = Arrangement.spacedBy(18.dp),
                         verticalAlignment = Alignment.Top,
                     ) {
-                        TunerMeterPanel(
-                            state = state,
-                            hasAudioPermission = hasAudioPermission,
-                            pegTurnDirections = preferences.pegTurnDirections,
+                        Column(
                             modifier = Modifier.weight(1f),
-                        )
+                            verticalArrangement = Arrangement.spacedBy(14.dp),
+                        ) {
+                            TunerMeterPanel(
+                                state = state,
+                                hasAudioPermission = hasAudioPermission,
+                                activeTuning = activeTuning,
+                                tuningMode = tuningMode,
+                                guidedStringNumber = guidedStringNumber,
+                                pegTurnDirections = preferences.pegTurnDirections,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            TunerActions(
+                                state = state,
+                                hasAudioPermission = hasAudioPermission,
+                                onPrimaryAction = onPrimaryAction,
+                                onStop = onStop,
+                                onShowPrivacy = onShowPrivacy,
+                            )
+                        }
                         StartupTuningPanel(
                             activeTuning = activeTuning,
                             tunings = tunings,
@@ -146,8 +167,18 @@ fun TunerScreen(
                     TunerMeterPanel(
                         state = state,
                         hasAudioPermission = hasAudioPermission,
+                        activeTuning = activeTuning,
+                        tuningMode = tuningMode,
+                        guidedStringNumber = guidedStringNumber,
                         pegTurnDirections = preferences.pegTurnDirections,
                         modifier = Modifier.fillMaxWidth(),
+                    )
+                    TunerActions(
+                        state = state,
+                        hasAudioPermission = hasAudioPermission,
+                        onPrimaryAction = onPrimaryAction,
+                        onStop = onStop,
+                        onShowPrivacy = onShowPrivacy,
                     )
                     StartupTuningPanel(
                         activeTuning = activeTuning,
@@ -172,14 +203,6 @@ fun TunerScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
-
-                TunerActions(
-                    state = state,
-                    hasAudioPermission = hasAudioPermission,
-                    onPrimaryAction = onPrimaryAction,
-                    onStop = onStop,
-                    onShowPrivacy = onShowPrivacy,
-                )
             }
         }
     }
@@ -212,12 +235,20 @@ private fun TunerHeader(
 private fun TunerMeterPanel(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    activeTuning: TuningDefinition,
+    tuningMode: TuningMode,
+    guidedStringNumber: Int,
     pegTurnDirections: Map<Int, PegTurnDirection>,
     modifier: Modifier = Modifier,
 ) {
+    val guidedTarget = if (tuningMode == TuningMode.Guided) {
+        activeTuning.strings.firstOrNull { it.stringNumber == guidedStringNumber }
+    } else {
+        null
+    }
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = PanelShape,
         tonalElevation = 2.dp,
         color = MaterialTheme.colorScheme.surface,
     ) {
@@ -226,12 +257,13 @@ private fun TunerMeterPanel(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            TargetString(state)
+            TargetString(state = state, guidedTarget = guidedTarget)
             CentsMeter(state)
             FrequencyReadout(
                 state = state,
                 hasAudioPermission = hasAudioPermission,
                 pegTurnDirections = pegTurnDirections,
+                guidedTarget = guidedTarget,
             )
             Text(
                 text = stringResource(R.string.privacy_inline_note),
@@ -270,333 +302,256 @@ private fun StartupTuningPanel(
     val hasCustomTunings = tunings.any { !it.isBuiltIn }
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = PanelShape,
         tonalElevation = 1.dp,
         color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
-            modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+            SettingsSection(
+                title = stringResource(R.string.label_tuning),
+                helper = stringResource(R.string.section_tuning_helper),
             ) {
-                Text(
-                    text = stringResource(R.string.label_tuning),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = activeTuning.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.label_current_tuning),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = activeTuning.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+                TuningChoiceGrid(
+                    tunings = tunings,
+                    activeTuning = activeTuning,
+                    onTuningSelected = onTuningSelected,
                 )
             }
-            Text(
-                text = stringResource(R.string.label_available_tunings),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            for (tuning in tunings) {
-                TuningChoiceButton(
-                    tuning = tuning,
-                    selected = tuning.id == activeTuning.id,
-                    onClick = { onTuningSelected(tuning) },
-                )
-            }
-            Text(
-                text = stringResource(R.string.label_mode),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+
+            SettingsSection(
+                title = stringResource(R.string.label_mode),
+                helper = stringResource(R.string.section_mode_helper),
             ) {
-                TuningModeButton(
-                    label = stringResource(R.string.mode_guided),
-                    selected = tuningMode == TuningMode.Guided,
-                    onClick = { onTuningModeSelected(TuningMode.Guided) },
-                    modifier = Modifier.weight(1f),
-                )
-                TuningModeButton(
-                    label = stringResource(R.string.mode_auto),
-                    selected = tuningMode == TuningMode.Auto,
-                    onClick = { onTuningModeSelected(TuningMode.Auto) },
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            if (tuningMode == TuningMode.Guided) {
-                val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber)
-                Text(
-                    text = stringResource(R.string.label_guided_string),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(
-                        R.string.guided_step,
-                        guidedStep.stepNumber,
-                        guidedStep.total,
-                        guidedStep.string.walkthroughLabel(),
-                    ),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    OutlinedButton(
-                        onClick = {
-                            onGuidedStringSelected(
-                                previousGuidedStringNumber(activeTuning.strings, guidedStringNumber),
-                            )
-                        },
-                        enabled = guidedStep.index > 0,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                    ) {
-                        Text(stringResource(R.string.action_previous_string))
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            onGuidedStringSelected(
-                                nextGuidedStringNumber(activeTuning.strings, guidedStringNumber),
-                            )
-                        },
-                        enabled = guidedStep.index < guidedStep.total - 1,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                    ) {
-                        Text(stringResource(R.string.action_next_string))
-                    }
-                }
-                Text(
-                    text = stringResource(R.string.setting_peg_direction),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = stringResource(R.string.peg_tune_up_turn),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    PegDirectionButton(
-                        label = stringResource(R.string.turn_left),
-                        selected = preferences.pegTurnDirections[guidedStringNumber] == PegTurnDirection.Left,
-                        onClick = { onPegTurnDirectionChanged(guidedStringNumber, PegTurnDirection.Left) },
+                    TuningModeButton(
+                        label = stringResource(R.string.mode_guided),
+                        selected = tuningMode == TuningMode.Guided,
+                        onClick = { onTuningModeSelected(TuningMode.Guided) },
                         modifier = Modifier.weight(1f),
                     )
-                    PegDirectionButton(
-                        label = stringResource(R.string.turn_right),
-                        selected = preferences.pegTurnDirections[guidedStringNumber] == PegTurnDirection.Right,
-                        onClick = { onPegTurnDirectionChanged(guidedStringNumber, PegTurnDirection.Right) },
+                    TuningModeButton(
+                        label = stringResource(R.string.mode_auto),
+                        selected = tuningMode == TuningMode.Auto,
+                        onClick = { onTuningModeSelected(TuningMode.Auto) },
                         modifier = Modifier.weight(1f),
                     )
                 }
-                for (row in activeTuning.strings.chunked(3)) {
+                if (tuningMode == TuningMode.Guided) {
+                    val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber)
+                    Text(
+                        text = stringResource(
+                            R.string.guided_step,
+                            guidedStep.stepNumber,
+                            guidedStep.total,
+                            guidedStep.string.walkthroughLabel(),
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        for (string in row) {
-                            GuidedStringButton(
-                                string = string,
-                                selected = string.stringNumber == guidedStringNumber,
-                                onClick = { onGuidedStringSelected(string.stringNumber) },
-                                modifier = Modifier.weight(1f),
-                            )
+                        OutlinedButton(
+                            onClick = {
+                                onGuidedStringSelected(
+                                    previousGuidedStringNumber(activeTuning.strings, guidedStringNumber),
+                                )
+                            },
+                            enabled = guidedStep.index > 0,
+                            modifier = Modifier.weight(1f),
+                            shape = PanelShape,
+                            contentPadding = CompactButtonPadding,
+                        ) {
+                            Text(stringResource(R.string.action_previous_string))
                         }
-                        repeat(3 - row.size) {
-                            Spacer(modifier = Modifier.weight(1f))
+                        OutlinedButton(
+                            onClick = {
+                                onGuidedStringSelected(
+                                    nextGuidedStringNumber(activeTuning.strings, guidedStringNumber),
+                                )
+                            },
+                            enabled = guidedStep.index < guidedStep.total - 1,
+                            modifier = Modifier.weight(1f),
+                            shape = PanelShape,
+                            contentPadding = CompactButtonPadding,
+                        ) {
+                            Text(stringResource(R.string.action_next_string))
                         }
                     }
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                for (mode in StartupTuningMode.entries) {
-                    StartupModeButton(
-                        mode = mode,
-                        selected = preferences.startupMode == mode,
-                        onClick = { onStartupModeSelected(mode) },
-                        modifier = Modifier.weight(1f),
+                    Text(
+                        text = stringResource(R.string.peg_tune_up_turn),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        PegDirectionButton(
+                            label = stringResource(R.string.turn_left),
+                            selected = preferences.pegTurnDirections[guidedStringNumber] == PegTurnDirection.Left,
+                            onClick = { onPegTurnDirectionChanged(guidedStringNumber, PegTurnDirection.Left) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        PegDirectionButton(
+                            label = stringResource(R.string.turn_right),
+                            selected = preferences.pegTurnDirections[guidedStringNumber] == PegTurnDirection.Right,
+                            onClick = { onPegTurnDirectionChanged(guidedStringNumber, PegTurnDirection.Right) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    GuidedStringGrid(
+                        strings = activeTuning.strings,
+                        guidedStringNumber = guidedStringNumber,
+                        onGuidedStringSelected = onGuidedStringSelected,
                     )
                 }
             }
-            OutlinedButton(
-                onClick = onSetFavoriteTuning,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
+
+            SettingsSection(
+                title = stringResource(R.string.section_defaults),
+                helper = stringResource(R.string.section_defaults_helper),
             ) {
-                Text(stringResource(R.string.action_set_favorite))
-            }
-            Text(
-                text = stringResource(R.string.setting_theme),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                for (mode in ThemeMode.entries) {
-                    ThemeModeButton(
-                        mode = mode,
-                        selected = preferences.themeMode == mode,
-                        onClick = { onThemeModeSelected(mode) },
-                        modifier = Modifier.weight(1f),
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    for (mode in StartupTuningMode.entries) {
+                        StartupModeButton(
+                            mode = mode,
+                            selected = preferences.startupMode == mode,
+                            onClick = { onStartupModeSelected(mode) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.setting_freeze_last_note),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                Checkbox(
+                OutlinedButton(
+                    onClick = onSetFavoriteTuning,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = PanelShape,
+                    contentPadding = CompactButtonPadding,
+                ) {
+                    Text(stringResource(R.string.action_set_favorite))
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    for (mode in ThemeMode.entries) {
+                        ThemeModeButton(
+                            mode = mode,
+                            selected = preferences.themeMode == mode,
+                            onClick = { onThemeModeSelected(mode) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+                ToggleSettingRow(
+                    label = stringResource(R.string.setting_freeze_last_note),
+                    helper = stringResource(R.string.setting_freeze_last_note_helper),
                     checked = preferences.freezeAfterDecay,
                     onCheckedChange = onFreezeAfterDecayChanged,
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+
+            SettingsSection(
+                title = stringResource(R.string.section_precision),
+                helper = stringResource(R.string.section_precision_helper),
             ) {
-                Text(
-                    text = stringResource(R.string.setting_a4_calibration),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyLarge,
+                NumericSettingRow(
+                    label = stringResource(R.string.setting_a4_calibration),
+                    value = formatWholeHz(preferences.a4Hz),
+                    decreaseLabel = "-1",
+                    increaseLabel = "+1",
+                    canDecrease = preferences.a4Hz > 400.0,
+                    canIncrease = preferences.a4Hz < 480.0,
+                    onDecrease = { onA4CalibrationChanged((preferences.a4Hz - 1.0).coerceAtLeast(400.0)) },
+                    onIncrease = { onA4CalibrationChanged((preferences.a4Hz + 1.0).coerceAtMost(480.0)) },
                 )
-                OutlinedButton(
-                    onClick = { onA4CalibrationChanged((preferences.a4Hz - 1.0).coerceAtLeast(400.0)) },
-                    enabled = preferences.a4Hz > 400.0,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
-                ) {
-                    Text("-1")
-                }
-                Text(
-                    text = formatWholeHz(preferences.a4Hz),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                )
-                OutlinedButton(
-                    onClick = { onA4CalibrationChanged((preferences.a4Hz + 1.0).coerceAtMost(480.0)) },
-                    enabled = preferences.a4Hz < 480.0,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
-                ) {
-                    Text("+1")
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.setting_noise_gate),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                OutlinedButton(
-                    onClick = {
+                NumericSettingRow(
+                    label = stringResource(R.string.setting_noise_gate),
+                    value = formatThreeDecimals(preferences.noiseGateRms),
+                    decreaseLabel = "-",
+                    increaseLabel = "+",
+                    canDecrease = preferences.noiseGateRms > 0.002,
+                    canIncrease = preferences.noiseGateRms < 0.030,
+                    onDecrease = {
                         onNoiseGateChanged((preferences.noiseGateRms - 0.001).coerceAtLeast(0.002))
                     },
-                    enabled = preferences.noiseGateRms > 0.002,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
-                ) {
-                    Text("-")
-                }
-                Text(
-                    text = formatThreeDecimals(preferences.noiseGateRms),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                )
-                OutlinedButton(
-                    onClick = {
+                    onIncrease = {
                         onNoiseGateChanged((preferences.noiseGateRms + 0.001).coerceAtMost(0.030))
                     },
-                    enabled = preferences.noiseGateRms < 0.030,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
-                ) {
-                    Text("+")
-                }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.setting_cents_tolerance),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyLarge,
                 )
-                OutlinedButton(
-                    onClick = {
+                NumericSettingRow(
+                    label = stringResource(R.string.setting_cents_tolerance),
+                    value = stringResource(
+                        R.string.cents_tolerance_value,
+                        formatWholeNumber(preferences.centsTolerance),
+                    ),
+                    decreaseLabel = "-1",
+                    increaseLabel = "+1",
+                    canDecrease = preferences.centsTolerance > 1.0,
+                    canIncrease = preferences.centsTolerance < 25.0,
+                    onDecrease = {
                         onCentsToleranceChanged((preferences.centsTolerance - 1.0).coerceAtLeast(1.0))
                     },
-                    enabled = preferences.centsTolerance > 1.0,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
-                ) {
-                    Text("-1")
-                }
-                Text(
-                    text = stringResource(R.string.cents_tolerance_value, formatWholeNumber(preferences.centsTolerance)),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                )
-                OutlinedButton(
-                    onClick = {
+                    onIncrease = {
                         onCentsToleranceChanged((preferences.centsTolerance + 1.0).coerceAtMost(25.0))
                     },
-                    enabled = preferences.centsTolerance < 25.0,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
-                ) {
-                    Text("+1")
-                }
+                )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+
+            SettingsSection(
+                title = stringResource(R.string.section_files),
+                helper = stringResource(R.string.section_files_helper),
             ) {
-                OutlinedButton(
-                    onClick = onImportTunings,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Text(stringResource(R.string.action_import))
+                    OutlinedButton(
+                        onClick = onImportTunings,
+                        modifier = Modifier.weight(1f),
+                        shape = PanelShape,
+                        contentPadding = CompactButtonPadding,
+                    ) {
+                        Text(stringResource(R.string.action_import))
+                    }
+                    OutlinedButton(
+                        onClick = onExportTunings,
+                        enabled = hasCustomTunings,
+                        modifier = Modifier.weight(1f),
+                        shape = PanelShape,
+                        contentPadding = CompactButtonPadding,
+                    ) {
+                        Text(stringResource(R.string.action_export))
+                    }
                 }
-                OutlinedButton(
-                    onClick = onExportTunings,
-                    enabled = hasCustomTunings,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text(stringResource(R.string.action_export))
-                }
+                TuningFileMessageText(tuningFileMessage)
             }
-            TuningFileMessageText(tuningFileMessage)
         }
     }
 }
@@ -609,32 +564,46 @@ private fun TunerActions(
     onStop: () -> Unit,
     onShowPrivacy: () -> Unit,
 ) {
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Button(
-            onClick = onPrimaryAction,
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Text(primaryActionLabel(state, hasAudioPermission))
+        if (state.isListening) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Button(
+                    onClick = onPrimaryAction,
+                    modifier = Modifier.weight(1f),
+                    shape = PanelShape,
+                ) {
+                    Text(primaryActionLabel(state, hasAudioPermission))
+                }
+                OutlinedButton(
+                    onClick = onStop,
+                    modifier = Modifier.weight(1f),
+                    shape = PanelShape,
+                ) {
+                    Text(stringResource(R.string.action_stop))
+                }
+            }
+        } else {
+            Button(
+                onClick = onPrimaryAction,
+                modifier = Modifier.fillMaxWidth(),
+                shape = PanelShape,
+            ) {
+                Text(primaryActionLabel(state, hasAudioPermission))
+            }
         }
         OutlinedButton(
-            onClick = onStop,
-            enabled = state.isListening,
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(8.dp),
+            onClick = onShowPrivacy,
+            modifier = Modifier.fillMaxWidth(),
+            shape = PanelShape,
         ) {
-            Text(stringResource(R.string.action_stop))
+            Text(stringResource(R.string.action_privacy))
         }
-    }
-    OutlinedButton(
-        onClick = onShowPrivacy,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-    ) {
-        Text(stringResource(R.string.action_privacy))
     }
 }
 
@@ -647,11 +616,229 @@ private fun TuningFileMessageText(message: TuningFileMessage?) {
         TuningFileMessage.NoCustomTunings -> stringResource(R.string.file_no_custom_tunings)
         is TuningFileMessage.Error -> message.text
     }
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    val isError = message is TuningFileMessage.Error
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = PanelShape,
+        color = if (isError) {
+            MaterialTheme.colorScheme.errorContainer
+        } else {
+            MaterialTheme.colorScheme.secondaryContainer
+        },
+        contentColor = if (isError) {
+            MaterialTheme.colorScheme.onErrorContainer
+        } else {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        },
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun SettingsSection(
+    title: String,
+    helper: String,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = helper,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        content()
+    }
+}
+
+@Composable
+private fun TuningChoiceGrid(
+    tunings: List<TuningDefinition>,
+    activeTuning: TuningDefinition,
+    onTuningSelected: (TuningDefinition) -> Unit,
+) {
+    for (row in tunings.chunked(2)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            for (tuning in row) {
+                TuningChoiceButton(
+                    tuning = tuning,
+                    selected = tuning.id == activeTuning.id,
+                    onClick = { onTuningSelected(tuning) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            if (row.size == 1) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun GuidedStringGrid(
+    strings: List<GuitarString>,
+    guidedStringNumber: Int,
+    onGuidedStringSelected: (Int) -> Unit,
+) {
+    for (row in strings.chunked(3)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            for (string in row) {
+                GuidedStringButton(
+                    string = string,
+                    selected = string.stringNumber == guidedStringNumber,
+                    onClick = { onGuidedStringSelected(string.stringNumber) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            repeat(3 - row.size) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ToggleSettingRow(
+    label: String,
+    helper: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    val checkedState = if (checked) {
+        stringResource(R.string.state_on)
+    } else {
+        stringResource(R.string.state_off)
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = helper,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier.semantics {
+                contentDescription = label
+                stateDescription = checkedState
+            },
+        )
+    }
+}
+
+@Composable
+private fun NumericSettingRow(
+    label: String,
+    value: String,
+    decreaseLabel: String,
+    increaseLabel: String,
+    canDecrease: Boolean,
+    canIncrease: Boolean,
+    onDecrease: () -> Unit,
+    onIncrease: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        OutlinedButton(
+            onClick = onDecrease,
+            enabled = canDecrease,
+            shape = PanelShape,
+            contentPadding = CompactButtonPadding,
+        ) {
+            Text(decreaseLabel)
+        }
+        Text(
+            text = value,
+            modifier = Modifier.widthIn(min = 72.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+        )
+        OutlinedButton(
+            onClick = onIncrease,
+            enabled = canIncrease,
+            shape = PanelShape,
+            contentPadding = CompactButtonPadding,
+        ) {
+            Text(increaseLabel)
+        }
+    }
+}
+
+@Composable
+private fun SelectableOptionButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = CompactButtonPadding,
+) {
+    val selectedState = if (selected) {
+        stringResource(R.string.state_selected)
+    } else {
+        stringResource(R.string.state_not_selected)
+    }
+    val semanticsModifier = modifier.semantics {
+        this.selected = selected
+        stateDescription = selectedState
+    }
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = semanticsModifier,
+            shape = PanelShape,
+            contentPadding = contentPadding,
+        ) {
+            Text(label, maxLines = 1, textAlign = TextAlign.Center)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = semanticsModifier,
+            shape = PanelShape,
+            contentPadding = contentPadding,
+        ) {
+            Text(label, maxLines = 1, textAlign = TextAlign.Center)
+        }
+    }
 }
 
 @Composable
@@ -659,29 +846,19 @@ private fun TuningChoiceButton(
     tuning: TuningDefinition,
     selected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val label = if (tuning.isBuiltIn) {
         tuning.name
     } else {
         stringResource(R.string.tuning_custom_suffix, tuning.name)
     }
-    if (selected) {
-        Button(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Text(label)
-        }
-    } else {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Text(label)
-        }
-    }
+    SelectableOptionButton(
+        label = label,
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+    )
 }
 
 @Composable
@@ -691,27 +868,13 @@ private fun StartupModeButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(8.dp)
-    val contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
-    if (selected) {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-            contentPadding = contentPadding,
-        ) {
-            Text(mode.label(), maxLines = 1)
-        }
-    } else {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-            contentPadding = contentPadding,
-        ) {
-            Text(mode.label(), maxLines = 1)
-        }
-    }
+    SelectableOptionButton(
+        label = mode.label(),
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+    )
 }
 
 @Composable
@@ -721,27 +884,13 @@ private fun ThemeModeButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(8.dp)
-    val contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
-    if (selected) {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-            contentPadding = contentPadding,
-        ) {
-            Text(mode.label(), maxLines = 1)
-        }
-    } else {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-            contentPadding = contentPadding,
-        ) {
-            Text(mode.label(), maxLines = 1)
-        }
-    }
+    SelectableOptionButton(
+        label = mode.label(),
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+    )
 }
 
 @Composable
@@ -751,24 +900,12 @@ private fun TuningModeButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(8.dp)
-    if (selected) {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-        ) {
-            Text(label, maxLines = 1)
-        }
-    } else {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-        ) {
-            Text(label, maxLines = 1)
-        }
-    }
+    SelectableOptionButton(
+        label = label,
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -778,27 +915,14 @@ private fun GuidedStringButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(8.dp)
     val label = "${string.stringNumber} ${string.scientificPitch}"
-    if (selected) {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
-        ) {
-            Text(label, maxLines = 1)
-        }
-    } else {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
-        ) {
-            Text(label, maxLines = 1)
-        }
-    }
+    SelectableOptionButton(
+        label = label,
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+    )
 }
 
 @Composable
@@ -808,46 +932,47 @@ private fun PegDirectionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(8.dp)
-    if (selected) {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-        ) {
-            Text(label, maxLines = 1)
-        }
-    } else {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = modifier,
-            shape = shape,
-        ) {
-            Text(label, maxLines = 1)
-        }
-    }
+    SelectableOptionButton(
+        label = label,
+        selected = selected,
+        onClick = onClick,
+        modifier = modifier,
+    )
 }
 
 private fun GuitarString.walkthroughLabel(): String =
     "$name ($scientificPitch)"
 
 @Composable
-private fun TargetString(state: TunerSessionState) {
+private fun TargetString(
+    state: TunerSessionState,
+    guidedTarget: GuitarString?,
+) {
     val measurement = state.measurement
-    val target = measurement.target
+    val target = measurement.target ?: guidedTarget
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
-            text = target?.name ?: "--",
+            text = target?.name ?: stringResource(R.string.target_auto_detect),
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
         )
         Text(
-            text = target?.displayName ?: stringResource(R.string.target_waiting_for_string),
+            text = when {
+                measurement.target != null -> measurement.target.displayName
+                guidedTarget != null -> stringResource(
+                    R.string.target_guided_prompt,
+                    guidedTarget.stringNumber,
+                    guidedTarget.scientificPitch,
+                )
+                else -> stringResource(R.string.target_waiting_for_string)
+            },
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -861,41 +986,67 @@ private fun CentsMeter(state: TunerSessionState) {
     val centerColor = MaterialTheme.colorScheme.primary
     val markerColor = MaterialTheme.colorScheme.tertiary
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(96.dp)
-            .semantics {
-                contentDescription = accessibility.contentDescription
-                stateDescription = accessibility.stateDescription
-                progressBarRangeInfo = ProgressBarRangeInfo(accessibility.progressCents, -50f..50f)
-            },
-        contentAlignment = Alignment.Center,
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val y = size.height / 2f
-            val left = 16.dp.toPx()
-            val right = size.width - 16.dp.toPx()
-            val centerX = size.width / 2f
-            drawLine(
-                color = trackColor,
-                start = Offset(left, y),
-                end = Offset(right, y),
-                strokeWidth = 6.dp.toPx(),
-                cap = StrokeCap.Round,
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(88.dp)
+                .semantics {
+                    contentDescription = accessibility.contentDescription
+                    stateDescription = accessibility.stateDescription
+                    progressBarRangeInfo = ProgressBarRangeInfo(accessibility.progressCents, -50f..50f)
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val y = size.height / 2f
+                val left = 16.dp.toPx()
+                val right = size.width - 16.dp.toPx()
+                val centerX = size.width / 2f
+                drawLine(
+                    color = trackColor,
+                    start = Offset(left, y),
+                    end = Offset(right, y),
+                    strokeWidth = 6.dp.toPx(),
+                    cap = StrokeCap.Round,
+                )
+                drawLine(
+                    color = centerColor,
+                    start = Offset(centerX, y - 28.dp.toPx()),
+                    end = Offset(centerX, y + 28.dp.toPx()),
+                    strokeWidth = 4.dp.toPx(),
+                    cap = StrokeCap.Round,
+                )
+                val markerX = centerX + (boundedCents / 50.0).toFloat() * ((right - left) / 2f)
+                drawCircle(
+                    color = markerColor,
+                    radius = 12.dp.toPx(),
+                    center = Offset(markerX, y),
+                )
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(R.string.meter_flat),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            drawLine(
-                color = centerColor,
-                start = Offset(centerX, y - 28.dp.toPx()),
-                end = Offset(centerX, y + 28.dp.toPx()),
-                strokeWidth = 4.dp.toPx(),
-                cap = StrokeCap.Round,
+            Text(
+                text = stringResource(R.string.meter_in_tune),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
             )
-            val markerX = centerX + (boundedCents / 50.0).toFloat() * ((right - left) / 2f)
-            drawCircle(
-                color = markerColor,
-                radius = 12.dp.toPx(),
-                center = Offset(markerX, y),
+            Text(
+                text = stringResource(R.string.meter_sharp),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -906,6 +1057,7 @@ private fun FrequencyReadout(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
     pegTurnDirections: Map<Int, PegTurnDirection>,
+    guidedTarget: GuitarString?,
 ) {
     val measurement = state.measurement
     val pitchResult = state.pitchResult
@@ -921,6 +1073,7 @@ private fun FrequencyReadout(
                 state = state,
                 hasAudioPermission = hasAudioPermission,
                 turnDirection = measurement.turnDirection(pegTurnDirections),
+                guidedTarget = guidedTarget,
             ),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
@@ -990,13 +1143,16 @@ private fun guidanceLabel(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
     turnDirection: PegTurnDirection?,
+    guidedTarget: GuitarString?,
 ): String {
     if (!hasAudioPermission) return stringResource(R.string.guidance_allow_mic)
     if (!state.isListening) return stringResource(R.string.guidance_start_listening)
 
     val status = state.measurement.status
     val base = when (status) {
-        TuningStatus.WaitingForSignal -> stringResource(R.string.guidance_strum_open_string)
+        TuningStatus.WaitingForSignal -> guidedTarget?.let {
+            stringResource(R.string.guidance_strum_guided, it.walkthroughLabel())
+        } ?: stringResource(R.string.guidance_strum_open_string)
         TuningStatus.SignalClipping -> stringResource(R.string.guidance_play_softer)
         TuningStatus.HighNoise -> stringResource(R.string.guidance_reduce_noise)
         TuningStatus.NoStringDetected -> stringResource(R.string.guidance_try_one_string)

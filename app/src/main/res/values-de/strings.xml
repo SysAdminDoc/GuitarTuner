@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GuitarTuner</string>
-    <string name="status_permission_required">Mikrofonberechtigung erforderlich</string>
-    <string name="status_ready">Bereit</string>
+    <string name="status_permission_required">Mikrofonzugriff erforderlich</string>
+    <string name="status_ready">Bereit zum Stimmen</string>
     <string name="status_listening">Hoert zu</string>
     <string name="status_frozen">Eingefroren</string>
     <string name="status_input_clipping">Eingang uebersteuert</string>
-    <string name="status_high_noise">Hohe Geraeusche</string>
-    <string name="status_no_string_detected">Keine Gitarrensaite erkannt</string>
-    <string name="status_detected">Erkannt</string>
-    <string name="target_waiting_for_string">Wartet auf Saite</string>
-    <string name="guidance_strum_open_string">Leere Saite anschlagen</string>
+    <string name="status_high_noise">Hintergrundgeraeusch ist hoch</string>
+    <string name="status_no_string_detected">Keine klare Saite erkannt</string>
+    <string name="status_detected">Ton erkannt</string>
+    <string name="target_waiting_for_string">Eine leere Saite anschlagen</string>
+    <string name="target_auto_detect">Auto-Erkennung</string>
+    <string name="target_guided_prompt">Saite %1$d - %2$s</string>
+    <string name="guidance_strum_open_string">Eine leere Saite anschlagen</string>
+    <string name="guidance_strum_guided">%1$s leer anschlagen</string>
     <string name="guidance_play_softer">Leiser spielen</string>
-    <string name="guidance_reduce_noise">Geraeusche reduzieren</string>
-    <string name="guidance_try_one_string">Eine Saite versuchen</string>
-    <string name="guidance_start_listening">Zum Hoeren Start tippen</string>
-    <string name="guidance_allow_mic">Mikrofon erlauben zum Stimmen</string>
+    <string name="guidance_reduce_noise">Einen ruhigeren Ort suchen</string>
+    <string name="guidance_try_one_string">Eine Saite klar anschlagen</string>
+    <string name="guidance_start_listening">Starten, wenn du bereit bist</string>
+    <string name="guidance_allow_mic">Mikrofonzugriff zum Stimmen erlauben</string>
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>
     <string name="guidance_in_tune">Gestimmt</string>
     <string name="guidance_with_turn">%1$s - %2$s drehen</string>
     <string name="action_allow_mic">Mikrofon erlauben</string>
-    <string name="action_pause">Pause</string>
-    <string name="action_start">Start</string>
+    <string name="action_pause">Hoeren pausieren</string>
+    <string name="action_start">Hoeren starten</string>
     <string name="action_stop">Stopp</string>
     <string name="action_set_favorite">Favorit setzen</string>
     <string name="action_import">Importieren</string>
@@ -33,14 +36,31 @@
     <string name="theme_dark">Dunkel</string>
     <string name="theme_light">Hell</string>
     <string name="setting_freeze_last_note">Letzte Note einfrieren</string>
+    <string name="setting_freeze_last_note_helper">Haelt den letzten stabilen Ton sichtbar, waehrend die Note ausklingt.</string>
     <string name="setting_a4_calibration">A4-Kalibrierung</string>
     <string name="setting_cents_tolerance">Cent-Toleranz</string>
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Rauschschwelle</string>
+    <string name="section_tuning_helper">Stimmung waehlen, bevor das Hoeren startet.</string>
+    <string name="section_mode_helper">Gefuehrt ist am sichersten fuer Anfaenger; Auto hoert auf die naechste Saite.</string>
+    <string name="section_defaults">Standardwerte</string>
+    <string name="section_defaults_helper">Startverhalten und Anzeigeoptionen waehlen.</string>
+    <string name="section_precision">Praezision</string>
+    <string name="section_precision_helper">Kalibrierung nur anpassen, wenn eine andere Referenz gebraucht wird.</string>
+    <string name="section_files">Stimmungsdateien</string>
+    <string name="section_files_helper">Benutzerdefinierte Stimmungen als JSON importieren oder exportieren.</string>
+    <string name="state_selected">Ausgewaehlt</string>
+    <string name="state_not_selected">Nicht ausgewaehlt</string>
+    <string name="state_on">Ein</string>
+    <string name="state_off">Aus</string>
+    <string name="meter_flat">Tief</string>
+    <string name="meter_in_tune">Gestimmt</string>
+    <string name="meter_sharp">Hoch</string>
     <string name="startup_standard">Standard</string>
     <string name="startup_last">Letzte</string>
     <string name="startup_favorite">Favorit</string>
     <string name="label_tuning">Stimmung</string>
+    <string name="label_current_tuning">Aktuell</string>
     <string name="label_available_tunings">Verfuegbare Stimmungen</string>
     <string name="label_mode">Modus</string>
     <string name="mode_auto">Auto</string>
@@ -67,11 +87,12 @@
     <string name="privacy_inline_note">Audio verlaesst dieses Geraet nie.</string>
     <string name="privacy_summary">GuitarTuner verarbeitet Mikrofon-Audio nur lokal zum Stimmen.</string>
     <string name="privacy_done">Fertig</string>
-    <string-array name="privacy_points">
-        <item>Audio wird auf diesem Geraet analysiert, solange das Stimmgeraet sichtbar ist.</item>
-        <item>Audiodaten werden nicht gespeichert, exportiert oder hochgeladen.</item>
-        <item>Die App deklariert nur die Mikrofonberechtigung und keine Netzwerkberechtigung.</item>
-        <item>Start-Stimmungsoptionen bleiben auf diesem Geraet, bis App-Daten geloescht werden oder die App deinstalliert wird.</item>
-        <item>Kontakt: replace-before-release@example.com.</item>
-    </string-array>
+    <string name="privacy_point_local_title">Lokale Analyse</string>
+    <string name="privacy_point_local_body">Mikrofon-Audio wird nur auf diesem Geraet analysiert, solange das Stimmgeraet sichtbar ist.</string>
+    <string name="privacy_point_recordings_title">Keine Aufnahmen</string>
+    <string name="privacy_point_recordings_body">Audiodaten werden nicht gespeichert, exportiert, hochgeladen oder mit einem Konto verknuepft.</string>
+    <string name="privacy_point_permissions_title">Minimale Berechtigungen</string>
+    <string name="privacy_point_permissions_body">Die App deklariert nur die Mikrofonberechtigung und keine Netzwerkberechtigung.</string>
+    <string name="privacy_point_preferences_title">Lokale Einstellungen</string>
+    <string name="privacy_point_preferences_body">Stimmungsoptionen bleiben im App-Speicher, bis App-Daten geloescht werden oder die App deinstalliert wird.</string>
 </resources>

@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GuitarTuner</string>
-    <string name="status_permission_required">Se requiere permiso de microfono</string>
-    <string name="status_ready">Listo</string>
+    <string name="status_permission_required">Se necesita acceso al microfono</string>
+    <string name="status_ready">Listo para afinar</string>
     <string name="status_listening">Escuchando</string>
     <string name="status_frozen">Congelado</string>
     <string name="status_input_clipping">La entrada esta saturada</string>
-    <string name="status_high_noise">Ruido alto</string>
-    <string name="status_no_string_detected">No se detecto una cuerda de guitarra</string>
-    <string name="status_detected">Detectado</string>
-    <string name="target_waiting_for_string">Esperando cuerda</string>
+    <string name="status_high_noise">El ruido de fondo es alto</string>
+    <string name="status_no_string_detected">No se detecto una cuerda clara</string>
+    <string name="status_detected">Tono detectado</string>
+    <string name="target_waiting_for_string">Toca una cuerda al aire</string>
+    <string name="target_auto_detect">Deteccion auto</string>
+    <string name="target_guided_prompt">Cuerda %1$d - %2$s</string>
     <string name="guidance_strum_open_string">Toca una cuerda al aire</string>
+    <string name="guidance_strum_guided">Toca %1$s al aire</string>
     <string name="guidance_play_softer">Toca mas suave</string>
-    <string name="guidance_reduce_noise">Reduce el ruido</string>
-    <string name="guidance_try_one_string">Prueba una cuerda</string>
-    <string name="guidance_start_listening">Toca Iniciar para escuchar</string>
-    <string name="guidance_allow_mic">Permite microfono para afinar</string>
+    <string name="guidance_reduce_noise">Busca un lugar mas silencioso</string>
+    <string name="guidance_try_one_string">Toca una cuerda claramente</string>
+    <string name="guidance_start_listening">Empieza a escuchar cuando estes listo</string>
+    <string name="guidance_allow_mic">Permite acceso al microfono para afinar</string>
     <string name="guidance_tune_up">Sube la afinacion</string>
     <string name="guidance_tune_down">Baja la afinacion</string>
     <string name="guidance_in_tune">Afinada</string>
     <string name="guidance_with_turn">%1$s - gira %2$s</string>
     <string name="action_allow_mic">Permitir microfono</string>
-    <string name="action_pause">Pausar</string>
-    <string name="action_start">Iniciar</string>
+    <string name="action_pause">Pausar escucha</string>
+    <string name="action_start">Empezar escucha</string>
     <string name="action_stop">Detener</string>
     <string name="action_set_favorite">Guardar favorita</string>
     <string name="action_import">Importar</string>
@@ -33,14 +36,31 @@
     <string name="theme_dark">Oscuro</string>
     <string name="theme_light">Claro</string>
     <string name="setting_freeze_last_note">Congelar ultima nota</string>
+    <string name="setting_freeze_last_note_helper">Mantiene visible el ultimo tono estable mientras la nota se apaga.</string>
     <string name="setting_a4_calibration">Calibracion A4</string>
     <string name="setting_cents_tolerance">Tolerancia en cents</string>
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Puerta de ruido</string>
+    <string name="section_tuning_helper">Elige la afinacion antes de empezar a escuchar.</string>
+    <string name="section_mode_helper">El modo Guiado es mas seguro para principiantes; Auto escucha la cuerda mas cercana.</string>
+    <string name="section_defaults">Valores iniciales</string>
+    <string name="section_defaults_helper">Elige el inicio y las preferencias visuales.</string>
+    <string name="section_precision">Precision</string>
+    <string name="section_precision_helper">Ajusta la calibracion solo si necesitas una referencia no estandar.</string>
+    <string name="section_files">Archivos de afinacion</string>
+    <string name="section_files_helper">Importa o exporta afinaciones personalizadas como JSON.</string>
+    <string name="state_selected">Seleccionado</string>
+    <string name="state_not_selected">No seleccionado</string>
+    <string name="state_on">Activado</string>
+    <string name="state_off">Desactivado</string>
+    <string name="meter_flat">Baja</string>
+    <string name="meter_in_tune">Afinada</string>
+    <string name="meter_sharp">Alta</string>
     <string name="startup_standard">Estandar</string>
     <string name="startup_last">Ultima</string>
     <string name="startup_favorite">Favorita</string>
     <string name="label_tuning">Afinacion</string>
+    <string name="label_current_tuning">Actual</string>
     <string name="label_available_tunings">Afinaciones disponibles</string>
     <string name="label_mode">Modo</string>
     <string name="mode_auto">Auto</string>
@@ -67,11 +87,12 @@
     <string name="privacy_inline_note">El audio nunca sale de este dispositivo.</string>
     <string name="privacy_summary">GuitarTuner procesa el audio del microfono localmente solo para afinar.</string>
     <string name="privacy_done">Listo</string>
-    <string-array name="privacy_points">
-        <item>El audio se analiza en este dispositivo mientras el afinador esta visible.</item>
-        <item>Las muestras de audio no se guardan, exportan ni suben.</item>
-        <item>La app solo declara permiso de microfono y no tiene permiso de red.</item>
-        <item>Las preferencias de afinacion inicial permanecen en este dispositivo hasta borrar los datos o desinstalar la app.</item>
-        <item>Contacto: replace-before-release@example.com.</item>
-    </string-array>
+    <string name="privacy_point_local_title">Analisis local</string>
+    <string name="privacy_point_local_body">El audio del microfono solo se analiza en este dispositivo mientras el afinador esta visible.</string>
+    <string name="privacy_point_recordings_title">Sin grabaciones</string>
+    <string name="privacy_point_recordings_body">Las muestras de audio no se guardan, exportan, suben ni se vinculan a una cuenta.</string>
+    <string name="privacy_point_permissions_title">Permisos minimos</string>
+    <string name="privacy_point_permissions_body">La app solo declara permiso de microfono y no tiene permiso de red.</string>
+    <string name="privacy_point_preferences_title">Preferencias locales</string>
+    <string name="privacy_point_preferences_body">Las preferencias de afinacion quedan en el almacenamiento de la app hasta borrar los datos o desinstalarla.</string>
 </resources>

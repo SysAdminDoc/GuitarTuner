@@ -38,3 +38,4 @@
 - Added README screenshots captured from the Android app running on a physical Samsung SM-S938B.
 - Expanded signed release build documentation with local keystore, GitHub secret, APK/AAB, and checksum commands.
 - Prepared the GitHub release workflow to publish or update a tagged release once a remote and signing secrets exist.
+- Refined the tuner UI with first-screen listening actions, guided target empty states, sectioned settings, accessible selectable controls, stronger privacy copy, fuller theme tokens, and refreshed physical-device screenshots.

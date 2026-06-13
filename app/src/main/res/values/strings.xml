@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GuitarTuner</string>
-    <string name="status_permission_required">Microphone permission required</string>
-    <string name="status_ready">Ready</string>
+    <string name="status_permission_required">Microphone access needed</string>
+    <string name="status_ready">Ready to tune</string>
     <string name="status_listening">Listening</string>
     <string name="status_frozen">Frozen</string>
     <string name="status_input_clipping">Input is clipping</string>
-    <string name="status_high_noise">High noise</string>
-    <string name="status_no_string_detected">No guitar string detected</string>
-    <string name="status_detected">Detected</string>
-    <string name="target_waiting_for_string">Waiting for string</string>
-    <string name="guidance_strum_open_string">Strum an open string</string>
+    <string name="status_high_noise">Background noise is high</string>
+    <string name="status_no_string_detected">No clear string detected</string>
+    <string name="status_detected">Pitch detected</string>
+    <string name="target_waiting_for_string">Strum one open string</string>
+    <string name="target_auto_detect">Auto detect</string>
+    <string name="target_guided_prompt">String %1$d - %2$s</string>
+    <string name="guidance_strum_open_string">Strum one open string</string>
+    <string name="guidance_strum_guided">Strum %1$s open</string>
     <string name="guidance_play_softer">Play softer</string>
-    <string name="guidance_reduce_noise">Reduce noise</string>
-    <string name="guidance_try_one_string">Try one string</string>
-    <string name="guidance_start_listening">Tap Start to listen</string>
-    <string name="guidance_allow_mic">Allow mic to start tuning</string>
+    <string name="guidance_reduce_noise">Move somewhere quieter</string>
+    <string name="guidance_try_one_string">Strum one string clearly</string>
+    <string name="guidance_start_listening">Start listening when ready</string>
+    <string name="guidance_allow_mic">Allow microphone access to tune</string>
     <string name="guidance_tune_up">Tune up</string>
     <string name="guidance_tune_down">Tune down</string>
     <string name="guidance_in_tune">In tune</string>
     <string name="guidance_with_turn">%1$s - turn %2$s</string>
-    <string name="action_allow_mic">Allow mic</string>
-    <string name="action_pause">Pause</string>
-    <string name="action_start">Start</string>
+    <string name="action_allow_mic">Allow microphone</string>
+    <string name="action_pause">Pause listening</string>
+    <string name="action_start">Start listening</string>
     <string name="action_stop">Stop</string>
     <string name="action_set_favorite">Set favorite</string>
     <string name="action_import">Import</string>
@@ -33,14 +36,31 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
     <string name="setting_freeze_last_note">Freeze last note</string>
+    <string name="setting_freeze_last_note_helper">Keep the last stable pitch visible as the note fades.</string>
     <string name="setting_a4_calibration">A4 calibration</string>
     <string name="setting_cents_tolerance">Cents tolerance</string>
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Noise gate</string>
+    <string name="section_tuning_helper">Choose the tuning before you start listening.</string>
+    <string name="section_mode_helper">Guided mode is safest for beginners; Auto listens for the nearest string.</string>
+    <string name="section_defaults">Defaults</string>
+    <string name="section_defaults_helper">Pick startup behavior and display preferences.</string>
+    <string name="section_precision">Precision</string>
+    <string name="section_precision_helper">Adjust calibration only when you need a nonstandard reference.</string>
+    <string name="section_files">Tuning files</string>
+    <string name="section_files_helper">Import or export custom tunings as JSON.</string>
+    <string name="state_selected">Selected</string>
+    <string name="state_not_selected">Not selected</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="meter_flat">Flat</string>
+    <string name="meter_in_tune">In tune</string>
+    <string name="meter_sharp">Sharp</string>
     <string name="startup_standard">Standard</string>
     <string name="startup_last">Last</string>
     <string name="startup_favorite">Favorite</string>
     <string name="label_tuning">Tuning</string>
+    <string name="label_current_tuning">Current</string>
     <string name="label_available_tunings">Available tunings</string>
     <string name="label_mode">Mode</string>
     <string name="mode_auto">Auto</string>
@@ -67,11 +87,12 @@
     <string name="privacy_inline_note">Audio never leaves this device.</string>
     <string name="privacy_summary">GuitarTuner processes microphone audio locally for tuning only.</string>
     <string name="privacy_done">Done</string>
-    <string-array name="privacy_points">
-        <item>Audio is analyzed on this device while the tuner is visible.</item>
-        <item>Audio samples are not saved, exported, or uploaded.</item>
-        <item>The app declares microphone permission only and has no network permission.</item>
-        <item>Startup tuning preferences stay on this device until app data is cleared or the app is uninstalled.</item>
-        <item>Contact: replace-before-release@example.com.</item>
-    </string-array>
+    <string name="privacy_point_local_title">Local analysis</string>
+    <string name="privacy_point_local_body">Microphone audio is analyzed only on this device while the tuner is visible.</string>
+    <string name="privacy_point_recordings_title">No recordings</string>
+    <string name="privacy_point_recordings_body">Audio samples are not saved, exported, uploaded, or tied to an account.</string>
+    <string name="privacy_point_permissions_title">Minimal permissions</string>
+    <string name="privacy_point_permissions_body">The app declares microphone permission only and has no network permission.</string>
+    <string name="privacy_point_preferences_title">Local preferences</string>
+    <string name="privacy_point_preferences_body">Tuning preferences stay in app storage until app data is cleared or the app is uninstalled.</string>
 </resources>
