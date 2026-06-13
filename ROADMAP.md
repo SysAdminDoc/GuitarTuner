@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 6 - Settings and Tunings
 
-- [ ] Add standard, half-step down, drop D, open G, DADGAD, and custom tuning support.
 - [ ] Add cents tolerance setting.
 - [ ] Add sensitivity / noise gate setting.
 - [ ] Add theme setting.

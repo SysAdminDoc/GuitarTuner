@@ -20,6 +20,10 @@ data class TuningDefinition(
 
 object GuitarTunings {
     const val StandardId = "standard"
+    const val HalfStepDownId = "half_step_down"
+    const val DropDId = "drop_d"
+    const val OpenGId = "open_g"
+    const val DadgadId = "dadgad"
     private const val ReferenceA4Hz = 440.0
 
     val standard: TuningDefinition = TuningDefinition(
@@ -29,7 +33,69 @@ object GuitarTunings {
         isBuiltIn = true,
     )
 
-    val builtIns: List<TuningDefinition> = listOf(standard)
+    val halfStepDown: TuningDefinition = TuningDefinition(
+        id = HalfStepDownId,
+        name = "Half-step down",
+        strings = listOf(
+            GuitarString(stringNumber = 6, name = "Low Eb", scientificPitch = "Eb2", frequencyHz = 77.78),
+            GuitarString(stringNumber = 5, name = "Ab", scientificPitch = "Ab2", frequencyHz = 103.83),
+            GuitarString(stringNumber = 4, name = "Db", scientificPitch = "Db3", frequencyHz = 138.59),
+            GuitarString(stringNumber = 3, name = "Gb", scientificPitch = "Gb3", frequencyHz = 185.00),
+            GuitarString(stringNumber = 2, name = "Bb", scientificPitch = "Bb3", frequencyHz = 233.08),
+            GuitarString(stringNumber = 1, name = "High Eb", scientificPitch = "Eb4", frequencyHz = 311.13),
+        ),
+        isBuiltIn = true,
+    )
+
+    val dropD: TuningDefinition = TuningDefinition(
+        id = DropDId,
+        name = "Drop D",
+        strings = listOf(
+            GuitarString(stringNumber = 6, name = "D", scientificPitch = "D2", frequencyHz = 73.42),
+            GuitarString(stringNumber = 5, name = "A", scientificPitch = "A2", frequencyHz = 110.00),
+            GuitarString(stringNumber = 4, name = "D", scientificPitch = "D3", frequencyHz = 146.83),
+            GuitarString(stringNumber = 3, name = "G", scientificPitch = "G3", frequencyHz = 196.00),
+            GuitarString(stringNumber = 2, name = "B", scientificPitch = "B3", frequencyHz = 246.94),
+            GuitarString(stringNumber = 1, name = "High E", scientificPitch = "E4", frequencyHz = 329.63),
+        ),
+        isBuiltIn = true,
+    )
+
+    val openG: TuningDefinition = TuningDefinition(
+        id = OpenGId,
+        name = "Open G",
+        strings = listOf(
+            GuitarString(stringNumber = 6, name = "D", scientificPitch = "D2", frequencyHz = 73.42),
+            GuitarString(stringNumber = 5, name = "G", scientificPitch = "G2", frequencyHz = 98.00),
+            GuitarString(stringNumber = 4, name = "D", scientificPitch = "D3", frequencyHz = 146.83),
+            GuitarString(stringNumber = 3, name = "G", scientificPitch = "G3", frequencyHz = 196.00),
+            GuitarString(stringNumber = 2, name = "B", scientificPitch = "B3", frequencyHz = 246.94),
+            GuitarString(stringNumber = 1, name = "D", scientificPitch = "D4", frequencyHz = 293.66),
+        ),
+        isBuiltIn = true,
+    )
+
+    val dadgad: TuningDefinition = TuningDefinition(
+        id = DadgadId,
+        name = "DADGAD",
+        strings = listOf(
+            GuitarString(stringNumber = 6, name = "D", scientificPitch = "D2", frequencyHz = 73.42),
+            GuitarString(stringNumber = 5, name = "A", scientificPitch = "A2", frequencyHz = 110.00),
+            GuitarString(stringNumber = 4, name = "D", scientificPitch = "D3", frequencyHz = 146.83),
+            GuitarString(stringNumber = 3, name = "G", scientificPitch = "G3", frequencyHz = 196.00),
+            GuitarString(stringNumber = 2, name = "A", scientificPitch = "A3", frequencyHz = 220.00),
+            GuitarString(stringNumber = 1, name = "D", scientificPitch = "D4", frequencyHz = 293.66),
+        ),
+        isBuiltIn = true,
+    )
+
+    val builtIns: List<TuningDefinition> = listOf(
+        standard,
+        halfStepDown,
+        dropD,
+        openG,
+        dadgad,
+    )
 
     fun catalog(
         customTunings: List<TuningDefinition>,

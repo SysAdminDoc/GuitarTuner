@@ -29,3 +29,4 @@
 - Added a step-by-step Guided walkthrough from low E to high E with Previous/Next controls and highlighted target strings.
 - Added per-string peg-direction calibration so left/right turn guidance appears only after the selected string has a tune-up direction.
 - Added explicit empty, permission-required, high-noise, clipped-input, and no-string-detected guidance states.
+- Added built-in Half-step down, Drop D, Open G, and DADGAD tunings alongside Standard and existing custom tuning import/export.
