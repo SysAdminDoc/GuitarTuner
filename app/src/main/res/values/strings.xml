@@ -41,6 +41,8 @@
     <string name="frequency_value">%1$s Hz</string>
     <string name="cents_placeholder">-- cents</string>
     <string name="cents_value">%1$s cents</string>
+    <string name="confidence_placeholder">-- confidence</string>
+    <string name="confidence_value">%1$s confidence</string>
     <string name="file_imported_tunings">Imported %1$d custom tuning(s)</string>
     <string name="file_exported_tunings">Exported %1$d custom tuning(s)</string>
     <string name="file_no_custom_tunings">No custom tunings to export</string>

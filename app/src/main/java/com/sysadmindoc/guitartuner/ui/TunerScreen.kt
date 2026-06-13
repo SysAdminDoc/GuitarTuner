@@ -650,6 +650,7 @@ private fun FrequencyReadout(state: TunerSessionState) {
     val pitchResult = state.pitchResult
     val cents = pitchResult.centsOffset
     val frequency = pitchResult.frequencyHz
+    val confidence = pitchResult.confidence
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -683,6 +684,15 @@ private fun FrequencyReadout(state: TunerSessionState) {
                 stringResource(R.string.cents_placeholder)
             } else {
                 stringResource(R.string.cents_value, formatSignedOneDecimal(cents))
+            },
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = if (frequency == null) {
+                stringResource(R.string.confidence_placeholder)
+            } else {
+                stringResource(R.string.confidence_value, formatPercent(confidence))
             },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -729,6 +739,9 @@ private fun formatSignedOneDecimal(value: Double): String =
 
 private fun formatWholeHz(value: Double): String =
     String.format(Locale.US, "%.0f Hz", value)
+
+private fun formatPercent(value: Double): String =
+    String.format(Locale.US, "%.0f%%", value.coerceIn(0.0, 1.0) * 100.0)
 
 @Composable
 private fun StartupTuningMode.label(): String = when (this) {

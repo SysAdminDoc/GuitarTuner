@@ -41,6 +41,8 @@
     <string name="frequency_value">%1$s Hz</string>
     <string name="cents_placeholder">-- cents</string>
     <string name="cents_value">%1$s cents</string>
+    <string name="confidence_placeholder">-- confianza</string>
+    <string name="confidence_value">%1$s confianza</string>
     <string name="file_imported_tunings">Se importaron %1$d afinacion(es) personalizadas</string>
     <string name="file_exported_tunings">Se exportaron %1$d afinacion(es) personalizadas</string>
     <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>

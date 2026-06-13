@@ -44,7 +44,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 
 ## Repository Status
 
-GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Guided and Auto tuning modes, persisted A4 calibration, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string and octave-error coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
+GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Guided and Auto tuning modes, persisted A4 calibration, a confidence-aware main tuner readout, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string and octave-error coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
 ## Privacy Baseline
 
