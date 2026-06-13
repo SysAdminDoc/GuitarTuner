@@ -50,6 +50,9 @@ class AudioCaptureController(
     private var centsTolerance: Double = 5.0
 
     @Volatile
+    private var a4Hz: Double = 440.0
+
+    @Volatile
     private var tuningAnalyzer: TuningAnalyzer = TuningAnalyzer(currentStrings, targetSelection)
 
     @Volatile
@@ -117,11 +120,17 @@ class AudioCaptureController(
         pitchDetector = YinPitchDetector(PitchDetectorConfig(silenceRms = rms))
     }
 
+    fun setA4Hz(hz: Double) {
+        a4Hz = hz
+        rebuildAnalyzer()
+    }
+
     private fun rebuildAnalyzer() {
         tuningAnalyzer = TuningAnalyzer(
             strings = currentStrings,
             targetSelection = targetSelection,
             inTuneCents = centsTolerance,
+            a4Hz = a4Hz,
         )
         measurementSmoother.reset()
     }

@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
@@ -379,6 +380,12 @@ private fun StartupTuningPanel(
                         label = stringResource(R.string.mode_guided),
                         selected = tuningMode == TuningMode.Guided,
                         onClick = { onTuningModeSelected(TuningMode.Guided) },
+                        modifier = Modifier.weight(1f),
+                    )
+                    TuningModeButton(
+                        label = stringResource(R.string.mode_chromatic),
+                        selected = tuningMode == TuningMode.Chromatic,
+                        onClick = { onTuningModeSelected(TuningMode.Chromatic) },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -1034,6 +1041,7 @@ private fun CentsMeter(state: TunerSessionState) {
                     contentDescription = accessibility.contentDescription
                     stateDescription = accessibility.stateDescription
                     progressBarRangeInfo = ProgressBarRangeInfo(accessibility.progressCents, -50f..50f)
+                    liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
                 },
             contentAlignment = Alignment.Center,
         ) {

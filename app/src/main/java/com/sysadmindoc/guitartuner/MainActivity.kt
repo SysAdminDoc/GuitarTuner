@@ -113,8 +113,13 @@ private fun TunerRoute() {
             when (tuningMode) {
                 TuningMode.Auto -> TuningTargetSelection.auto()
                 TuningMode.Guided -> TuningTargetSelection.guided(guidedStringNumber)
+                TuningMode.Chromatic -> TuningTargetSelection.chromatic()
             },
         )
+    }
+
+    LaunchedEffect(preferences.a4Hz) {
+        controller.setA4Hz(preferences.a4Hz)
     }
 
     LaunchedEffect(preferences.freezeAfterDecay) {

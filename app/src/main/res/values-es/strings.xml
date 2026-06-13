@@ -52,7 +52,7 @@
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Puerta de ruido</string>
     <string name="section_tuning_helper">Elige la afinacion antes de empezar a escuchar.</string>
-    <string name="section_mode_helper">Auto detecta la cuerda al aire que toques; Guiado avanza cuerda por cuerda.</string>
+    <string name="section_mode_helper">Auto detecta la cuerda mas cercana; Guiado avanza cuerda por cuerda; Cromatico muestra cualquier nota.</string>
     <string name="section_defaults">Valores iniciales</string>
     <string name="section_defaults_helper">Elige el inicio y las preferencias visuales.</string>
     <string name="section_precision">Precision</string>
@@ -75,6 +75,7 @@
     <string name="label_mode">Modo</string>
     <string name="mode_auto">Auto</string>
     <string name="mode_guided">Guiado</string>
+    <string name="mode_chromatic">Cromatico</string>
     <string name="label_guided_string">Cuerda guiada</string>
     <string name="guided_step">Paso %1$d de %2$d: %3$s</string>
     <string name="action_previous_string">Anterior</string>

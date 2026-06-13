@@ -121,6 +121,31 @@ class TuningAnalyzerTest {
     }
 
     @Test
+    fun chromaticModeResolvesAnyPitch() {
+        val chromatic = TuningAnalyzer(
+            strings = StandardGuitarTuning.strings,
+            targetSelection = TuningTargetSelection.chromatic(),
+        )
+        val measurement = chromatic.analyze(detectedPitch(261.63))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("C4", measurement.target?.scientificPitch)
+        assertTrue(kotlin.math.abs(measurement.cents ?: 99.0) < 1.0)
+    }
+
+    @Test
+    fun chromaticModeReportsSharpNote() {
+        val chromatic = TuningAnalyzer(
+            strings = StandardGuitarTuning.strings,
+            targetSelection = TuningTargetSelection.chromatic(),
+        )
+        val measurement = chromatic.analyze(detectedPitch(450.0))
+
+        assertEquals(TuningStatus.TuneDown, measurement.status)
+        assertEquals("A4", measurement.target?.scientificPitch)
+    }
+
+    @Test
     fun mapsHighNoiseEstimateToHighNoiseState() {
         val measurement = analyzer.analyze(
             PitchEstimate(

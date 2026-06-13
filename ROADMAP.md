@@ -28,34 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### P1
 
-- [ ] P1 — String-break overshoot warning
-  Why: beginners snap high-E/B strings following tuners when the detected pitch is an octave or several semitones above target; no competitor warns; fits guided beginner-first philosophy.
-  Evidence: StringJoy tension data (octave-up E is inside break range), Steam Rocksmith thread (string broke following tuner), Quora GuitarTuna high-E breakage.
-  Touches: TuningAnalyzer.kt (overshoot threshold vs target), PitchResult.kt, TunerScreen.kt, strings.xml (+de/es).
-  Acceptance: detected pitch sustained more than ~300 cents above the selected/guided target shows a hard "STOP — tune down, string at risk" state (distinct color + haptic) instead of plain tune-down.
-  Complexity: S
-
-- [ ] P1 — Haptic in-tune confirmation
-  Why: confirms lock without staring at the screen (loud stages, accessibility); BOSS accu-pitch beep is the praised hardware equivalent; pure quick win.
-  Evidence: developer.android.com haptics APIs (HapticFeedbackConstants.CONFIRM / VibrationEffect primitives); BOSS Tuner accu-pitch.
-  Touches: TunerScreen.kt (or state holder), TunerSettings.kt + TunerPreferencesRepository.kt (toggle), strings.xml.
-  Acceptance: entering the in-tune band fires a single confirm haptic (no continuous buzzing); setting persists; off by default honored.
-  Complexity: S
-
-- [ ] P1 — Localize user-facing error strings out of the audio controller
-  Why: hardcoded English errors leak into UI state while de/es resources exist — the i18n story is otherwise complete.
-  Evidence: AudioCaptureController.kt:92, 141, 201, 238, 278, 299-305; values-de/strings.xml, values-es/strings.xml.
-  Touches: AudioCaptureController.kt (error codes instead of strings), TunerSessionState.kt, TunerScreen.kt, strings.xml (+de/es).
-  Acceptance: controller emits typed error states; all user-visible text resolves through resources; de/es translations added.
-  Complexity: S
-
-- [ ] P1 — Unify silence thresholds between input level and detector
-  Why: UI "effectively silent" (RMS 0.0002) and detector silence gate (0.0015) disagree, producing contradictory feedback near the boundary.
-  Evidence: TunerSessionState.kt:62-64 vs pitch/PitchDetectorConfig silenceRms default.
-  Touches: TunerSessionState.kt, YinPitchDetector.kt config, AudioInputLevelTest.kt.
-  Acceptance: one shared constant (or derived pair with documented ratio) drives both; UI never claims silence while the detector reports a pitch.
-  Complexity: S
-
 - [ ] P1 — Chromatic mode
   Why: table stakes — every maintained competitor has it (Choona shipped v1.5.0, Moekadu, billthefarmer); detects any note rather than nearest string.
   Evidence: Choona v1.5.0 release notes; Moekadu F-Droid description; JusTune HN thread requests.
@@ -77,12 +49,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: TalkBack announces debounced transitions ("E2, 15 cents flat" → "E2, in tune") without per-frame chatter; optional spoken mode works with TalkBack off; haptic channel distinguishes sharp/flat.
   Complexity: M
 
-- [ ] P1 — Minimum 48dp touch targets for stepper controls
-  Why: numeric setting steppers use compact padding likely under 48dp; small targets are a recurring competitor accessibility complaint.
-  Evidence: TunerScreen.kt NumericSettingRow compact button padding; thetwom/Tuner issue 35.
-  Touches: TunerScreen.kt.
-  Acceptance: all interactive elements measure ≥48x48dp (verified with layout bounds/accessibility scanner).
-  Complexity: S
 
 - [ ] P1 — Fastlane metadata and IzzyOnDroid submission, then F-Droid
   Why: distribution beyond GitHub is how OSS tuners reach users; IzzyOnDroid auto-ingests fastlane from GitHub releases; F-Droid needs a fdroiddata MR with tag-based auto-updates.

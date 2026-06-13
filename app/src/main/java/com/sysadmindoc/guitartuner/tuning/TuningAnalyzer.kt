@@ -13,6 +13,7 @@ class TuningAnalyzer(
     private val maxGuidedDetectCents: Double = 300.0,
     private val octaveCorrectionMinImprovementCents: Double = 80.0,
     private val overshootWarningCents: Double = 300.0,
+    private val a4Hz: Double = 440.0,
 ) {
     fun analyze(estimate: PitchEstimate): TuningMeasurement {
         val frequency = estimate.frequencyHz
@@ -21,14 +22,37 @@ class TuningAnalyzer(
             estimate.status == SignalStatus.HighNoise -> TuningMeasurement.highNoise()
             estimate.status == SignalStatus.Silence -> TuningMeasurement.waiting()
             frequency == null || estimate.status == SignalStatus.Unstable -> TuningMeasurement.noStringDetected()
+            targetSelection.mode == TuningMode.Chromatic -> analyzeChromaticFrequency(frequency, estimate.confidence)
             else -> analyzeFrequency(frequency, estimate.confidence)
         }
+    }
+
+    private fun analyzeChromaticFrequency(frequencyHz: Double, confidence: Double): TuningMeasurement {
+        val chromatic = ChromaticNote.resolve(frequencyHz, a4Hz)
+        val target = GuitarString(
+            stringNumber = 0,
+            name = chromatic.noteName,
+            scientificPitch = chromatic.scientificPitch,
+            frequencyHz = chromatic.targetFrequencyHz,
+        )
+        val direction = when {
+            abs(chromatic.cents) <= inTuneCents -> TuningDirection.InTune
+            chromatic.cents < 0.0 -> TuningDirection.TuneUp
+            else -> TuningDirection.TuneDown
+        }
+        return TuningMeasurement.detected(
+            target = target,
+            frequencyHz = frequencyHz,
+            cents = chromatic.cents,
+            confidence = confidence,
+            direction = direction,
+        )
     }
 
     private fun analyzeFrequency(frequencyHz: Double, confidence: Double): TuningMeasurement {
         val candidate = resolveSecondHarmonicCandidate(frequencyHz)
         val maxDetectCents = when (targetSelection.mode) {
-            TuningMode.Auto -> maxAutoDetectCents
+            TuningMode.Auto, TuningMode.Chromatic -> maxAutoDetectCents
             TuningMode.Guided -> maxGuidedDetectCents
         }
         if (abs(candidate.cents) > maxDetectCents) {
