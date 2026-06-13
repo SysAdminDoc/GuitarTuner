@@ -28,6 +28,10 @@ fun tuningMeterAccessibility(measurement: TuningMeasurement): TuningAccessibilit
         } else {
             "$stringLabel, in tune"
         }
+        TuningStatus.Overshoot -> {
+            val prefix = if (stringLabel == null) "" else "$stringLabel, "
+            "${prefix}tune down, string at risk"
+        }
         TuningStatus.TuneUp,
         TuningStatus.TuneDown,
         -> {

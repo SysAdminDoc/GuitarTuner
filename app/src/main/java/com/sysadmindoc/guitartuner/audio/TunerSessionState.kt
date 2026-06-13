@@ -60,8 +60,8 @@ data class AudioInputLevel(
         private const val RmsSmoothing = 0.25
         private const val PeakDecay = 0.82
         private const val SilentReadCount = 20L
-        private const val SilentRms = 0.0002
-        private const val SilentPeak = 0.0005
+        private const val SilentRms = 0.0015
+        private const val SilentPeak = 0.003
     }
 }
 
@@ -73,8 +73,18 @@ data class TunerSessionState(
     val pitchEstimate: PitchEstimate = PitchEstimate.silence(),
     val measurement: TuningMeasurement = TuningMeasurement.waiting(),
     val inputLevel: AudioInputLevel = AudioInputLevel(),
+    val audioError: AudioError? = null,
     val errorMessage: String? = null,
 ) {
     val pitchResult: PitchResult
         get() = PitchResult.from(pitchEstimate, measurement)
+}
+
+enum class AudioError {
+    MicInitFailed,
+    CaptureStopped,
+    DeadObject,
+    InvalidOperation,
+    BadValue,
+    Unknown,
 }

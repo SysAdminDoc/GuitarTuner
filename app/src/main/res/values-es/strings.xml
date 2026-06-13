@@ -11,6 +11,7 @@
     <string name="status_high_noise">El ruido de fondo es alto</string>
     <string name="status_no_string_detected">No se detecto una cuerda clara</string>
     <string name="status_detected">Tono detectado</string>
+    <string name="status_overshoot">Demasiado alta - baja ya</string>
     <string name="target_waiting_for_string">Toca una cuerda al aire</string>
     <string name="target_auto_detect">Deteccion auto</string>
     <string name="target_guided_prompt">Cuerda %1$d - %2$s</string>
@@ -27,6 +28,7 @@
     <string name="guidance_tune_up">Sube la afinacion</string>
     <string name="guidance_tune_down">Baja la afinacion</string>
     <string name="guidance_in_tune">Afinada</string>
+    <string name="guidance_overshoot">PARA - Baja la afinacion. La cuerda podria romperse.</string>
     <string name="guidance_with_turn">%1$s - gira %2$s</string>
     <string name="action_allow_mic">Permitir microfono</string>
     <string name="action_open_settings">Abrir ajustes</string>
@@ -43,6 +45,8 @@
     <string name="theme_light">Claro</string>
     <string name="setting_freeze_last_note">Congelar ultima nota</string>
     <string name="setting_freeze_last_note_helper">Mantiene visible el ultimo tono estable mientras la nota se apaga.</string>
+    <string name="setting_haptic">Confirmacion haptica</string>
+    <string name="setting_haptic_helper">Vibra cuando una cuerda llega a la zona afinada.</string>
     <string name="setting_a4_calibration">Calibracion A4</string>
     <string name="setting_cents_tolerance">Tolerancia en cents</string>
     <string name="cents_tolerance_value">%1$s cents</string>
@@ -94,6 +98,8 @@
     <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>
     <string name="file_error_read">No se pudo leer el archivo de afinacion.</string>
     <string name="file_error_write">No se pudo guardar el archivo de afinacion.</string>
+    <string name="error_mic_init">No se pudo abrir el microfono.</string>
+    <string name="error_capture_stopped">La captura del microfono se detuvo.</string>
     <string name="privacy_title">Privacidad</string>
     <string name="privacy_inline_note">El audio nunca sale de este dispositivo.</string>
     <string name="privacy_summary">GuitarTuner procesa el audio del microfono localmente solo para afinar.</string>

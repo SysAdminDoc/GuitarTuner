@@ -42,6 +42,7 @@ data class PitchResult(
 
             estimate.status == SignalStatus.Unstable -> PitchSignalState.Unstable
             measurement.status == TuningStatus.NoStringDetected -> PitchSignalState.NoStringDetected
+            measurement.status == TuningStatus.Overshoot -> PitchSignalState.Detected
             estimate.status == SignalStatus.Silence ||
                 measurement.status == TuningStatus.WaitingForSignal -> PitchSignalState.WaitingForSignal
 

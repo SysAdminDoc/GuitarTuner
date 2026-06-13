@@ -12,6 +12,7 @@ class TuningAnalyzer(
     private val maxAutoDetectCents: Double = 250.0,
     private val maxGuidedDetectCents: Double = 300.0,
     private val octaveCorrectionMinImprovementCents: Double = 80.0,
+    private val overshootWarningCents: Double = 300.0,
 ) {
     fun analyze(estimate: PitchEstimate): TuningMeasurement {
         val frequency = estimate.frequencyHz
@@ -32,6 +33,15 @@ class TuningAnalyzer(
         }
         if (abs(candidate.cents) > maxDetectCents) {
             return TuningMeasurement.noStringDetected(frequencyHz = frequencyHz, confidence = confidence)
+        }
+
+        if (candidate.cents > overshootWarningCents) {
+            return TuningMeasurement.overshoot(
+                target = candidate.string,
+                frequencyHz = candidate.frequencyHz,
+                cents = candidate.cents,
+                confidence = confidence,
+            )
         }
 
         val direction = when {
@@ -117,6 +127,20 @@ data class TuningMeasurement(
             confidence = confidence,
         )
 
+        fun overshoot(
+            target: GuitarString,
+            frequencyHz: Double,
+            cents: Double,
+            confidence: Double,
+        ): TuningMeasurement = TuningMeasurement(
+            status = TuningStatus.Overshoot,
+            target = target,
+            frequencyHz = frequencyHz,
+            cents = cents,
+            confidence = confidence,
+            direction = TuningDirection.TuneDown,
+        )
+
         fun detected(
             target: GuitarString,
             frequencyHz: Double,
@@ -146,6 +170,7 @@ enum class TuningStatus {
     TuneUp,
     TuneDown,
     InTune,
+    Overshoot,
 }
 
 enum class TuningDirection {

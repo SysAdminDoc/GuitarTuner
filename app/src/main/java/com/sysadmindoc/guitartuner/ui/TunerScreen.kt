@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +26,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import android.view.HapticFeedbackConstants
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
@@ -42,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
+import com.sysadmindoc.guitartuner.audio.AudioError
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
@@ -62,7 +71,8 @@ import java.util.Locale
 import kotlin.math.abs
 
 private val PanelShape = RoundedCornerShape(8.dp)
-private val CompactButtonPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+private val CompactButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp)
+private val MinTouchTarget = 48.dp
 
 @Composable
 fun TunerScreen(
@@ -81,6 +91,7 @@ fun TunerScreen(
     onSetFavoriteTuning: () -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
+    onHapticEnabledChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
     onNoiseGateChanged: (Double) -> Unit,
@@ -92,6 +103,16 @@ fun TunerScreen(
     onShowPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val view = LocalView.current
+    var previousInTune by remember { mutableStateOf(false) }
+    val currentlyInTune = state.measurement.status == TuningStatus.InTune
+    LaunchedEffect(currentlyInTune) {
+        if (currentlyInTune && !previousInTune && preferences.hapticEnabled) {
+            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+        }
+        previousInTune = currentlyInTune
+    }
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -152,6 +173,7 @@ fun TunerScreen(
                             onSetFavoriteTuning = onSetFavoriteTuning,
                             onThemeModeSelected = onThemeModeSelected,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
+                            onHapticEnabledChanged = onHapticEnabledChanged,
                             onA4CalibrationChanged = onA4CalibrationChanged,
                             onCentsToleranceChanged = onCentsToleranceChanged,
                             onNoiseGateChanged = onNoiseGateChanged,
@@ -192,6 +214,7 @@ fun TunerScreen(
                         onSetFavoriteTuning = onSetFavoriteTuning,
                         onThemeModeSelected = onThemeModeSelected,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
+                        onHapticEnabledChanged = onHapticEnabledChanged,
                         onA4CalibrationChanged = onA4CalibrationChanged,
                         onCentsToleranceChanged = onCentsToleranceChanged,
                         onNoiseGateChanged = onNoiseGateChanged,
@@ -289,6 +312,7 @@ private fun StartupTuningPanel(
     onSetFavoriteTuning: () -> Unit,
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
+    onHapticEnabledChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
     onNoiseGateChanged: (Double) -> Unit,
@@ -474,6 +498,12 @@ private fun StartupTuningPanel(
                     helper = stringResource(R.string.setting_freeze_last_note_helper),
                     checked = preferences.freezeAfterDecay,
                     onCheckedChange = onFreezeAfterDecayChanged,
+                )
+                ToggleSettingRow(
+                    label = stringResource(R.string.setting_haptic),
+                    helper = stringResource(R.string.setting_haptic_helper),
+                    checked = preferences.hapticEnabled,
+                    onCheckedChange = onHapticEnabledChanged,
                 )
             }
 
@@ -787,6 +817,7 @@ private fun NumericSettingRow(
             enabled = canDecrease,
             shape = PanelShape,
             contentPadding = CompactButtonPadding,
+            modifier = Modifier.defaultMinSize(minHeight = MinTouchTarget),
         ) {
             Text(decreaseLabel)
         }
@@ -801,6 +832,7 @@ private fun NumericSettingRow(
             enabled = canIncrease,
             shape = PanelShape,
             contentPadding = CompactButtonPadding,
+            modifier = Modifier.defaultMinSize(minHeight = MinTouchTarget),
         ) {
             Text(increaseLabel)
         }
@@ -1088,6 +1120,7 @@ private fun FrequencyReadout(
                 TuningStatus.TuneDown,
                 -> MaterialTheme.colorScheme.tertiary
 
+                TuningStatus.Overshoot -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             },
             textAlign = TextAlign.Center,
@@ -1149,9 +1182,19 @@ private fun FrequencyReadout(
 }
 
 @Composable
+private fun audioErrorText(error: AudioError): String = when (error) {
+    AudioError.MicInitFailed -> stringResource(R.string.error_mic_init)
+    AudioError.CaptureStopped -> stringResource(R.string.error_capture_stopped)
+    AudioError.DeadObject -> stringResource(R.string.error_capture_stopped)
+    AudioError.InvalidOperation -> stringResource(R.string.error_capture_stopped)
+    AudioError.BadValue -> stringResource(R.string.error_capture_stopped)
+    AudioError.Unknown -> stringResource(R.string.error_capture_stopped)
+}
+
+@Composable
 private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): String = when {
     !hasAudioPermission -> stringResource(R.string.status_permission_required)
-    state.errorMessage != null -> state.errorMessage
+    state.audioError != null -> audioErrorText(state.audioError)
     !state.isListening -> stringResource(R.string.status_ready)
     state.isFrozen -> stringResource(R.string.status_frozen)
     state.micStolen -> stringResource(R.string.status_mic_stolen)
@@ -1162,6 +1205,7 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
     state.measurement.status == TuningStatus.SignalClipping -> stringResource(R.string.status_input_clipping)
     state.measurement.status == TuningStatus.HighNoise -> stringResource(R.string.status_high_noise)
     state.measurement.status == TuningStatus.NoStringDetected -> stringResource(R.string.status_no_string_detected)
+    state.measurement.status == TuningStatus.Overshoot -> stringResource(R.string.status_overshoot)
     else -> stringResource(R.string.status_detected)
 }
 
@@ -1204,10 +1248,11 @@ private fun guidanceLabel(
         TuningStatus.TuneUp -> stringResource(R.string.guidance_tune_up)
         TuningStatus.TuneDown -> stringResource(R.string.guidance_tune_down)
         TuningStatus.InTune -> stringResource(R.string.guidance_in_tune)
+        TuningStatus.Overshoot -> stringResource(R.string.guidance_overshoot)
     }
     return if (
         turnDirection == null ||
-        status != TuningStatus.TuneUp && status != TuningStatus.TuneDown
+        status != TuningStatus.TuneUp && status != TuningStatus.TuneDown && status != TuningStatus.Overshoot
     ) {
         base
     } else {
@@ -1294,6 +1339,7 @@ private fun TunerScreenPreview() {
             onSetFavoriteTuning = {},
             onThemeModeSelected = {},
             onFreezeAfterDecayChanged = {},
+            onHapticEnabledChanged = {},
             onA4CalibrationChanged = {},
             onCentsToleranceChanged = {},
             onNoiseGateChanged = {},

@@ -37,6 +37,7 @@ class TunerPreferencesRepository(
                 favoriteTuningId = storedPreferences[FavoriteTuningKey] ?: GuitarTunings.StandardId,
                 themeMode = storedPreferences[ThemeModeKey].toThemeMode(),
                 freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
+                hapticEnabled = storedPreferences[HapticEnabledKey] ?: false,
                 a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
                 centsTolerance = storedPreferences[CentsToleranceKey].sanitizeCentsTolerance(),
                 noiseGateRms = storedPreferences[NoiseGateRmsKey].sanitizeNoiseGateRms(),
@@ -72,6 +73,12 @@ class TunerPreferencesRepository(
     suspend fun setFreezeAfterDecay(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[FreezeAfterDecayKey] = enabled
+        }
+    }
+
+    suspend fun setHapticEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[HapticEnabledKey] = enabled
         }
     }
 
@@ -128,6 +135,7 @@ class TunerPreferencesRepository(
         val FavoriteTuningKey = stringPreferencesKey("favorite_tuning_id")
         val ThemeModeKey = stringPreferencesKey("theme_mode")
         val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
+        val HapticEnabledKey = booleanPreferencesKey("haptic_enabled")
         val A4HzKey = doublePreferencesKey("a4_hz")
         val CentsToleranceKey = doublePreferencesKey("cents_tolerance")
         val NoiseGateRmsKey = doublePreferencesKey("noise_gate_rms")

@@ -143,10 +143,10 @@ class AudioCaptureController(
         while (scope.isActive && captureJob?.isActive == true) {
             val recorder = try {
                 buildAudioRecord(excludedSources)
-            } catch (exception: RuntimeException) {
+            } catch (_: RuntimeException) {
                 _state.value = TunerSessionState(
                     isListening = false,
-                    errorMessage = exception.message ?: "Could not open the microphone.",
+                    audioError = AudioError.MicInitFailed,
                 )
                 return
             }
@@ -160,7 +160,7 @@ class AudioCaptureController(
                 _state.value = _state.value.copy(
                     isListening = true,
                     inputLevel = AudioInputLevel(sourceLabel = sourceLabel, sampleRateHz = recorderSampleRate),
-                    errorMessage = null,
+                    audioError = null,
                 )
                 Log.i(
                     LogTag,
@@ -171,11 +171,11 @@ class AudioCaptureController(
                     excludedSources.add(recorder.audioSource)
                     Log.w(LogTag, "Source $sourceLabel produced only zeros during startup, trying next source.")
                 }
-            } catch (exception: RuntimeException) {
+            } catch (_: RuntimeException) {
                 _state.value = TunerSessionState(
                     isListening = false,
                     pitchEstimate = _state.value.pitchEstimate.copy(status = SignalStatus.Unstable),
-                    errorMessage = exception.message ?: "Microphone capture stopped.",
+                    audioError = AudioError.CaptureStopped,
                 )
                 return
             } finally {
@@ -244,7 +244,7 @@ class AudioCaptureController(
                 isListening = true,
                 inputLevel = inputLevel,
                 micStolen = micStolen,
-                errorMessage = null,
+                audioError = null,
             )
 
             for (index in 0 until read) {

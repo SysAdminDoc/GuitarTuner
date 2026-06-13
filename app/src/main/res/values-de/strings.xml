@@ -11,6 +11,7 @@
     <string name="status_high_noise">Hintergrundgeraeusch ist hoch</string>
     <string name="status_no_string_detected">Keine klare Saite erkannt</string>
     <string name="status_detected">Ton erkannt</string>
+    <string name="status_overshoot">Zu hoch - jetzt tiefer stimmen</string>
     <string name="target_waiting_for_string">Eine leere Saite anschlagen</string>
     <string name="target_auto_detect">Auto-Erkennung</string>
     <string name="target_guided_prompt">Saite %1$d - %2$s</string>
@@ -27,6 +28,7 @@
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>
     <string name="guidance_in_tune">Gestimmt</string>
+    <string name="guidance_overshoot">STOPP - Tiefer stimmen. Saite koennte reissen.</string>
     <string name="guidance_with_turn">%1$s - %2$s drehen</string>
     <string name="action_allow_mic">Mikrofon erlauben</string>
     <string name="action_open_settings">Einstellungen oeffnen</string>
@@ -43,6 +45,8 @@
     <string name="theme_light">Hell</string>
     <string name="setting_freeze_last_note">Letzte Note einfrieren</string>
     <string name="setting_freeze_last_note_helper">Haelt den letzten stabilen Ton sichtbar, waehrend die Note ausklingt.</string>
+    <string name="setting_haptic">Haptische Bestaetigung</string>
+    <string name="setting_haptic_helper">Vibriert, wenn eine Saite den Stimmbereich erreicht.</string>
     <string name="setting_a4_calibration">A4-Kalibrierung</string>
     <string name="setting_cents_tolerance">Cent-Toleranz</string>
     <string name="cents_tolerance_value">%1$s cents</string>
@@ -94,6 +98,8 @@
     <string name="file_no_custom_tunings">Keine benutzerdefinierten Stimmungen zum Exportieren</string>
     <string name="file_error_read">Stimmungsdatei konnte nicht gelesen werden.</string>
     <string name="file_error_write">Stimmungsdatei konnte nicht gespeichert werden.</string>
+    <string name="error_mic_init">Mikrofon konnte nicht geoeffnet werden.</string>
+    <string name="error_capture_stopped">Mikrofonaufnahme gestoppt.</string>
     <string name="privacy_title">Datenschutz</string>
     <string name="privacy_inline_note">Audio verlaesst dieses Geraet nie.</string>
     <string name="privacy_summary">GuitarTuner verarbeitet Mikrofon-Audio nur lokal zum Stimmen.</string>

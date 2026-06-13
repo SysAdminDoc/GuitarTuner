@@ -38,6 +38,7 @@ class MeasurementFreeze {
         TuningStatus.TuneUp,
         TuningStatus.TuneDown,
         TuningStatus.InTune,
+        TuningStatus.Overshoot,
         -> true
 
         TuningStatus.WaitingForSignal,

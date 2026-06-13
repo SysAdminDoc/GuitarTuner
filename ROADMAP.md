@@ -26,50 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-### P0
-
-- [ ] P0 — Crash-proof custom tuning import/export
-  Why: `readTextFromUri`/`writeTextToUri` throw IOException/SecurityException inside uncaught coroutines; an unreadable or revoked SAF URI crashes the app.
-  Evidence: MainActivity.kt:127-151, 262-273 (verified by code read).
-  Touches: MainActivity.kt, ui/TuningFileMessage.kt, strings.xml (+de/es).
-  Acceptance: importing a denied/corrupt/revoked URI shows a TuningFileMessage error; no crash; JVM test covers the failure path.
-  Complexity: S
-
-- [ ] P0 — Negotiate sample rate 48 kHz-first with 44.1 kHz fallback
-  Why: capture hardcodes a 44.1 kHz request and throws if unsupported; modern devices are natively 48 kHz so every session pays the platform resampler.
-  Evidence: AudioCaptureController.kt:232-239, 316-322; detector already consumes the actual rate (line 213-214); Android sampling guidance + sevagh/pitch-detection issue 63 buffer data.
-  Touches: AudioCaptureController.kt, YinPitchDetectorTest.kt (48 kHz fixture frames).
-  Acceptance: recorder opens at 48 kHz where supported, falls back to 44.1 kHz; pitch regression tests pass at both rates.
-  Complexity: S
-
-- [ ] P0 — Prefer UNPROCESSED audio source when the device declares support
-  Why: UNPROCESSED (no AGC/noise-suppression — the documented tuner source) is currently tried last and never property-gated; VOICE_RECOGNITION's processing distorts amplitude and harmonics.
-  Evidence: AudioCaptureController.kt:242-251; AudioManager PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED docs; google/oboe issues 1006/1074 (silent-UNPROCESSED devices).
-  Touches: AudioCaptureController.kt.
-  Acceptance: when the property reports support, UNPROCESSED is selected; if it yields only zero frames for ~1 s the controller falls back to the next source automatically; selected source still shown in diagnostics.
-  Complexity: M
-
-- [ ] P0 — Detect microphone loss to another app (concurrent-capture zeros)
-  Why: Android 10+ silences the losing capture app with zero-filled buffers instead of an error; the tuner currently shows generic "no sound" guidance and looks broken.
-  Evidence: AudioCaptureController.kt:163-196; developer.android.com/guide/topics/media/sharing-audio-input.
-  Touches: AudioCaptureController.kt, TunerSessionState.kt, TunerScreen.kt, strings.xml (+de/es).
-  Acceptance: sustained zero input after live input while listening surfaces a distinct "another app may be using the microphone" state with recovery guidance.
-  Complexity: M
-
-- [ ] P0 — Complete the runtime permission flow
-  Why: no rationale handling and no settings deep-link after permanent denial leaves a button that appears dead; the denial error message also lingers after the user grants permission from Settings.
-  Evidence: MainActivity.kt:153-162, 164-182, 196-201; AudioCaptureController.kt:89-94; Android requesting-permissions guidance.
-  Touches: MainActivity.kt, AudioCaptureController.kt, TunerScreen.kt, strings.xml (+de/es).
-  Acceptance: rationale shown via shouldShowRequestPermissionRationale; permanent denial offers an app-settings deep-link; returning with permission granted clears the stale error and one tap starts listening.
-  Complexity: S
-
-- [ ] P0 — Octave-jump hysteresis and pitch-candidate weighting
-  Why: hard second-harmonic halving still allows G3/G4 flips and wrong-string latching — the largest complaint class in competitor trackers (Moekadu #88: 17 comments, #114, #72).
-  Evidence: tuning/TuningAnalyzer.kt (0.75 floor heuristic), pitch/YinPitchDetector.kt; pYIN (Mauch & Dixon 2014) candidate-probability stage; thetwom/Tuner issues 88/114/72.
-  Touches: YinPitchDetector.kt (emit ranked candidates), TuningAnalyzer.kt, StableMeasurementSmoother.kt, new octave-flip WAV fixtures.
-  Acceptance: G-string fixture with weak fundamental no longer flips octave between consecutive frames; switching strings still re-locks within ~2 frames; existing fixture suite stays green.
-  Complexity: M
-
 ### P1
 
 - [ ] P1 — String-break overshoot warning

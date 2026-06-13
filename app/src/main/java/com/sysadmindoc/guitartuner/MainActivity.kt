@@ -267,6 +267,9 @@ private fun TunerRoute() {
                 onFreezeAfterDecayChanged = { enabled ->
                     scope.launch { preferencesRepository.setFreezeAfterDecay(enabled) }
                 },
+                onHapticEnabledChanged = { enabled ->
+                    scope.launch { preferencesRepository.setHapticEnabled(enabled) }
+                },
                 onA4CalibrationChanged = { a4Hz ->
                     scope.launch { preferencesRepository.setA4Hz(a4Hz) }
                 },
