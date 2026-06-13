@@ -47,6 +47,9 @@ import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
 import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
+import com.sysadmindoc.guitartuner.tuning.guidedTuningStep
+import com.sysadmindoc.guitartuner.tuning.nextGuidedStringNumber
+import com.sysadmindoc.guitartuner.tuning.previousGuidedStringNumber
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.util.Locale
 import kotlin.math.abs
@@ -289,11 +292,51 @@ private fun StartupTuningPanel(
                 )
             }
             if (tuningMode == TuningMode.Guided) {
+                val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber)
                 Text(
                     text = stringResource(R.string.label_guided_string),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                Text(
+                    text = stringResource(
+                        R.string.guided_step,
+                        guidedStep.stepNumber,
+                        guidedStep.total,
+                        guidedStep.string.walkthroughLabel(),
+                    ),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            onGuidedStringSelected(
+                                previousGuidedStringNumber(activeTuning.strings, guidedStringNumber),
+                            )
+                        },
+                        enabled = guidedStep.index > 0,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        Text(stringResource(R.string.action_previous_string))
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            onGuidedStringSelected(
+                                nextGuidedStringNumber(activeTuning.strings, guidedStringNumber),
+                            )
+                        },
+                        enabled = guidedStep.index < guidedStep.total - 1,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        Text(stringResource(R.string.action_next_string))
+                    }
+                }
                 for (row in activeTuning.strings.chunked(3)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -573,6 +616,9 @@ private fun GuidedStringButton(
         }
     }
 }
+
+private fun GuitarString.walkthroughLabel(): String =
+    "$name ($scientificPitch)"
 
 @Composable
 private fun TargetString(state: TunerSessionState) {

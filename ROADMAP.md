@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 5 - Guided Tuning UI
 
-- [ ] Add step-by-step acoustic guitar walkthrough from low E to high E.
 - [ ] Add peg-direction calibration for left/right guidance.
 - [ ] Add empty, permission-denied, high-noise, clipped-input, and no-string-detected states.
 

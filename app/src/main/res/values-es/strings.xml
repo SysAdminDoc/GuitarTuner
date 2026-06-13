@@ -36,6 +36,9 @@
     <string name="mode_auto">Auto</string>
     <string name="mode_guided">Guiado</string>
     <string name="label_guided_string">Cuerda guiada</string>
+    <string name="guided_step">Paso %1$d de %2$d: %3$s</string>
+    <string name="action_previous_string">Anterior</string>
+    <string name="action_next_string">Siguiente</string>
     <string name="tuning_custom_suffix">%1$s personalizada</string>
     <string name="frequency_placeholder">-- Hz</string>
     <string name="frequency_value">%1$s Hz</string>

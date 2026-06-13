@@ -36,6 +36,9 @@
     <string name="mode_auto">Auto</string>
     <string name="mode_guided">Gefuehrt</string>
     <string name="label_guided_string">Gefuehrte Saite</string>
+    <string name="guided_step">Schritt %1$d von %2$d: %3$s</string>
+    <string name="action_previous_string">Zurueck</string>
+    <string name="action_next_string">Weiter</string>
     <string name="tuning_custom_suffix">%1$s benutzerdefiniert</string>
     <string name="frequency_placeholder">-- Hz</string>
     <string name="frequency_value">%1$s Hz</string>

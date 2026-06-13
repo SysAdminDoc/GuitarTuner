@@ -26,3 +26,4 @@
 - Added Guided and Auto tuning modes, including a guided string selector that locks analysis to one target string and an auto path that keeps nearest-string detection.
 - Added a persisted A4 calibration setting with a 440 Hz default and per-Hz stepper controls that scale built-in and custom tuning targets.
 - Added confidence to the main tuner readout alongside note, string, frequency, and cents feedback.
+- Added a step-by-step Guided walkthrough from low E to high E with Previous/Next controls and highlighted target strings.
