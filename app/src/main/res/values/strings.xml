@@ -4,6 +4,7 @@
     <string name="status_permission_required">Microphone access needed</string>
     <string name="status_ready">Ready to tune</string>
     <string name="status_listening">Listening</string>
+    <string name="status_mic_silent">Mic open; no sound reaching it</string>
     <string name="status_frozen">Frozen</string>
     <string name="status_input_clipping">Input is clipping</string>
     <string name="status_high_noise">Background noise is high</string>
@@ -19,6 +20,7 @@
     <string name="guidance_try_one_string">Strum one string clearly</string>
     <string name="guidance_start_listening">Start listening when ready</string>
     <string name="guidance_allow_mic">Allow microphone access to tune</string>
+    <string name="guidance_check_mic_input">Strum close to the phone; if Mic stays 0, check Android mic access.</string>
     <string name="guidance_tune_up">Tune up</string>
     <string name="guidance_tune_down">Tune down</string>
     <string name="guidance_in_tune">In tune</string>
@@ -81,7 +83,8 @@
     <string name="confidence_placeholder">-- confidence</string>
     <string name="confidence_value">%1$s confidence</string>
     <string name="input_level_placeholder">Input --</string>
-    <string name="input_level_value">Input %1$s</string>
+    <string name="input_level_value">Mic %1$s / peak %2$s</string>
+    <string name="input_source_value">%1$s source - %2$d Hz</string>
     <string name="file_imported_tunings">Imported %1$d custom tuning(s)</string>
     <string name="file_exported_tunings">Exported %1$d custom tuning(s)</string>
     <string name="file_no_custom_tunings">No custom tunings to export</string>

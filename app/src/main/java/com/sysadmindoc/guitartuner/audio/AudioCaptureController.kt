@@ -5,6 +5,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
+import android.util.Log
 import com.sysadmindoc.guitartuner.pitch.PitchDetectorConfig
 import com.sysadmindoc.guitartuner.pitch.SignalStatus
 import com.sysadmindoc.guitartuner.pitch.YinPitchDetector
@@ -146,15 +147,37 @@ class AudioCaptureController(
         try {
             recorder.startRecording()
             val recorderSampleRate = recorder.sampleRate.takeIf { it > 0 } ?: SampleRate
+            val sourceLabel = recorder.audioSource.audioSourceLabel()
+            _state.value = _state.value.copy(
+                isListening = true,
+                inputLevel = AudioInputLevel(sourceLabel = sourceLabel, sampleRateHz = recorderSampleRate),
+                errorMessage = null,
+            )
+            Log.i(
+                LogTag,
+                "Started microphone capture source=$sourceLabel sampleRate=$recorderSampleRate bufferFrames=${recorder.bufferSizeInFrames}",
+            )
             val readBuffer = ShortArray(ReadBufferSize)
             val frameBuffer = FloatArray(FrameSize)
             var frameFill = 0
             while (scope.isActive && captureJob?.isActive == true) {
                 val read = recorder.read(readBuffer, 0, readBuffer.size, AudioRecord.READ_BLOCKING)
                 if (read < 0) {
-                    throw IllegalStateException("Microphone read failed with AudioRecord code $read.")
+                    throw IllegalStateException(readErrorMessage(read))
                 }
                 if (read == 0) continue
+
+                _state.value = _state.value.copy(
+                    isListening = true,
+                    inputLevel = AudioInputLevel.fromPcmRead(
+                        samples = readBuffer,
+                        length = read,
+                        previous = _state.value.inputLevel,
+                        sourceLabel = sourceLabel,
+                        sampleRateHz = recorderSampleRate,
+                    ),
+                    errorMessage = null,
+                )
 
                 for (index in 0 until read) {
                     frameBuffer[frameFill] = readBuffer[index] / Short.MAX_VALUE.toFloat()
@@ -195,7 +218,7 @@ class AudioCaptureController(
             measurement = measurement,
             enabled = freezeAfterDecay,
         )
-        _state.value = TunerSessionState(
+        _state.value = _state.value.copy(
             isListening = true,
             isFrozen = measurementFrame.isFrozen,
             pitchEstimate = measurementFrame.pitchEstimate,
@@ -217,6 +240,9 @@ class AudioCaptureController(
 
         val bufferBytes = maxOf(minimumBuffer, FrameSize * Short.SIZE_BYTES * 2)
         val sources = buildList {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                add(MediaRecorder.AudioSource.VOICE_PERFORMANCE)
+            }
             add(MediaRecorder.AudioSource.VOICE_RECOGNITION)
             add(MediaRecorder.AudioSource.MIC)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -225,19 +251,25 @@ class AudioCaptureController(
         }
 
         for (source in sources) {
-            val recorder = AudioRecord.Builder()
-                .setAudioSource(source)
-                .setAudioFormat(
-                    AudioFormat.Builder()
-                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(SampleRate)
-                        .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                        .build(),
-                )
-                .setBufferSizeInBytes(bufferBytes)
-                .build()
+            val recorder = try {
+                AudioRecord.Builder()
+                    .setAudioSource(source)
+                    .setAudioFormat(
+                        AudioFormat.Builder()
+                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                            .setSampleRate(SampleRate)
+                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                            .build(),
+                    )
+                    .setBufferSizeInBytes(bufferBytes)
+                    .build()
+            } catch (exception: RuntimeException) {
+                Log.w(LogTag, "Microphone source ${source.audioSourceLabel()} failed to build.", exception)
+                null
+            } ?: continue
 
             if (recorder.state == AudioRecord.STATE_INITIALIZED) {
+                Log.i(LogTag, "Selected microphone source ${source.audioSourceLabel()}.")
                 return recorder
             }
             recorder.safeRelease()
@@ -264,7 +296,25 @@ class AudioCaptureController(
         }
     }
 
+    private fun readErrorMessage(errorCode: Int): String = when (errorCode) {
+        AudioRecord.ERROR_DEAD_OBJECT -> "Microphone capture stopped because Android invalidated the audio recorder."
+        AudioRecord.ERROR_INVALID_OPERATION -> "Microphone read failed because the audio recorder is not recording."
+        AudioRecord.ERROR_BAD_VALUE -> "Microphone read failed because Android rejected the read buffer."
+        AudioRecord.ERROR -> "Microphone read failed with an unknown Android AudioRecord error."
+        else -> "Microphone read failed with AudioRecord code $errorCode."
+    }
+
+    private fun Int.audioSourceLabel(): String = when (this) {
+        MediaRecorder.AudioSource.VOICE_PERFORMANCE -> "Voice performance"
+        MediaRecorder.AudioSource.VOICE_RECOGNITION -> "Voice recognition"
+        MediaRecorder.AudioSource.MIC -> "Mic"
+        MediaRecorder.AudioSource.UNPROCESSED -> "Unprocessed"
+        MediaRecorder.AudioSource.DEFAULT -> "Android default"
+        else -> "Source $this"
+    }
+
     private companion object {
+        const val LogTag = "GuitarTunerAudio"
         const val SampleRate = 44_100
         const val FrameSize = 4_096
         const val FrameHopSize = 2_048

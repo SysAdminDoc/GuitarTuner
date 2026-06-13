@@ -1064,6 +1064,7 @@ private fun FrequencyReadout(
     val cents = pitchResult.centsOffset
     val frequency = pitchResult.frequencyHz
     val confidence = pitchResult.confidence
+    val inputLevel = state.inputLevel
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -1117,13 +1118,29 @@ private fun FrequencyReadout(
         )
         Text(
             text = if (state.isListening) {
-                stringResource(R.string.input_level_value, formatLevelPercent(state.pitchEstimate.rms))
+                stringResource(
+                    R.string.input_level_value,
+                    formatLevelPercent(inputLevel.rms),
+                    formatLevelPercent(inputLevel.peak),
+                )
             } else {
                 stringResource(R.string.input_level_placeholder)
             },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        if (state.isListening && inputLevel.sourceLabel != null && inputLevel.sampleRateHz != null) {
+            Text(
+                text = stringResource(
+                    R.string.input_source_value,
+                    inputLevel.sourceLabel,
+                    inputLevel.sampleRateHz,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
@@ -1133,6 +1150,9 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
     state.errorMessage != null -> state.errorMessage
     !state.isListening -> stringResource(R.string.status_ready)
     state.isFrozen -> stringResource(R.string.status_frozen)
+    state.inputLevel.isEffectivelySilent &&
+        state.measurement.status == TuningStatus.WaitingForSignal ->
+        stringResource(R.string.status_mic_silent)
     state.measurement.status == TuningStatus.WaitingForSignal -> stringResource(R.string.status_listening)
     state.measurement.status == TuningStatus.SignalClipping -> stringResource(R.string.status_input_clipping)
     state.measurement.status == TuningStatus.HighNoise -> stringResource(R.string.status_high_noise)
@@ -1156,6 +1176,12 @@ private fun guidanceLabel(
 ): String {
     if (!hasAudioPermission) return stringResource(R.string.guidance_allow_mic)
     if (!state.isListening) return stringResource(R.string.guidance_start_listening)
+    if (
+        state.inputLevel.isEffectivelySilent &&
+        state.measurement.status == TuningStatus.WaitingForSignal
+    ) {
+        return stringResource(R.string.guidance_check_mic_input)
+    }
 
     val status = state.measurement.status
     val base = when (status) {

@@ -4,6 +4,7 @@
     <string name="status_permission_required">Mikrofonzugriff erforderlich</string>
     <string name="status_ready">Bereit zum Stimmen</string>
     <string name="status_listening">Hoert zu</string>
+    <string name="status_mic_silent">Mikro offen; kein Ton kommt an</string>
     <string name="status_frozen">Eingefroren</string>
     <string name="status_input_clipping">Eingang uebersteuert</string>
     <string name="status_high_noise">Hintergrundgeraeusch ist hoch</string>
@@ -19,6 +20,7 @@
     <string name="guidance_try_one_string">Eine Saite klar anschlagen</string>
     <string name="guidance_start_listening">Starten, wenn du bereit bist</string>
     <string name="guidance_allow_mic">Mikrofonzugriff zum Stimmen erlauben</string>
+    <string name="guidance_check_mic_input">Nah am Telefon anschlagen; wenn Mic bei 0 bleibt, Android-Mikrozugriff pruefen.</string>
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>
     <string name="guidance_in_tune">Gestimmt</string>
@@ -81,7 +83,8 @@
     <string name="confidence_placeholder">-- Vertrauen</string>
     <string name="confidence_value">%1$s Vertrauen</string>
     <string name="input_level_placeholder">Eingang --</string>
-    <string name="input_level_value">Eingang %1$s</string>
+    <string name="input_level_value">Mic %1$s / Spitze %2$s</string>
+    <string name="input_source_value">%1$s-Quelle - %2$d Hz</string>
     <string name="file_imported_tunings">%1$d benutzerdefinierte Stimmung(en) importiert</string>
     <string name="file_exported_tunings">%1$d benutzerdefinierte Stimmung(en) exportiert</string>
     <string name="file_no_custom_tunings">Keine benutzerdefinierten Stimmungen zum Exportieren</string>

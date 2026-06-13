@@ -4,6 +4,7 @@
     <string name="status_permission_required">Se necesita acceso al microfono</string>
     <string name="status_ready">Listo para afinar</string>
     <string name="status_listening">Escuchando</string>
+    <string name="status_mic_silent">Microfono abierto; no llega sonido</string>
     <string name="status_frozen">Congelado</string>
     <string name="status_input_clipping">La entrada esta saturada</string>
     <string name="status_high_noise">El ruido de fondo es alto</string>
@@ -19,6 +20,7 @@
     <string name="guidance_try_one_string">Toca una cuerda claramente</string>
     <string name="guidance_start_listening">Empieza a escuchar cuando estes listo</string>
     <string name="guidance_allow_mic">Permite acceso al microfono para afinar</string>
+    <string name="guidance_check_mic_input">Toca cerca del telefono; si Mic sigue en 0, revisa el acceso al microfono de Android.</string>
     <string name="guidance_tune_up">Sube la afinacion</string>
     <string name="guidance_tune_down">Baja la afinacion</string>
     <string name="guidance_in_tune">Afinada</string>
@@ -81,7 +83,8 @@
     <string name="confidence_placeholder">-- confianza</string>
     <string name="confidence_value">%1$s confianza</string>
     <string name="input_level_placeholder">Entrada --</string>
-    <string name="input_level_value">Entrada %1$s</string>
+    <string name="input_level_value">Mic %1$s / pico %2$s</string>
+    <string name="input_source_value">Fuente %1$s - %2$d Hz</string>
     <string name="file_imported_tunings">Se importaron %1$d afinacion(es) personalizadas</string>
     <string name="file_exported_tunings">Se exportaron %1$d afinacion(es) personalizadas</string>
     <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>
