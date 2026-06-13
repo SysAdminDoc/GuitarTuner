@@ -103,7 +103,7 @@ private fun TunerRoute() {
     }
 
     LaunchedEffect(activeTuning) {
-        controller.setTuning(activeTuning.strings)
+        controller.setTuning(activeTuning.strings, activeTuning.minFrequencyHz, activeTuning.maxFrequencyHz)
         preferencesRepository.rememberLastUsedTuning(activeTuning.id)
         if (activeTuning.strings.none { it.stringNumber == guidedStringNumber }) {
             guidedStringNumber = activeTuning.strings.firstOrNull()?.stringNumber ?: guidedStringNumber

@@ -16,7 +16,7 @@ data class PitchDetectorConfig(
 )
 
 class YinPitchDetector(
-    private val config: PitchDetectorConfig = PitchDetectorConfig(),
+    val config: PitchDetectorConfig = PitchDetectorConfig(),
 ) {
     fun detect(samples: FloatArray, sampleRate: Int): PitchEstimate {
         if (samples.size < MinimumSamples) {

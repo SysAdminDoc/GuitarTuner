@@ -16,6 +16,8 @@ data class TuningDefinition(
     val name: String,
     val strings: List<GuitarString>,
     val isBuiltIn: Boolean,
+    val minFrequencyHz: Double = 70.0,
+    val maxFrequencyHz: Double = 450.0,
 )
 
 object GuitarTunings {
@@ -24,6 +26,8 @@ object GuitarTunings {
     const val DropDId = "drop_d"
     const val OpenGId = "open_g"
     const val DadgadId = "dadgad"
+    const val BassStandardId = "bass_standard"
+    const val UkuleleStandardId = "ukulele_standard"
     private const val ReferenceA4Hz = 440.0
 
     val standard: TuningDefinition = TuningDefinition(
@@ -89,12 +93,42 @@ object GuitarTunings {
         isBuiltIn = true,
     )
 
+    val bassStandard: TuningDefinition = TuningDefinition(
+        id = BassStandardId,
+        name = "Bass standard",
+        strings = listOf(
+            GuitarString(stringNumber = 4, name = "E", scientificPitch = "E1", frequencyHz = 41.20),
+            GuitarString(stringNumber = 3, name = "A", scientificPitch = "A1", frequencyHz = 55.00),
+            GuitarString(stringNumber = 2, name = "D", scientificPitch = "D2", frequencyHz = 73.42),
+            GuitarString(stringNumber = 1, name = "G", scientificPitch = "G2", frequencyHz = 98.00),
+        ),
+        isBuiltIn = true,
+        minFrequencyHz = 35.0,
+        maxFrequencyHz = 200.0,
+    )
+
+    val ukuleleStandard: TuningDefinition = TuningDefinition(
+        id = UkuleleStandardId,
+        name = "Ukulele standard",
+        strings = listOf(
+            GuitarString(stringNumber = 4, name = "G", scientificPitch = "G4", frequencyHz = 392.00),
+            GuitarString(stringNumber = 3, name = "C", scientificPitch = "C4", frequencyHz = 261.63),
+            GuitarString(stringNumber = 2, name = "E", scientificPitch = "E4", frequencyHz = 329.63),
+            GuitarString(stringNumber = 1, name = "A", scientificPitch = "A4", frequencyHz = 440.00),
+        ),
+        isBuiltIn = true,
+        minFrequencyHz = 200.0,
+        maxFrequencyHz = 520.0,
+    )
+
     val builtIns: List<TuningDefinition> = listOf(
         standard,
         halfStepDown,
         dropD,
         openG,
         dadgad,
+        bassStandard,
+        ukuleleStandard,
     )
 
     fun catalog(

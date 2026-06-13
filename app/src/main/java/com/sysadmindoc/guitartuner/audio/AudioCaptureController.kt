@@ -101,8 +101,15 @@ class AudioCaptureController(
         _state.value = _state.value.copy(permissionError = false)
     }
 
-    fun setTuning(strings: List<GuitarString>) {
+    fun setTuning(strings: List<GuitarString>, minFrequencyHz: Double = 70.0, maxFrequencyHz: Double = 450.0) {
         currentStrings = strings
+        pitchDetector = YinPitchDetector(
+            PitchDetectorConfig(
+                silenceRms = pitchDetector.config.silenceRms,
+                minFrequencyHz = minFrequencyHz,
+                maxFrequencyHz = maxFrequencyHz,
+            ),
+        )
         rebuildAnalyzer()
     }
 
@@ -117,7 +124,9 @@ class AudioCaptureController(
     }
 
     fun setNoiseGateRms(rms: Double) {
-        pitchDetector = YinPitchDetector(PitchDetectorConfig(silenceRms = rms))
+        pitchDetector = YinPitchDetector(
+            pitchDetector.config.copy(silenceRms = rms),
+        )
     }
 
     fun setA4Hz(hz: Double) {

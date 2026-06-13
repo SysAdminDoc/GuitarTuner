@@ -21,6 +21,8 @@ class GuitarTuningsTest {
                 GuitarTunings.DropDId,
                 GuitarTunings.OpenGId,
                 GuitarTunings.DadgadId,
+                GuitarTunings.BassStandardId,
+                GuitarTunings.UkuleleStandardId,
                 "custom",
             ),
             ids,
