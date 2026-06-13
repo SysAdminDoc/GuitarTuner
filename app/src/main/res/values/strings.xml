@@ -36,6 +36,7 @@
     <string name="action_start">Start listening</string>
     <string name="action_stop">Stop</string>
     <string name="action_set_favorite">Set favorite</string>
+    <string name="action_play_tone">Play</string>
     <string name="action_import">Import</string>
     <string name="action_export">Export</string>
     <string name="action_privacy">Privacy</string>

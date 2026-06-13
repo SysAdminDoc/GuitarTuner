@@ -1,0 +1,1 @@
+Initial release with YIN pitch detection, Auto/Guided/Chromatic modes, custom tunings, reference tone playback, haptic confirmation, string-break warning, and AMOLED dark theme.

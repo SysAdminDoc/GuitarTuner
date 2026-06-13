@@ -26,37 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
-### P1
-
-- [ ] P1 — Chromatic mode
-  Why: table stakes — every maintained competitor has it (Choona shipped v1.5.0, Moekadu, billthefarmer); detects any note rather than nearest string.
-  Evidence: Choona v1.5.0 release notes; Moekadu F-Droid description; JusTune HN thread requests.
-  Touches: TuningAnalyzer.kt / new ChromaticAnalyzer, TuningMode enum, TunerScreen.kt mode selector, strings.xml (+de/es), tests.
-  Acceptance: chromatic mode shows nearest chromatic note + cents for any pitch in 70-450 Hz (range widened as needed); Auto/Guided behavior unchanged.
-  Complexity: M
-
-- [ ] P1 — Reference tone playback
-  Why: lets users tune by ear and verify the target; Choona ships it; Moekadu issue #55 shows open demand; needs no new permission.
-  Evidence: Choona README feature list; thetwom/Tuner issue 55.
-  Touches: new audio/TonePlayer.kt (AudioTrack sine/Karplus-strong), TunerScreen.kt per-string play affordance, capture pause-during-playback logic.
-  Acceptance: tapping a string target plays its frequency (A4-calibrated); capture suspends during playback and resumes after; works offline.
-  Complexity: M
-
-- [ ] P1 — Non-visual tuning: TalkBack live region + spoken state mode
-  Why: no first-class accessible tuner exists on Android (blind guitarists are pointed to a $0.99 iOS app); meter semantics exist but nothing announces state transitions.
-  Evidence: AFB AccessWorld on HotPaw Talking Tuner; recurring AppleVis request threads; ui/TuningAccessibility.kt already buckets cents.
-  Touches: TunerScreen.kt (liveRegion = Polite on the stable readout), TuningAccessibility.kt, optional TextToSpeech mode behind a setting, TunerPreferencesRepository.kt.
-  Acceptance: TalkBack announces debounced transitions ("E2, 15 cents flat" → "E2, in tune") without per-frame chatter; optional spoken mode works with TalkBack off; haptic channel distinguishes sharp/flat.
-  Complexity: M
-
-
-- [ ] P1 — Fastlane metadata and IzzyOnDroid submission, then F-Droid
-  Why: distribution beyond GitHub is how OSS tuners reach users; IzzyOnDroid auto-ingests fastlane from GitHub releases; F-Droid needs a fdroiddata MR with tag-based auto-updates.
-  Evidence: izzyondroid.org fastlane docs; f-droid.org Inclusion How-To; Choona and Moekadu metadata layouts.
-  Touches: new fastlane/metadata/android/en-US/ (short_description ≤80 chars, full_description, icon, phoneScreenshots, changelogs/<versionCode>.txt), README badges.
-  Acceptance: repo carries valid fastlane metadata; IzzyOnDroid listing live after first tagged signed release; fdroiddata MR submitted with UpdateCheckMode: Tags.
-  Complexity: M
-
 ### P2
 
 - [ ] P2 — Microphone input device picker

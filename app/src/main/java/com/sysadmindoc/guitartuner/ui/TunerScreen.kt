@@ -101,6 +101,7 @@ fun TunerScreen(
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
     tuningFileMessage: TuningFileMessage?,
+    onPlayTone: (Double) -> Unit,
     onShowPrivacy: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -182,6 +183,7 @@ fun TunerScreen(
                             onTuningSelected = onTuningSelected,
                             onImportTunings = onImportTunings,
                             onExportTunings = onExportTunings,
+                            onPlayTone = onPlayTone,
                             tuningFileMessage = tuningFileMessage,
                             modifier = Modifier.weight(1f),
                         )
@@ -223,6 +225,7 @@ fun TunerScreen(
                         onTuningSelected = onTuningSelected,
                         onImportTunings = onImportTunings,
                         onExportTunings = onExportTunings,
+                        onPlayTone = onPlayTone,
                         tuningFileMessage = tuningFileMessage,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -321,6 +324,7 @@ private fun StartupTuningPanel(
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
+    onPlayTone: (Double) -> Unit,
     tuningFileMessage: TuningFileMessage?,
     modifier: Modifier = Modifier,
 ) {
@@ -391,16 +395,31 @@ private fun StartupTuningPanel(
                 }
                 if (tuningMode == TuningMode.Guided) {
                     val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber)
-                    Text(
-                        text = stringResource(
-                            R.string.guided_step,
-                            guidedStep.stepNumber,
-                            guidedStep.total,
-                            guidedStep.string.walkthroughLabel(),
-                        ),
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.guided_step,
+                                guidedStep.stepNumber,
+                                guidedStep.total,
+                                guidedStep.string.walkthroughLabel(),
+                            ),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.weight(1f),
+                        )
+                        OutlinedButton(
+                            onClick = { onPlayTone(guidedStep.string.frequencyHz) },
+                            shape = PanelShape,
+                            contentPadding = CompactButtonPadding,
+                            modifier = Modifier.defaultMinSize(minHeight = MinTouchTarget),
+                        ) {
+                            Text(stringResource(R.string.action_play_tone))
+                        }
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -1355,6 +1374,7 @@ private fun TunerScreenPreview() {
             onTuningSelected = {},
             onImportTunings = {},
             onExportTunings = {},
+            onPlayTone = {},
             tuningFileMessage = null,
             onShowPrivacy = {},
         )

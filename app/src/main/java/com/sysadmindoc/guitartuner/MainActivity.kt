@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sysadmindoc.guitartuner.audio.AudioCaptureController
+import com.sysadmindoc.guitartuner.audio.TonePlayer
 import com.sysadmindoc.guitartuner.settings.CustomTuningRepository
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
@@ -64,6 +65,7 @@ private fun TunerRoute() {
         ) == "true"
         AudioCaptureController(scope = scope, supportsUnprocessedSource = supportsUnprocessed)
     }
+    val tonePlayer = remember { TonePlayer() }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
     var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
     var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Auto) }
@@ -215,6 +217,7 @@ private fun TunerRoute() {
         lifecycle.addObserver(observer)
         onDispose {
             lifecycle.removeObserver(observer)
+            tonePlayer.stop()
             controller.close()
         }
     }
@@ -296,6 +299,10 @@ private fun TunerRoute() {
                 },
                 onExportTunings = {
                     exportLauncher.launch("guitartuner-custom-tunings.json")
+                },
+                onPlayTone = { frequencyHz ->
+                    controller.stop()
+                    tonePlayer.play(frequencyHz)
                 },
                 tuningFileMessage = tuningFileMessage,
                 onShowPrivacy = { showPrivacy = true },
