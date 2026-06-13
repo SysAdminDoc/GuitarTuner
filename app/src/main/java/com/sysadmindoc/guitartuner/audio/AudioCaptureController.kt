@@ -8,6 +8,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
 import android.util.Log
+import com.sysadmindoc.guitartuner.pitch.PhaseRefiner
 import com.sysadmindoc.guitartuner.pitch.PitchDetectorConfig
 import com.sysadmindoc.guitartuner.pitch.SignalStatus
 import com.sysadmindoc.guitartuner.pitch.YinPitchDetector
@@ -66,6 +67,7 @@ class AudioCaptureController(
 
     private val measurementFreeze = MeasurementFreeze()
     private val measurementSmoother = StableMeasurementSmoother()
+    private val phaseRefiner = PhaseRefiner()
 
     private var captureJob: Job? = null
 
@@ -295,7 +297,13 @@ class AudioCaptureController(
     }
 
     private fun analyzeFrame(samples: FloatArray, sampleRate: Int) {
-        val estimate = pitchDetector.detect(samples, sampleRate)
+        var estimate = pitchDetector.detect(samples, sampleRate)
+        if (estimate.frequencyHz != null && estimate.status == SignalStatus.Detected) {
+            val refined = phaseRefiner.refine(samples, estimate.frequencyHz!!)
+            estimate = estimate.copy(frequencyHz = refined)
+        } else {
+            phaseRefiner.reset()
+        }
         val measurement = measurementSmoother.apply(tuningAnalyzer.analyze(estimate))
         val measurementFrame = measurementFreeze.apply(
             estimate = estimate,

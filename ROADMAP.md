@@ -28,13 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### P2
 
-- [ ] P2 — Sub-cent refinement via single-bin-DFT phase tracking
-  Why: phase difference across hops at the detected fundamental yields sub-cent precision on E2 without longer windows; the technique behind software strobe tuners.
-  Evidence: dsego/strobe-tuner design notes; 29a.ch/2020 guitar tuner write-up; billthefarmer/ctuner FFT-phase approach.
-  Touches: pitch/ new PhaseRefiner.kt fed by YIN coarse estimate, AudioCaptureController.kt pipeline, fixture accuracy assertions tightened.
-  Acceptance: fixture suite shows ≤1-cent error on E2-E4 steady tones (current tolerance documented as baseline); latency unchanged.
-  Complexity: M
-
 - [ ] P2 — Optional strobe precision view
   Why: precision-view differentiation with a real demand signal (analog/needle alternatives requested in Moekadu #102); phase-accumulator Canvas is cheap once cents offset exists.
   Evidence: dsego/strobe-tuner phase-comparator design; Peterson strobe UX reputation; Moekadu issue 102.
