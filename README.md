@@ -1,6 +1,8 @@
 # GuitarTuner
 
-![GuitarTuner wordmark](GuitarTuner_wordmark_transparent_512.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SysAdminDoc/GuitarTuner/refs/heads/main/logo.png" width="300" alt="GuitarTuner logo">
+</p>
 
 ![Version](https://img.shields.io/badge/version-v0.0.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
