@@ -64,6 +64,7 @@
     <string name="file_exported_tunings">Se exportaron %1$d afinacion(es) personalizadas</string>
     <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>
     <string name="privacy_title">Privacidad</string>
+    <string name="privacy_inline_note">El audio nunca sale de este dispositivo.</string>
     <string name="privacy_summary">GuitarTuner procesa el audio del microfono localmente solo para afinar.</string>
     <string name="privacy_done">Listo</string>
     <string-array name="privacy_points">

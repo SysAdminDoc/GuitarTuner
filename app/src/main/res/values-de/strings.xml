@@ -64,6 +64,7 @@
     <string name="file_exported_tunings">%1$d benutzerdefinierte Stimmung(en) exportiert</string>
     <string name="file_no_custom_tunings">Keine benutzerdefinierten Stimmungen zum Exportieren</string>
     <string name="privacy_title">Datenschutz</string>
+    <string name="privacy_inline_note">Audio verlaesst dieses Geraet nie.</string>
     <string name="privacy_summary">GuitarTuner verarbeitet Mikrofon-Audio nur lokal zum Stimmen.</string>
     <string name="privacy_done">Fertig</string>
     <string-array name="privacy_points">

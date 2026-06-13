@@ -64,6 +64,7 @@
     <string name="file_exported_tunings">Exported %1$d custom tuning(s)</string>
     <string name="file_no_custom_tunings">No custom tunings to export</string>
     <string name="privacy_title">Privacy</string>
+    <string name="privacy_inline_note">Audio never leaves this device.</string>
     <string name="privacy_summary">GuitarTuner processes microphone audio locally for tuning only.</string>
     <string name="privacy_done">Done</string>
     <string-array name="privacy_points">

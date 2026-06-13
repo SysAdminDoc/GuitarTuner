@@ -233,6 +233,13 @@ private fun TunerMeterPanel(
                 hasAudioPermission = hasAudioPermission,
                 pegTurnDirections = pegTurnDirections,
             )
+            Text(
+                text = stringResource(R.string.privacy_inline_note),
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }

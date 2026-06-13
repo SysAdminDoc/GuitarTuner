@@ -26,10 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Scaffold Milestones
 
-### Phase 6 - Settings and Tunings
-
-- [ ] Add privacy note explaining that audio never leaves the device.
-
 ### Phase 7 - Verification and Release Prep
 
 - [ ] Add a small local recorded-guitar fixture set.

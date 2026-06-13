@@ -33,3 +33,4 @@
 - Added a persisted cents tolerance setting that updates the analyzer's in-tune window.
 - Added a persisted noise gate setting that updates microphone sensitivity for the pitch detector.
 - Added a persisted System/Dark/Light theme setting backed by the existing AMOLED dark and light color schemes.
+- Added a first-screen privacy note that states microphone audio never leaves the device.
