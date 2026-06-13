@@ -1,0 +1,7 @@
+file,stringNumber,expectedName,expectedPitch,expectedHz
+standard_e2.wav,6,Low E,E2,82.41
+standard_a2.wav,5,A,A2,110.00
+standard_d3.wav,4,D,D3,146.83
+standard_g3.wav,3,G,G3,196.00
+standard_b3.wav,2,B,B3,246.94
+standard_e4.wav,1,High E,E4,329.63

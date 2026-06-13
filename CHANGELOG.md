@@ -34,3 +34,4 @@
 - Added a persisted noise gate setting that updates microphone sensitivity for the pitch detector.
 - Added a persisted System/Dark/Light theme setting backed by the existing AMOLED dark and light color schemes.
 - Added a first-screen privacy note that states microphone audio never leaves the device.
+- Added a local standard-guitar WAV fixture set and golden target regression tests for pitch and tuning results.
