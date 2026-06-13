@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 7 - Verification and Release Prep
 
-- [ ] Capture screenshots for README after UI exists.
 - [ ] Add signed release build documentation.
 - [ ] Prepare GitHub release workflow after a remote exists.
 

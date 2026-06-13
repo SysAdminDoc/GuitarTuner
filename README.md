@@ -46,6 +46,12 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 
 GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Guided and Auto tuning modes, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a first-screen local-audio privacy note, a confidence-aware main tuner readout, explicit signal and permission states, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string, octave-error, and local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
+## Screenshots
+
+![Main tuner screen](docs/screenshots/tuner-main.png)
+
+![Settings and tuning controls](docs/screenshots/tuner-settings.png)
+
 ## Privacy Baseline
 
 The Android manifest declares `RECORD_AUDIO` only. The app has no network permission, no background microphone service, and no audio upload path.
