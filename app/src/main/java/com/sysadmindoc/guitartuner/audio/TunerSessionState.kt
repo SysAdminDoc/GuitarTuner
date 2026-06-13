@@ -1,6 +1,7 @@
 package com.sysadmindoc.guitartuner.audio
 
 import com.sysadmindoc.guitartuner.pitch.PitchEstimate
+import com.sysadmindoc.guitartuner.tuning.PitchResult
 import com.sysadmindoc.guitartuner.tuning.TuningMeasurement
 
 data class TunerSessionState(
@@ -9,4 +10,7 @@ data class TunerSessionState(
     val pitchEstimate: PitchEstimate = PitchEstimate.silence(),
     val measurement: TuningMeasurement = TuningMeasurement.waiting(),
     val errorMessage: String? = null,
-)
+) {
+    val pitchResult: PitchResult
+        get() = PitchResult.from(pitchEstimate, measurement)
+}

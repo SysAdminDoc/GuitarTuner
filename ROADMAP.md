@@ -26,10 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Scaffold Milestones
 
-### Phase 3 - Pitch Detection Engine
-
-- [ ] Expose pitch result as frequency, nearest note, cents offset, confidence, and signal state.
-
 ### Phase 4 - Guitar Tuning Model
 
 - [ ] Add guided mode that locks onto one target string at a time.

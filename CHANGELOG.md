@@ -22,3 +22,4 @@
 - Verified debug microphone capture startup on a connected Samsung SM-S938B with adb install, `RECORD_AUDIO` grant, foreground launch, active Pause/Stop UI, and an empty crash buffer.
 - Added stable-frame smoothing after pluck attack to reduce jumpy cents/frequency feedback without smearing target-string changes.
 - Added second-harmonic octave correction so weak-fundamental guitar strings map back to the intended open string instead of a nearby higher string.
+- Added an explicit `PitchResult` contract exposing frequency, nearest note, cents offset, confidence, and signal state.

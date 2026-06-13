@@ -484,8 +484,9 @@ private fun CentsMeter(state: TunerSessionState) {
 @Composable
 private fun FrequencyReadout(state: TunerSessionState) {
     val measurement = state.measurement
-    val cents = measurement.cents
-    val frequency = measurement.frequencyHz
+    val pitchResult = state.pitchResult
+    val cents = pitchResult.centsOffset
+    val frequency = pitchResult.frequencyHz
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
