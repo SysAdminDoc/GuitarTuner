@@ -90,7 +90,7 @@ class TunerPreferencesRepository(
     }
 
     suspend fun setNoiseGateRms(noiseGateRms: Double) {
-        require(noiseGateRms in 0.002..0.030) { "Noise gate must stay within 0.002 and 0.030 RMS." }
+        require(noiseGateRms in 0.001..0.030) { "Noise gate must stay within 0.001 and 0.030 RMS." }
         dataStore.edit { preferences ->
             preferences[NoiseGateRmsKey] = noiseGateRms
         }
@@ -120,7 +120,7 @@ class TunerPreferencesRepository(
         this?.takeIf { it in 1.0..25.0 } ?: TunerSettings().centsTolerance
 
     private fun Double?.sanitizeNoiseGateRms(): Double =
-        this?.takeIf { it in 0.002..0.030 } ?: TunerSettings().noiseGateRms
+        this?.takeIf { it in 0.001..0.030 } ?: TunerSettings().noiseGateRms
 
     private companion object {
         val StartupModeKey = stringPreferencesKey("startup_mode")

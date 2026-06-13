@@ -146,29 +146,30 @@ class AudioCaptureController(
         try {
             recorder.startRecording()
             val recorderSampleRate = recorder.sampleRate.takeIf { it > 0 } ?: SampleRate
-            val buffer = ShortArray(FrameSize)
+            val readBuffer = ShortArray(ReadBufferSize)
+            val frameBuffer = FloatArray(FrameSize)
+            var frameFill = 0
             while (scope.isActive && captureJob?.isActive == true) {
-                val read = recorder.read(buffer, 0, buffer.size, AudioRecord.READ_BLOCKING)
-                if (read <= 0) continue
-                val samples = FloatArray(read)
-                for (index in 0 until read) {
-                    samples[index] = buffer[index] / Short.MAX_VALUE.toFloat()
+                val read = recorder.read(readBuffer, 0, readBuffer.size, AudioRecord.READ_BLOCKING)
+                if (read < 0) {
+                    throw IllegalStateException("Microphone read failed with AudioRecord code $read.")
                 }
+                if (read == 0) continue
 
-                val estimate = pitchDetector.detect(samples, recorderSampleRate)
-                val measurement = measurementSmoother.apply(tuningAnalyzer.analyze(estimate))
-                val measurementFrame = measurementFreeze.apply(
-                    estimate = estimate,
-                    measurement = measurement,
-                    enabled = freezeAfterDecay,
-                )
-                _state.value = TunerSessionState(
-                    isListening = true,
-                    isFrozen = measurementFrame.isFrozen,
-                    pitchEstimate = measurementFrame.pitchEstimate,
-                    measurement = measurementFrame.measurement,
-                    errorMessage = null,
-                )
+                for (index in 0 until read) {
+                    frameBuffer[frameFill] = readBuffer[index] / Short.MAX_VALUE.toFloat()
+                    frameFill += 1
+                    if (frameFill == FrameSize) {
+                        analyzeFrame(frameBuffer.copyOf(), recorderSampleRate)
+                        frameBuffer.copyInto(
+                            destination = frameBuffer,
+                            destinationOffset = 0,
+                            startIndex = FrameHopSize,
+                            endIndex = FrameSize,
+                        )
+                        frameFill = FrameSize - FrameHopSize
+                    }
+                }
             }
         } catch (exception: RuntimeException) {
             _state.value = TunerSessionState(
@@ -186,6 +187,23 @@ class AudioCaptureController(
         }
     }
 
+    private fun analyzeFrame(samples: FloatArray, sampleRate: Int) {
+        val estimate = pitchDetector.detect(samples, sampleRate)
+        val measurement = measurementSmoother.apply(tuningAnalyzer.analyze(estimate))
+        val measurementFrame = measurementFreeze.apply(
+            estimate = estimate,
+            measurement = measurement,
+            enabled = freezeAfterDecay,
+        )
+        _state.value = TunerSessionState(
+            isListening = true,
+            isFrozen = measurementFrame.isFrozen,
+            pitchEstimate = measurementFrame.pitchEstimate,
+            measurement = measurementFrame.measurement,
+            errorMessage = null,
+        )
+    }
+
     @SuppressLint("MissingPermission")
     private fun buildAudioRecord(): AudioRecord {
         val minimumBuffer = AudioRecord.getMinBufferSize(
@@ -199,6 +217,7 @@ class AudioCaptureController(
 
         val bufferBytes = maxOf(minimumBuffer, FrameSize * Short.SIZE_BYTES * 2)
         val sources = buildList {
+            add(MediaRecorder.AudioSource.VOICE_RECOGNITION)
             add(MediaRecorder.AudioSource.MIC)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 add(MediaRecorder.AudioSource.UNPROCESSED)
@@ -248,5 +267,7 @@ class AudioCaptureController(
     private companion object {
         const val SampleRate = 44_100
         const val FrameSize = 4_096
+        const val FrameHopSize = 2_048
+        const val ReadBufferSize = 1_024
     }
 }

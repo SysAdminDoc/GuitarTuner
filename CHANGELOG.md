@@ -40,3 +40,4 @@
 - Prepared the GitHub release workflow to publish or update a tagged release once a remote and signing secrets exist.
 - Refined the tuner UI with first-screen listening actions, guided target empty states, sectioned settings, accessible selectable controls, stronger privacy copy, fuller theme tokens, and refreshed physical-device screenshots.
 - Fixed real-use detection startup by making Auto mode the default, lowering the default microphone noise gate, preferring the reliable microphone source, using the recorder's actual sample rate, and adding quiet-input pitch regression coverage.
+- Hardened live string detection with overlapping microphone analysis windows, a YIN autocorrelation fallback, a more sensitive default gate, explicit AudioRecord read errors, live input-level feedback, and live-sized WAV fixture regression coverage.

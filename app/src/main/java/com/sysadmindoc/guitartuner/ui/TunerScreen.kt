@@ -493,16 +493,16 @@ private fun StartupTuningPanel(
                 )
                 NumericSettingRow(
                     label = stringResource(R.string.setting_noise_gate),
-                    value = formatThreeDecimals(preferences.noiseGateRms),
+                    value = formatFourDecimals(preferences.noiseGateRms),
                     decreaseLabel = "-",
                     increaseLabel = "+",
-                    canDecrease = preferences.noiseGateRms > 0.002,
+                    canDecrease = preferences.noiseGateRms > 0.001,
                     canIncrease = preferences.noiseGateRms < 0.030,
                     onDecrease = {
-                        onNoiseGateChanged((preferences.noiseGateRms - 0.001).coerceAtLeast(0.002))
+                        onNoiseGateChanged((preferences.noiseGateRms - 0.0005).coerceAtLeast(0.001))
                     },
                     onIncrease = {
-                        onNoiseGateChanged((preferences.noiseGateRms + 0.001).coerceAtMost(0.030))
+                        onNoiseGateChanged((preferences.noiseGateRms + 0.0005).coerceAtMost(0.030))
                     },
                 )
                 NumericSettingRow(
@@ -1115,6 +1115,15 @@ private fun FrequencyReadout(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        Text(
+            text = if (state.isListening) {
+                stringResource(R.string.input_level_value, formatLevelPercent(state.pitchEstimate.rms))
+            } else {
+                stringResource(R.string.input_level_placeholder)
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -1202,8 +1211,14 @@ private fun formatWholeNumber(value: Double): String =
 private fun formatThreeDecimals(value: Double): String =
     String.format(Locale.US, "%.3f", value)
 
+private fun formatFourDecimals(value: Double): String =
+    String.format(Locale.US, "%.4f", value)
+
 private fun formatPercent(value: Double): String =
     String.format(Locale.US, "%.0f%%", value.coerceIn(0.0, 1.0) * 100.0)
+
+private fun formatLevelPercent(value: Double): String =
+    String.format(Locale.US, "%.1f%%", value.coerceIn(0.0, 1.0) * 100.0)
 
 @Composable
 private fun StartupTuningMode.label(): String = when (this) {
@@ -1232,7 +1247,7 @@ private fun TunerScreenPreview() {
             hasAudioPermission = true,
             activeTuning = GuitarTunings.standard,
             tunings = GuitarTunings.builtIns,
-            tuningMode = TuningMode.Guided,
+            tuningMode = TuningMode.Auto,
             guidedStringNumber = 6,
             preferences = StoredTunerPreferences(),
             onPrimaryAction = {},

@@ -5,12 +5,12 @@ import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 data class TunerSettings(
     val calibration: PitchCalibration = PitchCalibration(),
     val centsTolerance: Double = 5.0,
-    val noiseGateRms: Double = 0.003,
+    val noiseGateRms: Double = 0.0015,
     val themeMode: ThemeMode = ThemeMode.System,
 ) {
     init {
         require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
-        require(noiseGateRms in 0.002..0.030) { "Noise gate must stay within 0.002 and 0.030 RMS." }
+        require(noiseGateRms in 0.001..0.030) { "Noise gate must stay within 0.001 and 0.030 RMS." }
     }
 }
 
@@ -36,13 +36,13 @@ data class StoredTunerPreferences(
     val freezeAfterDecay: Boolean = false,
     val a4Hz: Double = 440.0,
     val centsTolerance: Double = 5.0,
-    val noiseGateRms: Double = 0.003,
+    val noiseGateRms: Double = 0.0015,
     val pegTurnDirections: Map<Int, PegTurnDirection> = emptyMap(),
 ) {
     init {
         PitchCalibration(a4Hz)
         require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
-        require(noiseGateRms in 0.002..0.030) { "Noise gate must stay within 0.002 and 0.030 RMS." }
+        require(noiseGateRms in 0.001..0.030) { "Noise gate must stay within 0.001 and 0.030 RMS." }
     }
 
     fun startupTuningId(): String = when (startupMode) {

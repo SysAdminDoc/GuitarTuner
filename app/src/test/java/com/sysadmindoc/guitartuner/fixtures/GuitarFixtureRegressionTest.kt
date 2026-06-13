@@ -47,6 +47,31 @@ class GuitarFixtureRegressionTest {
         }
     }
 
+    @Test
+    fun liveSizedFramesDetectKnownGoodStandardTargets() {
+        for (fixture in fixtureManifest()) {
+            val audio = readPcm16Wav("guitar-fixtures/${fixture.file}")
+            val detectedFrames = audio.samples
+                .asIterable()
+                .chunked(LiveFrameSize)
+                .asSequence()
+                .map { it.toFloatArray() }
+                .map { detector.detect(it, audio.sampleRate) }
+                .map { estimate -> estimate to analyzer.analyze(estimate) }
+                .filter { (_, measurement) -> measurement.status != TuningStatus.WaitingForSignal }
+                .toList()
+
+            assertTrue("${fixture.file} should produce live-sized detections", detectedFrames.isNotEmpty())
+            assertTrue(
+                "${fixture.file} should identify string ${fixture.stringNumber} in at least one live frame",
+                detectedFrames.any { (_, measurement) ->
+                    measurement.target?.stringNumber == fixture.stringNumber &&
+                        abs((measurement.frequencyHz ?: 0.0) - fixture.expectedHz) < 1.5
+                },
+            )
+        }
+    }
+
     private fun fixtureManifest(): List<GuitarFixture> {
         val text = resourceBytes("guitar-fixtures/standard-fixtures.csv").decodeToString()
         return text.lineSequence()
@@ -156,3 +181,5 @@ private data class WavAudio(
     val sampleRate: Int,
     val samples: FloatArray,
 )
+
+private const val LiveFrameSize = 4_096

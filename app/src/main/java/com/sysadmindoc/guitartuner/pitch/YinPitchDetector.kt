@@ -7,11 +7,12 @@ import kotlin.math.sqrt
 data class PitchDetectorConfig(
     val minFrequencyHz: Double = 70.0,
     val maxFrequencyHz: Double = 450.0,
-    val silenceRms: Double = 0.003,
+    val silenceRms: Double = 0.0015,
     val highNoiseRms: Double = 0.04,
     val clippingRatio: Double = 0.02,
     val yinThreshold: Double = 0.15,
     val minConfidence: Double = 0.70,
+    val autocorrelationMinConfidence: Double = 0.45,
 )
 
 class YinPitchDetector(
@@ -58,6 +59,16 @@ class YinPitchDetector(
         cumulativeMeanNormalizedDifference(yin)
         val tau = absoluteThreshold(yin, minTau, maxTau)
         if (tau == NoTau) {
+            val fallback = autocorrelationFallback(centeredSamples, sampleRate, minTau, maxTau)
+            if (fallback != null) {
+                return PitchEstimate(
+                    frequencyHz = fallback.frequencyHz,
+                    confidence = fallback.confidence,
+                    rms = rms,
+                    clipping = false,
+                    status = SignalStatus.Detected,
+                )
+            }
             return PitchEstimate(
                 frequencyHz = null,
                 confidence = 0.0,
@@ -70,6 +81,18 @@ class YinPitchDetector(
         val refinedTau = parabolicInterpolation(yin, tau)
         val frequency = sampleRate / refinedTau
         val confidence = (1.0 - yin[tau]).coerceIn(0.0, 1.0)
+        if (confidence < config.minConfidence) {
+            val fallback = autocorrelationFallback(centeredSamples, sampleRate, minTau, maxTau)
+            if (fallback != null && fallback.confidence > confidence) {
+                return PitchEstimate(
+                    frequencyHz = fallback.frequencyHz,
+                    confidence = fallback.confidence,
+                    rms = rms,
+                    clipping = false,
+                    status = SignalStatus.Detected,
+                )
+            }
+        }
         return PitchEstimate(
             frequencyHz = frequency,
             confidence = confidence,
@@ -155,6 +178,68 @@ class YinPitchDetector(
         return if ((1.0 - bestValue) >= config.minConfidence) bestTau else NoTau
     }
 
+    private fun autocorrelationFallback(
+        samples: DoubleArray,
+        sampleRate: Int,
+        minTau: Int,
+        maxTau: Int,
+    ): PitchCandidate? {
+        val correlations = DoubleArray(maxTau + 1)
+        var bestTau = NoTau
+        var bestCorrelation = Double.NEGATIVE_INFINITY
+
+        for (tau in minTau..maxTau) {
+            val correlation = normalizedCorrelation(samples, tau)
+            correlations[tau] = correlation
+            if (correlation > bestCorrelation) {
+                bestCorrelation = correlation
+                bestTau = tau
+            }
+        }
+
+        for (tau in (minTau + 1) until maxTau) {
+            val correlation = correlations[tau]
+            if (
+                correlation >= config.autocorrelationMinConfidence &&
+                correlation >= correlations[tau - 1] &&
+                correlation >= correlations[tau + 1]
+            ) {
+                return PitchCandidate(
+                    frequencyHz = sampleRate / parabolicInterpolation(correlations, tau),
+                    confidence = correlation.coerceIn(0.0, 1.0),
+                )
+            }
+        }
+
+        return if (bestCorrelation >= config.autocorrelationMinConfidence && bestTau != NoTau) {
+            PitchCandidate(
+                frequencyHz = sampleRate / parabolicInterpolation(correlations, bestTau),
+                confidence = bestCorrelation.coerceIn(0.0, 1.0),
+            )
+        } else {
+            null
+        }
+    }
+
+    private fun normalizedCorrelation(samples: DoubleArray, tau: Int): Double {
+        val windowSize = samples.size - tau
+        if (windowSize <= 0) return 0.0
+
+        var sum = 0.0
+        var firstEnergy = 0.0
+        var secondEnergy = 0.0
+        for (index in 0 until windowSize) {
+            val first = samples[index]
+            val second = samples[index + tau]
+            sum += first * second
+            firstEnergy += first * first
+            secondEnergy += second * second
+        }
+
+        val denominator = sqrt(firstEnergy * secondEnergy)
+        return if (denominator == 0.0) 0.0 else sum / denominator
+    }
+
     private fun parabolicInterpolation(values: DoubleArray, tau: Int): Double {
         if (tau <= 1 || tau >= values.lastIndex) return tau.toDouble()
 
@@ -173,3 +258,8 @@ class YinPitchDetector(
         const val ClipThreshold = 0.98f
     }
 }
+
+private data class PitchCandidate(
+    val frequencyHz: Double,
+    val confidence: Double,
+)

@@ -80,6 +80,8 @@
     <string name="cents_value">%1$s cents</string>
     <string name="confidence_placeholder">-- confidence</string>
     <string name="confidence_value">%1$s confidence</string>
+    <string name="input_level_placeholder">Input --</string>
+    <string name="input_level_value">Input %1$s</string>
     <string name="file_imported_tunings">Imported %1$d custom tuning(s)</string>
     <string name="file_exported_tunings">Exported %1$d custom tuning(s)</string>
     <string name="file_no_custom_tunings">No custom tunings to export</string>
