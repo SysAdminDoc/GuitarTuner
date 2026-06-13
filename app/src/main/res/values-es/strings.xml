@@ -28,6 +28,10 @@
     <string name="action_import">Importar</string>
     <string name="action_export">Exportar</string>
     <string name="action_privacy">Privacidad</string>
+    <string name="setting_theme">Tema</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_light">Claro</string>
     <string name="setting_freeze_last_note">Congelar ultima nota</string>
     <string name="setting_a4_calibration">Calibracion A4</string>
     <string name="setting_cents_tolerance">Tolerancia en cents</string>

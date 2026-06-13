@@ -32,3 +32,4 @@
 - Added built-in Half-step down, Drop D, Open G, and DADGAD tunings alongside Standard and existing custom tuning import/export.
 - Added a persisted cents tolerance setting that updates the analyzer's in-tune window.
 - Added a persisted noise gate setting that updates microphone sensitivity for the pitch detector.
+- Added a persisted System/Dark/Light theme setting backed by the existing AMOLED dark and light color schemes.

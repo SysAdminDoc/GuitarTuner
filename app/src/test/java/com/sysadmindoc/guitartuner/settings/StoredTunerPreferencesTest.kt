@@ -37,4 +37,11 @@ class StoredTunerPreferencesTest {
 
         assertEquals("dadgad", preferences.startupTuningId())
     }
+
+    @Test
+    fun selectedThemeModeIsStoredWithPreferences() {
+        val preferences = StoredTunerPreferences(themeMode = ThemeMode.Light)
+
+        assertEquals(ThemeMode.Light, preferences.themeMode)
+    }
 }

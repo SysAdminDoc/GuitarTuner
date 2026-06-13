@@ -43,6 +43,7 @@ import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
+import com.sysadmindoc.guitartuner.settings.ThemeMode
 import com.sysadmindoc.guitartuner.settings.opposite
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.GuitarString
@@ -72,6 +73,7 @@ fun TunerScreen(
     onGuidedStringSelected: (Int) -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
@@ -127,6 +129,7 @@ fun TunerScreen(
                             onGuidedStringSelected = onGuidedStringSelected,
                             onStartupModeSelected = onStartupModeSelected,
                             onSetFavoriteTuning = onSetFavoriteTuning,
+                            onThemeModeSelected = onThemeModeSelected,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                             onA4CalibrationChanged = onA4CalibrationChanged,
                             onCentsToleranceChanged = onCentsToleranceChanged,
@@ -156,6 +159,7 @@ fun TunerScreen(
                         onGuidedStringSelected = onGuidedStringSelected,
                         onStartupModeSelected = onStartupModeSelected,
                         onSetFavoriteTuning = onSetFavoriteTuning,
+                        onThemeModeSelected = onThemeModeSelected,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                         onA4CalibrationChanged = onA4CalibrationChanged,
                         onCentsToleranceChanged = onCentsToleranceChanged,
@@ -244,6 +248,7 @@ private fun StartupTuningPanel(
     onGuidedStringSelected: (Int) -> Unit,
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
+    onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
@@ -427,6 +432,24 @@ private fun StartupTuningPanel(
                 shape = RoundedCornerShape(8.dp),
             ) {
                 Text(stringResource(R.string.action_set_favorite))
+            }
+            Text(
+                text = stringResource(R.string.setting_theme),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                for (mode in ThemeMode.entries) {
+                    ThemeModeButton(
+                        mode = mode,
+                        selected = preferences.themeMode == mode,
+                        onClick = { onThemeModeSelected(mode) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -657,6 +680,36 @@ private fun TuningChoiceButton(
 @Composable
 private fun StartupModeButton(
     mode: StartupTuningMode,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(8.dp)
+    val contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp)
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = contentPadding,
+        ) {
+            Text(mode.label(), maxLines = 1)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            contentPadding = contentPadding,
+        ) {
+            Text(mode.label(), maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun ThemeModeButton(
+    mode: ThemeMode,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -996,6 +1049,13 @@ private fun StartupTuningMode.label(): String = when (this) {
     StartupTuningMode.Favorite -> stringResource(R.string.startup_favorite)
 }
 
+@Composable
+private fun ThemeMode.label(): String = when (this) {
+    ThemeMode.System -> stringResource(R.string.theme_system)
+    ThemeMode.Dark -> stringResource(R.string.theme_dark)
+    ThemeMode.Light -> stringResource(R.string.theme_light)
+}
+
 @Preview(name = "Phone portrait", widthDp = 360, heightDp = 740)
 @Preview(name = "Phone landscape", widthDp = 840, heightDp = 360)
 @Preview(name = "Split screen", widthDp = 320, heightDp = 600)
@@ -1018,6 +1078,7 @@ private fun TunerScreenPreview() {
             onGuidedStringSelected = {},
             onStartupModeSelected = {},
             onSetFavoriteTuning = {},
+            onThemeModeSelected = {},
             onFreezeAfterDecayChanged = {},
             onA4CalibrationChanged = {},
             onCentsToleranceChanged = {},

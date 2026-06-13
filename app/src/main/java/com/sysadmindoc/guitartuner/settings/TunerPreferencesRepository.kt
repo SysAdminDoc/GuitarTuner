@@ -35,6 +35,7 @@ class TunerPreferencesRepository(
                 startupMode = storedPreferences[StartupModeKey].toStartupMode(),
                 lastUsedTuningId = storedPreferences[LastUsedTuningKey] ?: GuitarTunings.StandardId,
                 favoriteTuningId = storedPreferences[FavoriteTuningKey] ?: GuitarTunings.StandardId,
+                themeMode = storedPreferences[ThemeModeKey].toThemeMode(),
                 freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
                 a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
                 centsTolerance = storedPreferences[CentsToleranceKey].sanitizeCentsTolerance(),
@@ -59,6 +60,12 @@ class TunerPreferencesRepository(
         dataStore.edit { preferences ->
             preferences[FavoriteTuningKey] = tuningId
             preferences[StartupModeKey] = StartupTuningMode.Favorite.name
+        }
+    }
+
+    suspend fun setThemeMode(mode: ThemeMode) {
+        dataStore.edit { preferences ->
+            preferences[ThemeModeKey] = mode.name
         }
     }
 
@@ -103,6 +110,9 @@ class TunerPreferencesRepository(
     private fun String?.toStartupMode(): StartupTuningMode =
         StartupTuningMode.entries.firstOrNull { it.name == this } ?: StartupTuningMode.StandardDefault
 
+    private fun String?.toThemeMode(): ThemeMode =
+        ThemeMode.entries.firstOrNull { it.name == this } ?: ThemeMode.System
+
     private fun Double?.sanitizeA4Hz(): Double =
         this?.takeIf { it in 400.0..480.0 } ?: PitchCalibration().a4Hz
 
@@ -116,6 +126,7 @@ class TunerPreferencesRepository(
         val StartupModeKey = stringPreferencesKey("startup_mode")
         val LastUsedTuningKey = stringPreferencesKey("last_used_tuning_id")
         val FavoriteTuningKey = stringPreferencesKey("favorite_tuning_id")
+        val ThemeModeKey = stringPreferencesKey("theme_mode")
         val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
         val A4HzKey = doublePreferencesKey("a4_hz")
         val CentsToleranceKey = doublePreferencesKey("cents_tolerance")

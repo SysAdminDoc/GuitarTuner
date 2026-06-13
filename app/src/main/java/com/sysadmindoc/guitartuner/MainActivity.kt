@@ -44,9 +44,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            GuitarTunerTheme {
-                TunerRoute()
-            }
+            TunerRoute()
         }
     }
 }
@@ -183,73 +181,78 @@ private fun TunerRoute() {
         }
     }
 
-    if (showPrivacy) {
-        PrivacyScreen(onBack = { showPrivacy = false })
-    } else {
-        TunerScreen(
-            state = state,
-            hasAudioPermission = hasAudioPermission,
-            activeTuning = activeTuning,
-            tunings = tuningCatalog.tunings,
-            tuningMode = tuningMode,
-            guidedStringNumber = guidedStringNumber,
-            preferences = preferences,
-            onPrimaryAction = {
-                when {
-                    !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                    state.isListening -> controller.stop()
-                    else -> controller.start()
-                }
-            },
-            onStop = controller::stop,
-            onTuningModeSelected = { mode ->
-                tuningMode = mode
-            },
-            onGuidedStringSelected = { stringNumber ->
-                guidedStringNumber = stringNumber
-            },
-            onStartupModeSelected = { mode ->
-                selectedTuningId = when (mode) {
-                    com.sysadmindoc.guitartuner.settings.StartupTuningMode.StandardDefault ->
-                        GuitarTunings.StandardId
-                    com.sysadmindoc.guitartuner.settings.StartupTuningMode.LastUsed ->
-                        preferences.lastUsedTuningId
-                    com.sysadmindoc.guitartuner.settings.StartupTuningMode.Favorite ->
-                        preferences.favoriteTuningId
-                }
-                scope.launch { preferencesRepository.setStartupMode(mode) }
-            },
-            onSetFavoriteTuning = {
-                scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
-            },
-            onFreezeAfterDecayChanged = { enabled ->
-                scope.launch { preferencesRepository.setFreezeAfterDecay(enabled) }
-            },
-            onA4CalibrationChanged = { a4Hz ->
-                scope.launch { preferencesRepository.setA4Hz(a4Hz) }
-            },
-            onCentsToleranceChanged = { cents ->
-                scope.launch { preferencesRepository.setCentsTolerance(cents) }
-            },
-            onNoiseGateChanged = { rms ->
-                scope.launch { preferencesRepository.setNoiseGateRms(rms) }
-            },
-            onPegTurnDirectionChanged = { stringNumber, direction ->
-                scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }
-            },
-            onTuningSelected = { tuning ->
-                selectedTuningId = tuning.id
-                scope.launch { preferencesRepository.rememberLastUsedTuning(tuning.id) }
-            },
-            onImportTunings = {
-                importLauncher.launch(arrayOf("application/json", "text/json", "text/plain"))
-            },
-            onExportTunings = {
-                exportLauncher.launch("guitartuner-custom-tunings.json")
-            },
-            tuningFileMessage = tuningFileMessage,
-            onShowPrivacy = { showPrivacy = true },
-        )
+    GuitarTunerTheme(themeMode = preferences.themeMode) {
+        if (showPrivacy) {
+            PrivacyScreen(onBack = { showPrivacy = false })
+        } else {
+            TunerScreen(
+                state = state,
+                hasAudioPermission = hasAudioPermission,
+                activeTuning = activeTuning,
+                tunings = tuningCatalog.tunings,
+                tuningMode = tuningMode,
+                guidedStringNumber = guidedStringNumber,
+                preferences = preferences,
+                onPrimaryAction = {
+                    when {
+                        !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        state.isListening -> controller.stop()
+                        else -> controller.start()
+                    }
+                },
+                onStop = controller::stop,
+                onTuningModeSelected = { mode ->
+                    tuningMode = mode
+                },
+                onGuidedStringSelected = { stringNumber ->
+                    guidedStringNumber = stringNumber
+                },
+                onStartupModeSelected = { mode ->
+                    selectedTuningId = when (mode) {
+                        com.sysadmindoc.guitartuner.settings.StartupTuningMode.StandardDefault ->
+                            GuitarTunings.StandardId
+                        com.sysadmindoc.guitartuner.settings.StartupTuningMode.LastUsed ->
+                            preferences.lastUsedTuningId
+                        com.sysadmindoc.guitartuner.settings.StartupTuningMode.Favorite ->
+                            preferences.favoriteTuningId
+                    }
+                    scope.launch { preferencesRepository.setStartupMode(mode) }
+                },
+                onSetFavoriteTuning = {
+                    scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
+                },
+                onThemeModeSelected = { mode ->
+                    scope.launch { preferencesRepository.setThemeMode(mode) }
+                },
+                onFreezeAfterDecayChanged = { enabled ->
+                    scope.launch { preferencesRepository.setFreezeAfterDecay(enabled) }
+                },
+                onA4CalibrationChanged = { a4Hz ->
+                    scope.launch { preferencesRepository.setA4Hz(a4Hz) }
+                },
+                onCentsToleranceChanged = { cents ->
+                    scope.launch { preferencesRepository.setCentsTolerance(cents) }
+                },
+                onNoiseGateChanged = { rms ->
+                    scope.launch { preferencesRepository.setNoiseGateRms(rms) }
+                },
+                onPegTurnDirectionChanged = { stringNumber, direction ->
+                    scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }
+                },
+                onTuningSelected = { tuning ->
+                    selectedTuningId = tuning.id
+                    scope.launch { preferencesRepository.rememberLastUsedTuning(tuning.id) }
+                },
+                onImportTunings = {
+                    importLauncher.launch(arrayOf("application/json", "text/json", "text/plain"))
+                },
+                onExportTunings = {
+                    exportLauncher.launch("guitartuner-custom-tunings.json")
+                },
+                tuningFileMessage = tuningFileMessage,
+                onShowPrivacy = { showPrivacy = true },
+            )
+        }
     }
 }
 

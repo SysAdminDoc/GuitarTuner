@@ -32,6 +32,7 @@ data class StoredTunerPreferences(
     val startupMode: StartupTuningMode = StartupTuningMode.StandardDefault,
     val lastUsedTuningId: String = GuitarTunings.StandardId,
     val favoriteTuningId: String = GuitarTunings.StandardId,
+    val themeMode: ThemeMode = ThemeMode.System,
     val freezeAfterDecay: Boolean = false,
     val a4Hz: Double = 440.0,
     val centsTolerance: Double = 5.0,

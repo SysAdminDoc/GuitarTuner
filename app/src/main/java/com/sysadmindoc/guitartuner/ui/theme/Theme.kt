@@ -7,6 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.sysadmindoc.guitartuner.settings.ThemeMode
 
 private val AmoledDarkScheme = darkColorScheme(
     primary = Color(0xFF3DDC84),
@@ -40,10 +41,15 @@ private val LightScheme = lightColorScheme(
 
 @Composable
 fun GuitarTunerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: ThemeMode = ThemeMode.System,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme: ColorScheme = if (darkTheme) AmoledDarkScheme else LightScheme
+    val useDarkTheme = when (themeMode) {
+        ThemeMode.System -> isSystemInDarkTheme()
+        ThemeMode.Dark -> true
+        ThemeMode.Light -> false
+    }
+    val colorScheme: ColorScheme = if (useDarkTheme) AmoledDarkScheme else LightScheme
     MaterialTheme(
         colorScheme = colorScheme,
         typography = androidx.compose.material3.Typography(),

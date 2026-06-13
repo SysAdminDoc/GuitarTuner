@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 6 - Settings and Tunings
 
-- [ ] Add theme setting.
 - [ ] Add privacy note explaining that audio never leaves the device.
 
 ### Phase 7 - Verification and Release Prep
