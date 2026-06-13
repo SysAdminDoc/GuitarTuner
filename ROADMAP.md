@@ -26,10 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Scaffold Milestones
 
-### Phase 4 - Guitar Tuning Model
-
-- [ ] Add A4 calibration setting with 440 Hz default.
-
 ### Phase 5 - Guided Tuning UI
 
 - [ ] Build main tuner screen with large note, string, cents, and confidence readout.

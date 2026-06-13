@@ -24,3 +24,4 @@
 - Added second-harmonic octave correction so weak-fundamental guitar strings map back to the intended open string instead of a nearby higher string.
 - Added an explicit `PitchResult` contract exposing frequency, nearest note, cents offset, confidence, and signal state.
 - Added Guided and Auto tuning modes, including a guided string selector that locks analysis to one target string and an auto path that keeps nearest-string detection.
+- Added a persisted A4 calibration setting with a 440 Hz default and per-Hz stepper controls that scale built-in and custom tuning targets.

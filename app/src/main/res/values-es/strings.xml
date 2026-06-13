@@ -26,6 +26,7 @@
     <string name="action_export">Exportar</string>
     <string name="action_privacy">Privacidad</string>
     <string name="setting_freeze_last_note">Congelar ultima nota</string>
+    <string name="setting_a4_calibration">Calibracion A4</string>
     <string name="startup_standard">Estandar</string>
     <string name="startup_last">Ultima</string>
     <string name="startup_favorite">Favorita</string>

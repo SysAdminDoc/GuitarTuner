@@ -28,7 +28,12 @@ data class StoredTunerPreferences(
     val lastUsedTuningId: String = GuitarTunings.StandardId,
     val favoriteTuningId: String = GuitarTunings.StandardId,
     val freezeAfterDecay: Boolean = false,
+    val a4Hz: Double = 440.0,
 ) {
+    init {
+        PitchCalibration(a4Hz)
+    }
+
     fun startupTuningId(): String = when (startupMode) {
         StartupTuningMode.StandardDefault -> GuitarTunings.StandardId
         StartupTuningMode.LastUsed -> lastUsedTuningId

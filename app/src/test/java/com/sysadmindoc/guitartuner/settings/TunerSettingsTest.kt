@@ -16,9 +16,23 @@ class TunerSettingsTest {
     }
 
     @Test
+    fun storedPreferencesDefaultToConcertA() {
+        val preferences = StoredTunerPreferences()
+
+        assertEquals(440.0, preferences.a4Hz, 0.0)
+    }
+
+    @Test
     fun rejectsUnusableA4Calibration() {
         assertThrows(IllegalArgumentException::class.java) {
             PitchCalibration(a4Hz = 100.0)
+        }
+    }
+
+    @Test
+    fun storedPreferencesRejectUnusableA4Calibration() {
+        assertThrows(IllegalArgumentException::class.java) {
+            StoredTunerPreferences(a4Hz = 100.0)
         }
     }
 }

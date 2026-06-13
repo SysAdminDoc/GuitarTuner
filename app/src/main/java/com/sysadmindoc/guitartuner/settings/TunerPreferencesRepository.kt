@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
@@ -35,6 +36,7 @@ class TunerPreferencesRepository(
                 lastUsedTuningId = storedPreferences[LastUsedTuningKey] ?: GuitarTunings.StandardId,
                 favoriteTuningId = storedPreferences[FavoriteTuningKey] ?: GuitarTunings.StandardId,
                 freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
+                a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
             )
         }
 
@@ -63,13 +65,24 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setA4Hz(a4Hz: Double) {
+        val calibration = PitchCalibration(a4Hz)
+        dataStore.edit { preferences ->
+            preferences[A4HzKey] = calibration.a4Hz
+        }
+    }
+
     private fun String?.toStartupMode(): StartupTuningMode =
         StartupTuningMode.entries.firstOrNull { it.name == this } ?: StartupTuningMode.StandardDefault
+
+    private fun Double?.sanitizeA4Hz(): Double =
+        this?.takeIf { it in 400.0..480.0 } ?: PitchCalibration().a4Hz
 
     private companion object {
         val StartupModeKey = stringPreferencesKey("startup_mode")
         val LastUsedTuningKey = stringPreferencesKey("last_used_tuning_id")
         val FavoriteTuningKey = stringPreferencesKey("favorite_tuning_id")
         val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
+        val A4HzKey = doublePreferencesKey("a4_hz")
     }
 }

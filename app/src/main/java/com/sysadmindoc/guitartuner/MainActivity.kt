@@ -74,8 +74,11 @@ private fun TunerRoute() {
     val customTunings by customTuningRepository.customTunings.collectAsStateWithLifecycle(
         initialValue = emptyList(),
     )
-    val tuningCatalog = remember(customTunings) {
+    val uncalibratedTuningCatalog = remember(customTunings) {
         GuitarTunings.catalog(customTunings)
+    }
+    val tuningCatalog = remember(customTunings, preferences.a4Hz) {
+        GuitarTunings.catalog(customTunings, preferences.a4Hz)
     }
     val startupTuningId = preferences.startupTuningId()
     val activeTuning = remember(tuningCatalog, selectedTuningId, startupTuningId) {
@@ -90,7 +93,7 @@ private fun TunerRoute() {
         }
     }
 
-    LaunchedEffect(activeTuning.id) {
+    LaunchedEffect(activeTuning) {
         controller.setTuning(activeTuning.strings)
         preferencesRepository.rememberLastUsedTuning(activeTuning.id)
         if (activeTuning.strings.none { it.stringNumber == guidedStringNumber }) {
@@ -131,7 +134,7 @@ private fun TunerRoute() {
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
-            val customOnly = tuningCatalog.tunings.filterNot { it.isBuiltIn }
+            val customOnly = uncalibratedTuningCatalog.tunings.filterNot { it.isBuiltIn }
             if (customOnly.isEmpty()) {
                 tuningFileMessage = TuningFileMessage.NoCustomTunings
                 return@launch
@@ -213,6 +216,9 @@ private fun TunerRoute() {
             },
             onFreezeAfterDecayChanged = { enabled ->
                 scope.launch { preferencesRepository.setFreezeAfterDecay(enabled) }
+            },
+            onA4CalibrationChanged = { a4Hz ->
+                scope.launch { preferencesRepository.setA4Hz(a4Hz) }
             },
             onTuningSelected = { tuning ->
                 selectedTuningId = tuning.id

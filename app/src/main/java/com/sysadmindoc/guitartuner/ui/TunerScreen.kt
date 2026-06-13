@@ -67,6 +67,7 @@ fun TunerScreen(
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
+    onA4CalibrationChanged: (Double) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
@@ -116,6 +117,7 @@ fun TunerScreen(
                             onStartupModeSelected = onStartupModeSelected,
                             onSetFavoriteTuning = onSetFavoriteTuning,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
+                            onA4CalibrationChanged = onA4CalibrationChanged,
                             onTuningSelected = onTuningSelected,
                             onImportTunings = onImportTunings,
                             onExportTunings = onExportTunings,
@@ -139,6 +141,7 @@ fun TunerScreen(
                         onStartupModeSelected = onStartupModeSelected,
                         onSetFavoriteTuning = onSetFavoriteTuning,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
+                        onA4CalibrationChanged = onA4CalibrationChanged,
                         onTuningSelected = onTuningSelected,
                         onImportTunings = onImportTunings,
                         onExportTunings = onExportTunings,
@@ -217,6 +220,7 @@ private fun StartupTuningPanel(
     onStartupModeSelected: (StartupTuningMode) -> Unit,
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
+    onA4CalibrationChanged: (Double) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
@@ -342,6 +346,38 @@ private fun StartupTuningPanel(
                     checked = preferences.freezeAfterDecay,
                     onCheckedChange = onFreezeAfterDecayChanged,
                 )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.setting_a4_calibration),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                OutlinedButton(
+                    onClick = { onA4CalibrationChanged((preferences.a4Hz - 1.0).coerceAtLeast(400.0)) },
+                    enabled = preferences.a4Hz > 400.0,
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+                ) {
+                    Text("-1")
+                }
+                Text(
+                    text = formatWholeHz(preferences.a4Hz),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                )
+                OutlinedButton(
+                    onClick = { onA4CalibrationChanged((preferences.a4Hz + 1.0).coerceAtMost(480.0)) },
+                    enabled = preferences.a4Hz < 480.0,
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+                ) {
+                    Text("+1")
+                }
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -691,6 +727,9 @@ private fun formatOneDecimal(value: Double): String =
 private fun formatSignedOneDecimal(value: Double): String =
     String.format(Locale.US, "%+.1f", value)
 
+private fun formatWholeHz(value: Double): String =
+    String.format(Locale.US, "%.0f Hz", value)
+
 @Composable
 private fun StartupTuningMode.label(): String = when (this) {
     StartupTuningMode.StandardDefault -> stringResource(R.string.startup_standard)
@@ -721,6 +760,7 @@ private fun TunerScreenPreview() {
             onStartupModeSelected = {},
             onSetFavoriteTuning = {},
             onFreezeAfterDecayChanged = {},
+            onA4CalibrationChanged = {},
             onTuningSelected = {},
             onImportTunings = {},
             onExportTunings = {},

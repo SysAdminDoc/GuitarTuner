@@ -20,6 +20,7 @@ data class TuningDefinition(
 
 object GuitarTunings {
     const val StandardId = "standard"
+    private const val ReferenceA4Hz = 440.0
 
     val standard: TuningDefinition = TuningDefinition(
         id = StandardId,
@@ -30,12 +31,25 @@ object GuitarTunings {
 
     val builtIns: List<TuningDefinition> = listOf(standard)
 
-    fun catalog(customTunings: List<TuningDefinition>): TuningCatalog =
+    fun catalog(
+        customTunings: List<TuningDefinition>,
+        a4Hz: Double = ReferenceA4Hz,
+    ): TuningCatalog =
         TuningCatalog(
-            builtIns + customTunings.filterNot { custom ->
+            (builtIns + customTunings.filterNot { custom ->
                 builtIns.any { builtIn -> builtIn.id == custom.id }
+            }).map { tuning -> tuning.withA4Calibration(a4Hz) },
+        )
+
+    private fun TuningDefinition.withA4Calibration(a4Hz: Double): TuningDefinition {
+        val ratio = a4Hz / ReferenceA4Hz
+        if (ratio == 1.0) return this
+        return copy(
+            strings = strings.map { string ->
+                string.copy(frequencyHz = string.frequencyHz * ratio)
             },
         )
+    }
 }
 
 data class TuningCatalog(
