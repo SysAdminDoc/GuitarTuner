@@ -155,6 +155,32 @@ class YinPitchDetectorTest {
     }
 
     @Test
+    fun detectsBassLowEWithExtendedRange() {
+        val bassDetector = YinPitchDetector(PitchDetectorConfig(minFrequencyHz = 35.0, maxFrequencyHz = 200.0))
+        val estimate = bassDetector.detect(
+            samples = guitarLikeSignal(frequencyHz = 41.2, secondHarmonicLevel = 0.15, sampleRate = SampleRate48k),
+            sampleRate = SampleRate48k,
+        )
+
+        assertEquals(SignalStatus.Detected, estimate.status)
+        val frequencyHz = requireNotNull(estimate.frequencyHz)
+        assertTrue("Bass E1 expected 41.2, got $frequencyHz", abs(frequencyHz - 41.2) < 2.0)
+    }
+
+    @Test
+    fun detectsUkuleleHighAWithNarrowRange() {
+        val ukeDetector = YinPitchDetector(PitchDetectorConfig(minFrequencyHz = 200.0, maxFrequencyHz = 520.0))
+        val estimate = ukeDetector.detect(
+            samples = guitarLikeSignal(frequencyHz = 440.0, secondHarmonicLevel = 0.1),
+            sampleRate = SampleRate,
+        )
+
+        assertEquals(SignalStatus.Detected, estimate.status)
+        val frequencyHz = requireNotNull(estimate.frequencyHz)
+        assertTrue("Ukulele A4 expected 440, got $frequencyHz", abs(frequencyHz - 440.0) < 1.5)
+    }
+
+    @Test
     fun reportsHighNoiseForLoudUnpitchedInput() {
         val random = Random(11)
         val noise = FloatArray(4096) {

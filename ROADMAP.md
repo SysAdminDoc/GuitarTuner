@@ -49,13 +49,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: no file over ~400 lines in ui/; permission/import/export logic unit-tested; behavior identical (screenshots re-captured).
   Complexity: M
 
-- [ ] P2 — Capture-loop, alternate-tuning, and noise fixture tests
-  Why: AudioCaptureController logic (source fallback, zero-frame handling, frame assembly) and non-standard tunings have zero automated coverage; noise robustness is asserted only by one synthetic case.
-  Evidence: app/src/test/ inventory (no controller tests; guitar-fixtures/ holds standard tuning only).
-  Touches: test/ new AudioCaptureController tests (recorder abstraction), WAV fixtures for Drop D/DADGAD and chatter/white-noise/impulse profiles.
-  Acceptance: gradlew check exercises controller frame assembly and fallback paths; alternate-tuning and noise fixtures gate regressions.
-  Complexity: M
-
 - [ ] P2 — Baseline profile for cold start
   Why: a tuner is a 30-second utility — cold start is the UX; baseline profiles cut startup 15-40% in published case studies.
   Evidence: developer.android.com baseline profiles overview + Todoist/Duolingo case studies.

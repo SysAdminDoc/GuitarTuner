@@ -146,6 +146,49 @@ class TuningAnalyzerTest {
     }
 
     @Test
+    fun dropDTuningMapsLowDCorrectly() {
+        val dropD = TuningAnalyzer(GuitarTunings.dropD.strings)
+        val measurement = dropD.analyze(detectedPitch(73.42))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("D", measurement.target?.name)
+    }
+
+    @Test
+    fun bassStandardMapsLowECorrectly() {
+        val bass = TuningAnalyzer(
+            strings = GuitarTunings.bassStandard.strings,
+            inTuneCents = 5.0,
+        )
+        val measurement = bass.analyze(detectedPitch(41.2))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("E", measurement.target?.name)
+    }
+
+    @Test
+    fun ukuleleStandardMapsHighACorrectly() {
+        val uke = TuningAnalyzer(GuitarTunings.ukuleleStandard.strings)
+        val measurement = uke.analyze(detectedPitch(440.0))
+
+        assertEquals(TuningStatus.InTune, measurement.status)
+        assertEquals("A", measurement.target?.name)
+    }
+
+    @Test
+    fun overshootDetectedWhenFarAboveGuidedTarget() {
+        val guidedHighE = TuningAnalyzer(
+            strings = StandardGuitarTuning.strings,
+            targetSelection = TuningTargetSelection.guided(1),
+            overshootWarningCents = 300.0,
+        )
+        val measurement = guidedHighE.analyze(detectedPitch(400.0))
+
+        assertEquals(TuningStatus.Overshoot, measurement.status)
+        assertEquals("High E", measurement.target?.name)
+    }
+
+    @Test
     fun mapsHighNoiseEstimateToHighNoiseState() {
         val measurement = analyzer.analyze(
             PitchEstimate(

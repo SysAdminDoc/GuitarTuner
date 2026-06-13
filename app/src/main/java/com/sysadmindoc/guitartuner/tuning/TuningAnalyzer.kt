@@ -13,6 +13,7 @@ class TuningAnalyzer(
     private val maxGuidedDetectCents: Double = 300.0,
     private val octaveCorrectionMinImprovementCents: Double = 80.0,
     private val overshootWarningCents: Double = 300.0,
+    private val overshootCeilingCents: Double = 450.0,
     private val a4Hz: Double = 440.0,
 ) {
     fun analyze(estimate: PitchEstimate): TuningMeasurement {
@@ -51,21 +52,22 @@ class TuningAnalyzer(
 
     private fun analyzeFrequency(frequencyHz: Double, confidence: Double): TuningMeasurement {
         val candidate = resolveSecondHarmonicCandidate(frequencyHz)
-        val maxDetectCents = when (targetSelection.mode) {
-            TuningMode.Auto, TuningMode.Chromatic -> maxAutoDetectCents
-            TuningMode.Guided -> maxGuidedDetectCents
-        }
-        if (abs(candidate.cents) > maxDetectCents) {
-            return TuningMeasurement.noStringDetected(frequencyHz = frequencyHz, confidence = confidence)
-        }
 
-        if (candidate.cents > overshootWarningCents) {
+        if (candidate.cents > overshootWarningCents && candidate.cents < overshootCeilingCents) {
             return TuningMeasurement.overshoot(
                 target = candidate.string,
                 frequencyHz = candidate.frequencyHz,
                 cents = candidate.cents,
                 confidence = confidence,
             )
+        }
+
+        val maxDetectCents = when (targetSelection.mode) {
+            TuningMode.Auto, TuningMode.Chromatic -> maxAutoDetectCents
+            TuningMode.Guided -> maxGuidedDetectCents
+        }
+        if (abs(candidate.cents) > maxDetectCents) {
+            return TuningMeasurement.noStringDetected(frequencyHz = frequencyHz, confidence = confidence)
         }
 
         val direction = when {
