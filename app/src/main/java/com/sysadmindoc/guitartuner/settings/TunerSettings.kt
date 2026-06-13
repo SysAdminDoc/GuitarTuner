@@ -29,6 +29,7 @@ data class StoredTunerPreferences(
     val favoriteTuningId: String = GuitarTunings.StandardId,
     val freezeAfterDecay: Boolean = false,
     val a4Hz: Double = 440.0,
+    val pegTurnDirections: Map<Int, PegTurnDirection> = emptyMap(),
 ) {
     init {
         PitchCalibration(a4Hz)

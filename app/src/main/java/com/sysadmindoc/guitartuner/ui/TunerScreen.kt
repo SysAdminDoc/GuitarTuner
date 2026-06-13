@@ -40,11 +40,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
+import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
+import com.sysadmindoc.guitartuner.settings.opposite
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
+import com.sysadmindoc.guitartuner.tuning.TuningDirection
 import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
 import com.sysadmindoc.guitartuner.tuning.guidedTuningStep
@@ -71,6 +74,7 @@ fun TunerScreen(
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
+    onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
@@ -107,6 +111,7 @@ fun TunerScreen(
                     ) {
                         TunerMeterPanel(
                             state = state,
+                            pegTurnDirections = preferences.pegTurnDirections,
                             modifier = Modifier.weight(1f),
                         )
                         StartupTuningPanel(
@@ -121,6 +126,7 @@ fun TunerScreen(
                             onSetFavoriteTuning = onSetFavoriteTuning,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                             onA4CalibrationChanged = onA4CalibrationChanged,
+                            onPegTurnDirectionChanged = onPegTurnDirectionChanged,
                             onTuningSelected = onTuningSelected,
                             onImportTunings = onImportTunings,
                             onExportTunings = onExportTunings,
@@ -131,6 +137,7 @@ fun TunerScreen(
                 } else {
                     TunerMeterPanel(
                         state = state,
+                        pegTurnDirections = preferences.pegTurnDirections,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     StartupTuningPanel(
@@ -145,6 +152,7 @@ fun TunerScreen(
                         onSetFavoriteTuning = onSetFavoriteTuning,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                         onA4CalibrationChanged = onA4CalibrationChanged,
+                        onPegTurnDirectionChanged = onPegTurnDirectionChanged,
                         onTuningSelected = onTuningSelected,
                         onImportTunings = onImportTunings,
                         onExportTunings = onExportTunings,
@@ -191,6 +199,7 @@ private fun TunerHeader(
 @Composable
 private fun TunerMeterPanel(
     state: TunerSessionState,
+    pegTurnDirections: Map<Int, PegTurnDirection>,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -206,7 +215,10 @@ private fun TunerMeterPanel(
         ) {
             TargetString(state)
             CentsMeter(state)
-            FrequencyReadout(state)
+            FrequencyReadout(
+                state = state,
+                pegTurnDirections = pegTurnDirections,
+            )
         }
     }
 }
@@ -224,6 +236,7 @@ private fun StartupTuningPanel(
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
+    onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
@@ -336,6 +349,33 @@ private fun StartupTuningPanel(
                     ) {
                         Text(stringResource(R.string.action_next_string))
                     }
+                }
+                Text(
+                    text = stringResource(R.string.setting_peg_direction),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = stringResource(R.string.peg_tune_up_turn),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    PegDirectionButton(
+                        label = stringResource(R.string.turn_left),
+                        selected = preferences.pegTurnDirections[guidedStringNumber] == PegTurnDirection.Left,
+                        onClick = { onPegTurnDirectionChanged(guidedStringNumber, PegTurnDirection.Left) },
+                        modifier = Modifier.weight(1f),
+                    )
+                    PegDirectionButton(
+                        label = stringResource(R.string.turn_right),
+                        selected = preferences.pegTurnDirections[guidedStringNumber] == PegTurnDirection.Right,
+                        onClick = { onPegTurnDirectionChanged(guidedStringNumber, PegTurnDirection.Right) },
+                        modifier = Modifier.weight(1f),
+                    )
                 }
                 for (row in activeTuning.strings.chunked(3)) {
                     Row(
@@ -617,6 +657,33 @@ private fun GuidedStringButton(
     }
 }
 
+@Composable
+private fun PegDirectionButton(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(8.dp)
+    if (selected) {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+        ) {
+            Text(label, maxLines = 1)
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+        ) {
+            Text(label, maxLines = 1)
+        }
+    }
+}
+
 private fun GuitarString.walkthroughLabel(): String =
     "$name ($scientificPitch)"
 
@@ -691,7 +758,10 @@ private fun CentsMeter(state: TunerSessionState) {
 }
 
 @Composable
-private fun FrequencyReadout(state: TunerSessionState) {
+private fun FrequencyReadout(
+    state: TunerSessionState,
+    pegTurnDirections: Map<Int, PegTurnDirection>,
+) {
     val measurement = state.measurement
     val pitchResult = state.pitchResult
     val cents = pitchResult.centsOffset
@@ -702,7 +772,10 @@ private fun FrequencyReadout(state: TunerSessionState) {
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
-            text = guidanceLabel(measurement.status),
+            text = guidanceLabel(
+                status = measurement.status,
+                turnDirection = measurement.turnDirection(pegTurnDirections),
+            ),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = when (measurement.status) {
@@ -767,14 +840,44 @@ private fun primaryActionLabel(state: TunerSessionState, hasAudioPermission: Boo
 }
 
 @Composable
-private fun guidanceLabel(status: TuningStatus): String = when (status) {
-    TuningStatus.WaitingForSignal -> stringResource(R.string.guidance_strum_open_string)
-    TuningStatus.SignalClipping -> stringResource(R.string.guidance_play_softer)
-    TuningStatus.HighNoise -> stringResource(R.string.guidance_reduce_noise)
-    TuningStatus.NoStringDetected -> stringResource(R.string.guidance_try_one_string)
-    TuningStatus.TuneUp -> stringResource(R.string.guidance_tune_up)
-    TuningStatus.TuneDown -> stringResource(R.string.guidance_tune_down)
-    TuningStatus.InTune -> stringResource(R.string.guidance_in_tune)
+private fun guidanceLabel(
+    status: TuningStatus,
+    turnDirection: PegTurnDirection?,
+): String {
+    val base = when (status) {
+        TuningStatus.WaitingForSignal -> stringResource(R.string.guidance_strum_open_string)
+        TuningStatus.SignalClipping -> stringResource(R.string.guidance_play_softer)
+        TuningStatus.HighNoise -> stringResource(R.string.guidance_reduce_noise)
+        TuningStatus.NoStringDetected -> stringResource(R.string.guidance_try_one_string)
+        TuningStatus.TuneUp -> stringResource(R.string.guidance_tune_up)
+        TuningStatus.TuneDown -> stringResource(R.string.guidance_tune_down)
+        TuningStatus.InTune -> stringResource(R.string.guidance_in_tune)
+    }
+    return if (
+        turnDirection == null ||
+        status != TuningStatus.TuneUp && status != TuningStatus.TuneDown
+    ) {
+        base
+    } else {
+        val turnLabel = when (turnDirection) {
+            PegTurnDirection.Left -> stringResource(R.string.turn_left)
+            PegTurnDirection.Right -> stringResource(R.string.turn_right)
+        }
+        stringResource(R.string.guidance_with_turn, base, turnLabel)
+    }
+}
+
+private fun com.sysadmindoc.guitartuner.tuning.TuningMeasurement.turnDirection(
+    pegTurnDirections: Map<Int, PegTurnDirection>,
+): PegTurnDirection? {
+    val tuneUpDirection = target?.let { pegTurnDirections[it.stringNumber] } ?: return null
+    return when (direction) {
+        TuningDirection.TuneUp -> tuneUpDirection
+        TuningDirection.TuneDown -> tuneUpDirection.opposite()
+        TuningDirection.InTune,
+        null,
+        -> null
+    }
 }
 
 private fun formatOneDecimal(value: Double): String =
@@ -820,6 +923,7 @@ private fun TunerScreenPreview() {
             onSetFavoriteTuning = {},
             onFreezeAfterDecayChanged = {},
             onA4CalibrationChanged = {},
+            onPegTurnDirectionChanged = { _, _ -> },
             onTuningSelected = {},
             onImportTunings = {},
             onExportTunings = {},

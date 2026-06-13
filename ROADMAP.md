@@ -28,7 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### Phase 5 - Guided Tuning UI
 
-- [ ] Add peg-direction calibration for left/right guidance.
 - [ ] Add empty, permission-denied, high-noise, clipped-input, and no-string-detected states.
 
 ### Phase 6 - Settings and Tunings

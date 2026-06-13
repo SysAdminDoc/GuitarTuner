@@ -37,6 +37,7 @@ class TunerPreferencesRepository(
                 favoriteTuningId = storedPreferences[FavoriteTuningKey] ?: GuitarTunings.StandardId,
                 freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
                 a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
+                pegTurnDirections = decodePegTurnDirections(storedPreferences[PegDirectionsKey]),
             )
         }
 
@@ -72,6 +73,17 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setPegTurnDirection(
+        stringNumber: Int,
+        direction: PegTurnDirection,
+    ) {
+        dataStore.edit { preferences ->
+            val current = decodePegTurnDirections(preferences[PegDirectionsKey]).toMutableMap()
+            current[stringNumber] = direction
+            preferences[PegDirectionsKey] = encodePegTurnDirections(current)
+        }
+    }
+
     private fun String?.toStartupMode(): StartupTuningMode =
         StartupTuningMode.entries.firstOrNull { it.name == this } ?: StartupTuningMode.StandardDefault
 
@@ -84,5 +96,6 @@ class TunerPreferencesRepository(
         val FavoriteTuningKey = stringPreferencesKey("favorite_tuning_id")
         val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
         val A4HzKey = doublePreferencesKey("a4_hz")
+        val PegDirectionsKey = stringPreferencesKey("peg_directions")
     }
 }

@@ -220,6 +220,9 @@ private fun TunerRoute() {
             onA4CalibrationChanged = { a4Hz ->
                 scope.launch { preferencesRepository.setA4Hz(a4Hz) }
             },
+            onPegTurnDirectionChanged = { stringNumber, direction ->
+                scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }
+            },
             onTuningSelected = { tuning ->
                 selectedTuningId = tuning.id
                 scope.launch { preferencesRepository.rememberLastUsedTuning(tuning.id) }

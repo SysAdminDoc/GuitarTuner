@@ -17,6 +17,7 @@
     <string name="guidance_tune_up">Hoeher stimmen</string>
     <string name="guidance_tune_down">Tiefer stimmen</string>
     <string name="guidance_in_tune">Gestimmt</string>
+    <string name="guidance_with_turn">%1$s - %2$s drehen</string>
     <string name="action_allow_mic">Mikrofon erlauben</string>
     <string name="action_pause">Pause</string>
     <string name="action_start">Start</string>
@@ -39,6 +40,10 @@
     <string name="guided_step">Schritt %1$d von %2$d: %3$s</string>
     <string name="action_previous_string">Zurueck</string>
     <string name="action_next_string">Weiter</string>
+    <string name="setting_peg_direction">Wirbelrichtung</string>
+    <string name="peg_tune_up_turn">Wenn diese Saite hoeher muss, drehen:</string>
+    <string name="turn_left">Links</string>
+    <string name="turn_right">Rechts</string>
     <string name="tuning_custom_suffix">%1$s benutzerdefiniert</string>
     <string name="frequency_placeholder">-- Hz</string>
     <string name="frequency_value">%1$s Hz</string>
