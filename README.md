@@ -39,7 +39,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 - Build from a clean tag named `v*`.
 - Set signing secrets before pushing a release tag: `ANDROID_SIGNING_KEYSTORE_BASE64`, `GUITARTUNER_KEYSTORE_PASSWORD`, `GUITARTUNER_KEY_ALIAS`, and `GUITARTUNER_KEY_PASSWORD`.
 - Run `.\gradlew.bat check assembleRelease bundleRelease --no-daemon --no-configuration-cache`.
-- Publish the generated APK/AAB plus `SHA256SUMS.txt` from `.github/workflows/release.yml`.
+- Push the tag to GitHub after a remote and signing secrets are configured; `.github/workflows/release.yml` uploads the APK/AAB plus `SHA256SUMS.txt` and publishes them to a GitHub Release.
 - Do not publish artifacts from a dirty worktree or from an untagged local build.
 
 ## Signed Release Builds
@@ -73,6 +73,8 @@ For GitHub release builds, store the same passwords plus a base64-encoded keysto
 ```
 
 Paste that value into `ANDROID_SIGNING_KEYSTORE_BASE64`. The release workflow decodes it on the runner, builds `assembleRelease` and `bundleRelease`, and uploads APK/AAB artifacts with `SHA256SUMS.txt`.
+
+The release workflow is ready in this repository, but it only runs after the project is pushed to a GitHub remote and the four signing secrets exist. A `v*` tag push publishes or updates the matching GitHub Release; manual workflow runs build and upload artifacts without creating a release.
 
 ## Repository Status
 

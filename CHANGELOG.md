@@ -37,3 +37,4 @@
 - Added a local standard-guitar WAV fixture set and golden target regression tests for pitch and tuning results.
 - Added README screenshots captured from the Android app running on a physical Samsung SM-S938B.
 - Expanded signed release build documentation with local keystore, GitHub secret, APK/AAB, and checksum commands.
+- Prepared the GitHub release workflow to publish or update a tagged release once a remote and signing secrets exist.

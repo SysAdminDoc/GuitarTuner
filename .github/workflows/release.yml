@@ -10,7 +10,7 @@ jobs:
   android-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout clean tag
@@ -73,3 +73,17 @@ jobs:
           name: guitartuner-release
           path: release-artifacts/
           if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" release-artifacts/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" release-artifacts/* \
+              --verify-tag \
+              --title "$GITHUB_REF_NAME" \
+              --notes "GuitarTuner $GITHUB_REF_NAME"
+          fi

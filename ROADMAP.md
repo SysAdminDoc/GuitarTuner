@@ -26,10 +26,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Scaffold Milestones
 
-### Phase 7 - Verification and Release Prep
-
-- [ ] Prepare GitHub release workflow after a remote exists.
-
 ## Research-Driven Additions
 
 ## MVP Acceptance Criteria
