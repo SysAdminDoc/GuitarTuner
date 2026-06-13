@@ -41,6 +41,9 @@ class AudioCaptureController(
     private var targetSelection: TuningTargetSelection = TuningTargetSelection.auto()
 
     @Volatile
+    private var centsTolerance: Double = 5.0
+
+    @Volatile
     private var tuningAnalyzer: TuningAnalyzer = TuningAnalyzer(currentStrings, targetSelection)
 
     @Volatile
@@ -95,8 +98,17 @@ class AudioCaptureController(
         rebuildAnalyzer()
     }
 
+    fun setCentsTolerance(cents: Double) {
+        centsTolerance = cents
+        rebuildAnalyzer()
+    }
+
     private fun rebuildAnalyzer() {
-        tuningAnalyzer = TuningAnalyzer(currentStrings, targetSelection)
+        tuningAnalyzer = TuningAnalyzer(
+            strings = currentStrings,
+            targetSelection = targetSelection,
+            inTuneCents = centsTolerance,
+        )
         measurementSmoother.reset()
     }
 

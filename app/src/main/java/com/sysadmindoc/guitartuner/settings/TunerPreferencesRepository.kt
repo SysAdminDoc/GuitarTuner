@@ -37,6 +37,7 @@ class TunerPreferencesRepository(
                 favoriteTuningId = storedPreferences[FavoriteTuningKey] ?: GuitarTunings.StandardId,
                 freezeAfterDecay = storedPreferences[FreezeAfterDecayKey] ?: false,
                 a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
+                centsTolerance = storedPreferences[CentsToleranceKey].sanitizeCentsTolerance(),
                 pegTurnDirections = decodePegTurnDirections(storedPreferences[PegDirectionsKey]),
             )
         }
@@ -73,6 +74,13 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setCentsTolerance(centsTolerance: Double) {
+        require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
+        dataStore.edit { preferences ->
+            preferences[CentsToleranceKey] = centsTolerance
+        }
+    }
+
     suspend fun setPegTurnDirection(
         stringNumber: Int,
         direction: PegTurnDirection,
@@ -90,12 +98,16 @@ class TunerPreferencesRepository(
     private fun Double?.sanitizeA4Hz(): Double =
         this?.takeIf { it in 400.0..480.0 } ?: PitchCalibration().a4Hz
 
+    private fun Double?.sanitizeCentsTolerance(): Double =
+        this?.takeIf { it in 1.0..25.0 } ?: TunerSettings().centsTolerance
+
     private companion object {
         val StartupModeKey = stringPreferencesKey("startup_mode")
         val LastUsedTuningKey = stringPreferencesKey("last_used_tuning_id")
         val FavoriteTuningKey = stringPreferencesKey("favorite_tuning_id")
         val FreezeAfterDecayKey = booleanPreferencesKey("freeze_after_decay")
         val A4HzKey = doublePreferencesKey("a4_hz")
+        val CentsToleranceKey = doublePreferencesKey("cents_tolerance")
         val PegDirectionsKey = stringPreferencesKey("peg_directions")
     }
 }

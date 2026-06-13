@@ -20,6 +20,7 @@ class TunerSettingsTest {
         val preferences = StoredTunerPreferences()
 
         assertEquals(440.0, preferences.a4Hz, 0.0)
+        assertEquals(5.0, preferences.centsTolerance, 0.0)
     }
 
     @Test
@@ -33,6 +34,16 @@ class TunerSettingsTest {
     fun storedPreferencesRejectUnusableA4Calibration() {
         assertThrows(IllegalArgumentException::class.java) {
             StoredTunerPreferences(a4Hz = 100.0)
+        }
+    }
+
+    @Test
+    fun rejectsUnusableCentsTolerance() {
+        assertThrows(IllegalArgumentException::class.java) {
+            TunerSettings(centsTolerance = 0.5)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            StoredTunerPreferences(centsTolerance = 40.0)
         }
     }
 }

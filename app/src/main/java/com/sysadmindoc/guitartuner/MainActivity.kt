@@ -114,6 +114,10 @@ private fun TunerRoute() {
         controller.setFreezeAfterDecay(preferences.freezeAfterDecay)
     }
 
+    LaunchedEffect(preferences.centsTolerance) {
+        controller.setCentsTolerance(preferences.centsTolerance)
+    }
+
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
     ) { uri ->
@@ -219,6 +223,9 @@ private fun TunerRoute() {
             },
             onA4CalibrationChanged = { a4Hz ->
                 scope.launch { preferencesRepository.setA4Hz(a4Hz) }
+            },
+            onCentsToleranceChanged = { cents ->
+                scope.launch { preferencesRepository.setCentsTolerance(cents) }
             },
             onPegTurnDirectionChanged = { stringNumber, direction ->
                 scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }

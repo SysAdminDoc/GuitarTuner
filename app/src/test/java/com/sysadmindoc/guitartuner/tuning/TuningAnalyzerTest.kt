@@ -2,6 +2,7 @@ package com.sysadmindoc.guitartuner.tuning
 
 import com.sysadmindoc.guitartuner.pitch.PitchEstimate
 import com.sysadmindoc.guitartuner.pitch.SignalStatus
+import kotlin.math.pow
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -110,6 +111,16 @@ class TuningAnalyzerTest {
     }
 
     @Test
+    fun usesConfiguredCentsToleranceForInTuneWindow() {
+        val strict = TuningAnalyzer(StandardGuitarTuning.strings, inTuneCents = 5.0)
+        val relaxed = TuningAnalyzer(StandardGuitarTuning.strings, inTuneCents = 10.0)
+        val eightCentsSharp = frequencyWithCents(StandardGuitarTuning.strings.first().frequencyHz, 8.0)
+
+        assertEquals(TuningStatus.TuneDown, strict.analyze(detectedPitch(eightCentsSharp)).status)
+        assertEquals(TuningStatus.InTune, relaxed.analyze(detectedPitch(eightCentsSharp)).status)
+    }
+
+    @Test
     fun mapsHighNoiseEstimateToHighNoiseState() {
         val measurement = analyzer.analyze(
             PitchEstimate(
@@ -131,4 +142,7 @@ class TuningAnalyzerTest {
         clipping = false,
         status = SignalStatus.Detected,
     )
+
+    private fun frequencyWithCents(frequencyHz: Double, cents: Double): Double =
+        frequencyHz * 2.0.pow(cents / 1200.0)
 }

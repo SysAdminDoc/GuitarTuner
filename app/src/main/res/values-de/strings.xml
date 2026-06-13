@@ -30,6 +30,8 @@
     <string name="action_privacy">Datenschutz</string>
     <string name="setting_freeze_last_note">Letzte Note einfrieren</string>
     <string name="setting_a4_calibration">A4-Kalibrierung</string>
+    <string name="setting_cents_tolerance">Cent-Toleranz</string>
+    <string name="cents_tolerance_value">%1$s cents</string>
     <string name="startup_standard">Standard</string>
     <string name="startup_last">Letzte</string>
     <string name="startup_favorite">Favorit</string>

@@ -74,6 +74,7 @@ fun TunerScreen(
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
+    onCentsToleranceChanged: (Double) -> Unit,
     onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
@@ -127,6 +128,7 @@ fun TunerScreen(
                             onSetFavoriteTuning = onSetFavoriteTuning,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                             onA4CalibrationChanged = onA4CalibrationChanged,
+                            onCentsToleranceChanged = onCentsToleranceChanged,
                             onPegTurnDirectionChanged = onPegTurnDirectionChanged,
                             onTuningSelected = onTuningSelected,
                             onImportTunings = onImportTunings,
@@ -154,6 +156,7 @@ fun TunerScreen(
                         onSetFavoriteTuning = onSetFavoriteTuning,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                         onA4CalibrationChanged = onA4CalibrationChanged,
+                        onCentsToleranceChanged = onCentsToleranceChanged,
                         onPegTurnDirectionChanged = onPegTurnDirectionChanged,
                         onTuningSelected = onTuningSelected,
                         onImportTunings = onImportTunings,
@@ -240,6 +243,7 @@ private fun StartupTuningPanel(
     onSetFavoriteTuning: () -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
+    onCentsToleranceChanged: (Double) -> Unit,
     onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
@@ -460,6 +464,42 @@ private fun StartupTuningPanel(
                 OutlinedButton(
                     onClick = { onA4CalibrationChanged((preferences.a4Hz + 1.0).coerceAtMost(480.0)) },
                     enabled = preferences.a4Hz < 480.0,
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+                ) {
+                    Text("+1")
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.setting_cents_tolerance),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                OutlinedButton(
+                    onClick = {
+                        onCentsToleranceChanged((preferences.centsTolerance - 1.0).coerceAtLeast(1.0))
+                    },
+                    enabled = preferences.centsTolerance > 1.0,
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
+                ) {
+                    Text("-1")
+                }
+                Text(
+                    text = stringResource(R.string.cents_tolerance_value, formatWholeNumber(preferences.centsTolerance)),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                )
+                OutlinedButton(
+                    onClick = {
+                        onCentsToleranceChanged((preferences.centsTolerance + 1.0).coerceAtMost(25.0))
+                    },
+                    enabled = preferences.centsTolerance < 25.0,
                     shape = RoundedCornerShape(8.dp),
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
                 ) {
@@ -900,6 +940,9 @@ private fun formatSignedOneDecimal(value: Double): String =
 private fun formatWholeHz(value: Double): String =
     String.format(Locale.US, "%.0f Hz", value)
 
+private fun formatWholeNumber(value: Double): String =
+    String.format(Locale.US, "%.0f", value)
+
 private fun formatPercent(value: Double): String =
     String.format(Locale.US, "%.0f%%", value.coerceIn(0.0, 1.0) * 100.0)
 
@@ -934,6 +977,7 @@ private fun TunerScreenPreview() {
             onSetFavoriteTuning = {},
             onFreezeAfterDecayChanged = {},
             onA4CalibrationChanged = {},
+            onCentsToleranceChanged = {},
             onPegTurnDirectionChanged = { _, _ -> },
             onTuningSelected = {},
             onImportTunings = {},

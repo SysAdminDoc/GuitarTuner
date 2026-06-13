@@ -7,7 +7,11 @@ data class TunerSettings(
     val centsTolerance: Double = 5.0,
     val noiseGateRms: Double = 0.008,
     val themeMode: ThemeMode = ThemeMode.System,
-)
+) {
+    init {
+        require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
+    }
+}
 
 data class PitchCalibration(
     val a4Hz: Double = 440.0,
@@ -29,10 +33,12 @@ data class StoredTunerPreferences(
     val favoriteTuningId: String = GuitarTunings.StandardId,
     val freezeAfterDecay: Boolean = false,
     val a4Hz: Double = 440.0,
+    val centsTolerance: Double = 5.0,
     val pegTurnDirections: Map<Int, PegTurnDirection> = emptyMap(),
 ) {
     init {
         PitchCalibration(a4Hz)
+        require(centsTolerance in 1.0..25.0) { "Cents tolerance must stay within 1 and 25 cents." }
     }
 
     fun startupTuningId(): String = when (startupMode) {
