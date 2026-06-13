@@ -26,6 +26,25 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ## Research-Driven Additions
 
+### P1
+
+- [ ] P1 — Split TunerScreen.kt and extract a testable state holder
+  Why: file is ~1500 lines after feature additions; blocks UI testing and invites merge conflicts.
+  Where: ui/TunerScreen.kt, MainActivity.kt.
+  Acceptance: no file over ~400 lines in ui/; permission/import/export logic unit-tested; behavior identical.
+  Complexity: M
+
+- [ ] P1 — Version bump to v0.1.0 and first tagged release
+  Why: all P0/P1 features are shipped; the release workflow is configured but no signed release exists.
+  Where: app/build.gradle.kts, README.md badges, CHANGELOG.md.
+  Acceptance: v0.1.0 tag pushed, GitHub Release created with signed APK/AAB + SHA256SUMS.
+  Complexity: S
+
+- [ ] P1 — Re-capture screenshots on physical device
+  Why: UI has changed significantly (chromatic mode, fullscreen, haptic toggle, mic picker, overshoot state); stale screenshots mislead users.
+  Where: docs/screenshots/, fastlane/metadata/android/en-US/images/phoneScreenshots/, README.md.
+  Complexity: S
+
 ### P2
 
 - [ ] P2 — Optional strobe precision view
@@ -34,13 +53,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Touches: TunerScreen.kt (new meter style + setting), theme tokens; draw-phase-only state reads.
   Acceptance: strobe band drifts direction/speed proportional to cents and freezes when in tune; toggleable; default meter unchanged.
   Complexity: L
-
-- [ ] P2 — Split TunerScreen.kt and extract a testable state holder
-  Why: 1300-line screen file plus a 200-line route composable doing permission flow, SAF I/O, and preference plumbing blocks UI testing and invites regressions as P1 features land.
-  Evidence: ui/TunerScreen.kt (~50 KB); MainActivity.kt:52-257.
-  Touches: ui/ (meter, guided panel, settings sections, diagnostics files), new TunerStateHolder/ViewModel, MainActivity.kt.
-  Acceptance: no file over ~400 lines in ui/; permission/import/export logic unit-tested; behavior identical (screenshots re-captured).
-  Complexity: M
 
 - [ ] P2 — Baseline profile for cold start
   Why: a tuner is a 30-second utility — cold start is the UX; baseline profiles cut startup 15-40% in published case studies.
@@ -65,6 +77,20 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Touches: new wear/ module, shared core extraction into a library module, release workflow artifacts.
   Acceptance: watch app detects strings and shows tune-up/down with EdgeButton/ArcProgressIndicator UI; phone app unaffected.
   Complexity: XL
+
+### Audit Findings (deferred)
+
+- [ ] P2 — Add AudioCaptureController lifecycle and concurrency tests
+  Why: complex start/stop/close state machine and @Volatile field interactions have zero test coverage; audit found race windows in stop() and rebuildAnalyzer().
+  Where: test/ new AudioCaptureControllerTest.kt (requires recorder abstraction or Robolectric).
+
+- [ ] P2 — Add PrivacyScreen accessibility semantics
+  Why: text blocks lack contentDescription; screen reader users get poor navigation of the privacy information.
+  Where: ui/PrivacyScreen.kt.
+
+- [ ] P3 — Responsive font sizing in FullscreenTunerView
+  Why: hardcoded 96.sp/64.sp may overflow small phones or be tiny on tablets.
+  Where: ui/TunerScreen.kt FullscreenTunerView composable.
 
 ## MVP Acceptance Criteria
 
