@@ -242,6 +242,7 @@ class AudioCaptureController(
         val captureContext = currentCoroutineContext()
         val readBuffer = ShortArray(ReadBufferSize)
         val frameBuffer = FloatArray(FrameSize)
+        val analysisBuffer = FloatArray(FrameSize)
         var frameFill = 0
         var startupReads = 0
         var startupHasAudio = false
@@ -293,7 +294,8 @@ class AudioCaptureController(
                 frameBuffer[frameFill] = readBuffer[index] / Short.MAX_VALUE.toFloat()
                 frameFill += 1
                 if (frameFill == FrameSize) {
-                    analyzeFrame(frameBuffer.copyOf(), sampleRate)
+                    frameBuffer.copyInto(analysisBuffer)
+                    analyzeFrame(analysisBuffer, sampleRate)
                     frameBuffer.copyInto(
                         destination = frameBuffer,
                         destinationOffset = 0,

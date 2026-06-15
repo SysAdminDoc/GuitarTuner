@@ -27,6 +27,7 @@ internal fun TunerSettingsPanel(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onHapticEnabledChanged: (Boolean) -> Unit,
+    onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
@@ -65,6 +66,7 @@ internal fun TunerSettingsPanel(
             onThemeModeSelected = onThemeModeSelected,
             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
             onHapticEnabledChanged = onHapticEnabledChanged,
+            onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
         )
         PrecisionSection(
             preferences = preferences,

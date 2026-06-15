@@ -52,6 +52,10 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setHapticEnabled(enabled) }
     }
 
+    fun setAutoAdvanceGuided(enabled: Boolean) {
+        scope.launch { preferencesRepository.setAutoAdvanceGuided(enabled) }
+    }
+
     fun setA4Hz(a4Hz: Double) {
         scope.launch { preferencesRepository.setA4Hz(a4Hz) }
     }

@@ -269,6 +269,7 @@ private fun TunerRoute() {
                 onThemeModeSelected = { mode -> stateHolder.setThemeMode(mode) },
                 onFreezeAfterDecayChanged = { enabled -> stateHolder.setFreezeAfterDecay(enabled) },
                 onHapticEnabledChanged = { enabled -> stateHolder.setHapticEnabled(enabled) },
+                onAutoAdvanceGuidedChanged = { enabled -> stateHolder.setAutoAdvanceGuided(enabled) },
                 onMeasureA4 = {
                     val measured = TunerStateHolder.measureA4FromLive(
                         state.pitchEstimate.frequencyHz, state.pitchEstimate.confidence,

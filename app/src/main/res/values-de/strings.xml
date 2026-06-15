@@ -48,6 +48,8 @@
     <string name="setting_freeze_last_note_helper">Haelt den letzten stabilen Ton sichtbar, waehrend die Note ausklingt.</string>
     <string name="setting_haptic">Haptische Bestaetigung</string>
     <string name="setting_haptic_helper">Vibriert, wenn eine Saite den Stimmbereich erreicht.</string>
+    <string name="setting_auto_advance">Auto-Weiterschaltung bei Gefuehrt</string>
+    <string name="setting_auto_advance_helper">Springt automatisch zur naechsten Saite, wenn die aktuelle gestimmt ist.</string>
     <string name="action_measure_a4">A4 vom Mikrofon messen</string>
     <string name="setting_a4_calibration">A4-Kalibrierung</string>
     <string name="setting_cents_tolerance">Cent-Toleranz</string>

@@ -35,6 +35,7 @@ data class StoredTunerPreferences(
     val themeMode: ThemeMode = ThemeMode.System,
     val freezeAfterDecay: Boolean = false,
     val hapticEnabled: Boolean = false,
+    val autoAdvanceGuided: Boolean = true,
     val a4Hz: Double = 440.0,
     val centsTolerance: Double = 5.0,
     val noiseGateRms: Double = 0.0015,

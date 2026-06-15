@@ -35,6 +35,9 @@ import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
 import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
+import com.sysadmindoc.guitartuner.tuning.guidedTuningStep
+import com.sysadmindoc.guitartuner.tuning.nextGuidedStringNumber
+import kotlinx.coroutines.delay
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 
 @Composable
@@ -55,6 +58,7 @@ fun TunerScreen(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onHapticEnabledChanged: (Boolean) -> Unit,
+    onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
@@ -79,6 +83,18 @@ fun TunerScreen(
             view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
         }
         previousInTune = currentlyInTune
+    }
+
+    LaunchedEffect(currentlyInTune, tuningMode, guidedStringNumber) {
+        if (!currentlyInTune || tuningMode != TuningMode.Guided || !preferences.autoAdvanceGuided) return@LaunchedEffect
+        val step = guidedTuningStep(activeTuning.strings, guidedStringNumber)
+        if (step.index >= step.total - 1) return@LaunchedEffect
+        delay(1500)
+        val nextString = nextGuidedStringNumber(activeTuning.strings, guidedStringNumber)
+        if (preferences.hapticEnabled) {
+            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+        }
+        onGuidedStringSelected(nextString)
     }
 
     var fullscreenMode by remember { mutableStateOf(false) }
@@ -161,6 +177,7 @@ fun TunerScreen(
                             onThemeModeSelected = onThemeModeSelected,
                             onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                             onHapticEnabledChanged = onHapticEnabledChanged,
+                            onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
                             onMeasureA4 = onMeasureA4,
                             onA4CalibrationChanged = onA4CalibrationChanged,
                             onCentsToleranceChanged = onCentsToleranceChanged,
@@ -205,6 +222,7 @@ fun TunerScreen(
                         onThemeModeSelected = onThemeModeSelected,
                         onFreezeAfterDecayChanged = onFreezeAfterDecayChanged,
                         onHapticEnabledChanged = onHapticEnabledChanged,
+                        onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
                         onMeasureA4 = onMeasureA4,
                         onA4CalibrationChanged = onA4CalibrationChanged,
                         onCentsToleranceChanged = onCentsToleranceChanged,
@@ -261,6 +279,7 @@ private fun TunerScreenPreview() {
             onThemeModeSelected = {},
             onFreezeAfterDecayChanged = {},
             onHapticEnabledChanged = {},
+            onAutoAdvanceGuidedChanged = {},
             onMeasureA4 = {},
             onA4CalibrationChanged = {},
             onCentsToleranceChanged = {},

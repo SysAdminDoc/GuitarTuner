@@ -4,6 +4,10 @@
 
 - Moved TalkBack accessibility descriptions to string resources so tuning state is announced in the device language (en/de/es) instead of hardcoded English.
 - Derived the UI silence threshold from the detector's configured noise gate so the "no sound reaching mic" state and pitch detector silence gate agree at all user-chosen noise gate settings.
+- Added auto-advance in Guided mode: after a string holds in-tune for 1.5 seconds, the walkthrough moves to the next string with optional haptic confirmation. Togglable in settings (default on).
+- Eliminated per-frame heap allocation in the audio capture loop by using a pre-allocated analysis buffer instead of `copyOf()`.
+- Added SECURITY.md with APK verification instructions and release artifact integrity guidance.
+- Added fastlane `title.txt` for IzzyOnDroid metadata completeness.
 
 ## GuitarTuner v0.0.4 - 2026-06-15
 

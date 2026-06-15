@@ -27,6 +27,7 @@ internal fun DefaultsSection(
     onThemeModeSelected: (ThemeMode) -> Unit,
     onFreezeAfterDecayChanged: (Boolean) -> Unit,
     onHapticEnabledChanged: (Boolean) -> Unit,
+    onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
 ) {
     SettingsSection(
         title = stringResource(R.string.section_defaults),
@@ -77,6 +78,12 @@ internal fun DefaultsSection(
             helper = stringResource(R.string.setting_haptic_helper),
             checked = preferences.hapticEnabled,
             onCheckedChange = onHapticEnabledChanged,
+        )
+        ToggleSettingRow(
+            label = stringResource(R.string.setting_auto_advance),
+            helper = stringResource(R.string.setting_auto_advance_helper),
+            checked = preferences.autoAdvanceGuided,
+            onCheckedChange = onAutoAdvanceGuidedChanged,
         )
     }
 }
