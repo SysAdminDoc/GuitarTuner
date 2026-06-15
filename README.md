@@ -104,6 +104,10 @@ The release workflow is ready in this repository, but it only runs after the pro
 
 GuitarTuner v0.0.4 has a native Android scaffold with an in-project YIN pitch detector, autocorrelation fallback, overlapping live audio windows, lower default noise gate for real phone microphones, stable-frame smoothing that preserves overshoot warnings and configured in-tune tolerance, second-harmonic octave correction, an explicit `PitchResult` contract, Auto/Guided/Chromatic tuning modes, guitar/bass/ukulele presets, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a premium AMOLED tuner surface, compact live readouts, fullscreen stage mode, a local-audio privacy signal, sectioned settings controls, safe reference tone playback, live raw microphone RMS/peak, input source, sample rate, explicit signal and permission states, bounded tuning-file import validation, DataStore recovery for local settings, a merged-manifest permission gate, JVM tests for standard-string, octave-error, quiet-input, live-sized fixture frames, raw PCM level diagnostics, local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
+## Screenshot
+
+![Stable bottom listening controls](docs/screenshots/tuner-stable-controls.png)
+
 ## Privacy Baseline
 
 The Android manifest declares `RECORD_AUDIO` only. The app has no network permission, no background microphone service, and no audio upload path.
