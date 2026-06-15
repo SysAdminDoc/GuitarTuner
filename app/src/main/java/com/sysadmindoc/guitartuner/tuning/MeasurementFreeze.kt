@@ -34,6 +34,10 @@ class MeasurementFreeze {
             )
     }
 
+    fun reset() {
+        lastStableFrame = null
+    }
+
     private fun TuningStatus.isStableTuningStatus(): Boolean = when (this) {
         TuningStatus.TuneUp,
         TuningStatus.TuneDown,

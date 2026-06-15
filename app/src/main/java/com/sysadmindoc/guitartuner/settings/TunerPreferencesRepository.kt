@@ -1,6 +1,7 @@
 package com.sysadmindoc.guitartuner.settings
 
 import android.content.Context
+import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -24,7 +25,11 @@ class TunerPreferencesRepository(
 ) {
     val preferences: Flow<StoredTunerPreferences> = dataStore.data
         .catch { exception ->
-            if (exception is IOException || exception is kotlinx.serialization.SerializationException) {
+            if (
+                exception is IOException ||
+                exception is CorruptionException ||
+                exception is kotlinx.serialization.SerializationException
+            ) {
                 emit(emptyPreferences())
             } else {
                 throw exception

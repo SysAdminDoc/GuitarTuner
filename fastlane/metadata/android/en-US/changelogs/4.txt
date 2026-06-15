@@ -1,0 +1,1 @@
+Improves tuner reliability and release polish: preserves string-break overshoot warnings through smoothing, resets frozen notes when tuning context changes, recovers local settings after preference-store read failures, hardens reference tone playback, and improves settings toggle accessibility.

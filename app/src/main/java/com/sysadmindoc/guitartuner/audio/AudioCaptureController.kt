@@ -72,7 +72,6 @@ class AudioCaptureController(
         if (captureJob?.isActive == true) return
         _state.value = _state.value.copy(
             isListening = true,
-            errorMessage = null,
         )
         val job = scope.launch(dispatcher) {
             runCaptureLoop()
@@ -92,6 +91,7 @@ class AudioCaptureController(
         job?.cancel()
         activeRecord?.safeStop()
         measurementSmoother.reset()
+        measurementFreeze.reset()
         phaseRefiner.reset()
         _state.value = _state.value.copy(isListening = false, micStolen = false)
     }
@@ -148,6 +148,7 @@ class AudioCaptureController(
             a4Hz = a4Hz,
         )
         measurementSmoother.reset()
+        measurementFreeze.reset()
     }
 
     fun setFreezeAfterDecay(enabled: Boolean) {
@@ -326,7 +327,6 @@ class AudioCaptureController(
             isFrozen = measurementFrame.isFrozen,
             pitchEstimate = measurementFrame.pitchEstimate,
             measurement = measurementFrame.measurement,
-            errorMessage = null,
         )
     }
 

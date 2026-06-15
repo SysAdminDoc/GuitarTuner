@@ -11,7 +11,6 @@ class StableMeasurementSmootherTest {
         attackFramesToSkip = 1,
         stableWindowSize = 3,
         maxInterFrameCents = 20.0,
-        inTuneCents = 5.0,
     )
     private val smoother = StableMeasurementSmoother(config)
     private val lowE = StandardGuitarTuning.strings.first { it.scientificPitch == "E2" }
@@ -126,19 +125,75 @@ class StableMeasurementSmootherTest {
         assertEquals("non-octave target change is immediate", aString, newTarget.target)
     }
 
+    @Test
+    fun preservesOvershootWarningAfterSmoothing() {
+        val overshoot1 = overshoot(390.0, 292.5)
+        val overshoot2 = overshoot(395.0, 314.5)
+        val overshoot3 = overshoot(400.0, 336.3)
+
+        assertSame(overshoot1, smoother.apply(overshoot1))
+        smoother.apply(overshoot2)
+        val smoothed = smoother.apply(overshoot3)
+
+        assertEquals(TuningStatus.Overshoot, smoothed.status)
+        assertEquals(TuningDirection.TuneDown, smoothed.direction)
+    }
+
+    @Test
+    fun preservesAnalyzerInTuneDirectionForRelaxedTolerance() {
+        val inTuneAtEightCents = measurementWithDirection(
+            frequencyHz = 82.79,
+            cents = 8.0,
+            direction = TuningDirection.InTune,
+        )
+
+        smoother.apply(inTuneAtEightCents)
+        smoother.apply(inTuneAtEightCents.copy(frequencyHz = 82.81, cents = 8.4))
+        val smoothed = smoother.apply(inTuneAtEightCents.copy(frequencyHz = 82.77, cents = 7.6))
+
+        assertEquals(TuningStatus.InTune, smoothed.status)
+        assertEquals(TuningDirection.InTune, smoothed.direction)
+    }
+
     private fun measurement(
         frequencyHz: Double,
         cents: Double,
         target: GuitarString = lowE,
+    ): TuningMeasurement = measurementWithDirection(
+        frequencyHz = frequencyHz,
+        cents = cents,
+        target = target,
+        direction = when {
+            abs(cents) <= InTuneCents -> TuningDirection.InTune
+            cents < 0.0 -> TuningDirection.TuneUp
+            else -> TuningDirection.TuneDown
+        },
+    )
+
+    private fun measurementWithDirection(
+        frequencyHz: Double,
+        cents: Double,
+        target: GuitarString = lowE,
+        direction: TuningDirection,
     ): TuningMeasurement = TuningMeasurement.detected(
         target = target,
         frequencyHz = frequencyHz,
         cents = cents,
         confidence = 0.9,
-        direction = when {
-            abs(cents) <= config.inTuneCents -> TuningDirection.InTune
-            cents < 0.0 -> TuningDirection.TuneUp
-            else -> TuningDirection.TuneDown
-        },
+        direction = direction,
     )
+
+    private fun overshoot(
+        frequencyHz: Double,
+        cents: Double,
+    ): TuningMeasurement = TuningMeasurement.overshoot(
+        target = lowE,
+        frequencyHz = frequencyHz,
+        cents = cents,
+        confidence = 0.9,
+    )
+
+    private companion object {
+        const val InTuneCents = 5.0
+    }
 }

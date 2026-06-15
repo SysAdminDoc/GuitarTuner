@@ -74,7 +74,6 @@ data class TunerSessionState(
     val measurement: TuningMeasurement = TuningMeasurement.waiting(),
     val inputLevel: AudioInputLevel = AudioInputLevel(),
     val audioError: AudioError? = null,
-    val errorMessage: String? = null,
 ) {
     val pitchResult: PitchResult
         get() = PitchResult.from(pitchEstimate, measurement)

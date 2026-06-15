@@ -7,6 +7,9 @@ import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.sin
 
+internal fun isPlayableReferenceToneFrequency(frequencyHz: Double): Boolean =
+    frequencyHz.isFinite() && frequencyHz in 20.0..5_000.0
+
 class TonePlayer {
     private var track: AudioTrack? = null
 
@@ -15,25 +18,36 @@ class TonePlayer {
 
     fun play(frequencyHz: Double) {
         stop()
+        if (!isPlayableReferenceToneFrequency(frequencyHz)) return
+
         val samples = generateTone(frequencyHz)
         val bufferSize = samples.size * Short.SIZE_BYTES
-        val audioTrack = AudioTrack.Builder()
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build(),
-            )
-            .setAudioFormat(
-                AudioFormat.Builder()
-                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                    .setSampleRate(SampleRate)
-                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                    .build(),
-            )
-            .setBufferSizeInBytes(bufferSize)
-            .setTransferMode(AudioTrack.MODE_STATIC)
-            .build()
+        val audioTrack = try {
+            AudioTrack.Builder()
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build(),
+                )
+                .setAudioFormat(
+                    AudioFormat.Builder()
+                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(SampleRate)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                        .build(),
+                )
+                .setBufferSizeInBytes(bufferSize)
+                .setTransferMode(AudioTrack.MODE_STATIC)
+                .build()
+        } catch (_: RuntimeException) {
+            return
+        }
+
+        if (audioTrack.state != AudioTrack.STATE_INITIALIZED) {
+            try { audioTrack.release() } catch (_: RuntimeException) {}
+            return
+        }
 
         audioTrack.setPlaybackPositionUpdateListener(object : AudioTrack.OnPlaybackPositionUpdateListener {
             override fun onMarkerReached(t: AudioTrack) {
@@ -45,7 +59,12 @@ class TonePlayer {
         })
         track = audioTrack
         try {
-            audioTrack.write(samples, 0, samples.size)
+            val written = audioTrack.write(samples, 0, samples.size)
+            if (written != samples.size) {
+                track = null
+                try { audioTrack.release() } catch (_: RuntimeException) {}
+                return
+            }
             audioTrack.setNotificationMarkerPosition(samples.size)
             audioTrack.play()
         } catch (_: RuntimeException) {

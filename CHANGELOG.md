@@ -1,5 +1,14 @@
 # Changelog
 
+## GuitarTuner v0.0.4 - 2026-06-15
+
+- Preserved string-break overshoot warnings through stable-frame smoothing so dangerous sharp readings cannot degrade into ordinary tune-down guidance.
+- Respected analyzer-classified in-tune states during smoothing so relaxed cents tolerance settings remain authoritative.
+- Reset freeze-last-note state when listening stops or tuning/analyzer context changes, preventing stale measurements from reappearing after mode, tuning, or calibration changes.
+- Hardened reference tone playback against invalid frequencies, failed `AudioTrack` initialization, and incomplete static-buffer writes.
+- Recovered custom tunings and tuner preferences to empty/default state after DataStore read failures or corruption instead of breaking startup flows.
+- Made settings toggle rows fully tappable with checkbox semantics and removed dead session/error and string resources from earlier UI revisions.
+
 ## GuitarTuner v0.0.3 - 2026-06-15
 
 - Hardened microphone capture start/stop handling so canceled capture loops cannot attach to a newer job, stale recorders are stopped promptly, and cancellation does not surface as a false microphone failure.

@@ -79,4 +79,20 @@ class MeasurementFreezeTest {
         assertFalse(frame.isFrozen)
         assertEquals(newMeasurement, frame.measurement)
     }
+
+    @Test
+    fun resetClearsStoredStableMeasurement() {
+        val freeze = MeasurementFreeze()
+        freeze.apply(stableEstimate, stableMeasurement, enabled = true)
+
+        freeze.reset()
+        val frame = freeze.apply(
+            estimate = silenceEstimate,
+            measurement = TuningMeasurement.waiting(),
+            enabled = true,
+        )
+
+        assertFalse(frame.isFrozen)
+        assertEquals(TuningStatus.WaitingForSignal, frame.measurement.status)
+    }
 }

@@ -7,7 +7,6 @@ data class StableMeasurementSmootherConfig(
     val attackFramesToSkip: Int = 2,
     val stableWindowSize: Int = 4,
     val maxInterFrameCents: Double = 25.0,
-    val inTuneCents: Double = 5.0,
     val maxHoldoverFrames: Int = 2,
     val octaveFlipThreshold: Int = 3,
 )
@@ -126,14 +125,21 @@ class StableMeasurementSmoother(
     private fun averageStableFrames(): TuningMeasurement {
         val frames = stableFrames.toList()
         val target = activeTarget ?: return frames.last()
+        val latestFrame = frames.last()
         val frequencyHz = frames.mapNotNull { it.frequencyHz }.average()
         val cents = frames.mapNotNull { it.cents }.average()
         val confidence = frames.map { it.confidence }.average()
-        val direction = when {
-            abs(cents) <= config.inTuneCents -> TuningDirection.InTune
-            cents < 0.0 -> TuningDirection.TuneUp
-            else -> TuningDirection.TuneDown
+
+        if (latestFrame.status == TuningStatus.Overshoot) {
+            return TuningMeasurement.overshoot(
+                target = target,
+                frequencyHz = frequencyHz,
+                cents = cents,
+                confidence = confidence,
+            )
         }
+
+        val direction = averagedDirection(frames, cents)
 
         return TuningMeasurement.detected(
             target = target,
@@ -142,6 +148,26 @@ class StableMeasurementSmoother(
             confidence = confidence,
             direction = direction,
         )
+    }
+
+    private fun averagedDirection(
+        frames: List<TuningMeasurement>,
+        averagedCents: Double,
+    ): TuningDirection {
+        if (frames.all { it.status == TuningStatus.InTune }) {
+            return TuningDirection.InTune
+        }
+
+        val tuneUpFrames = frames.count { it.status == TuningStatus.TuneUp }
+        val tuneDownFrames = frames.count { it.status == TuningStatus.TuneDown }
+        return when {
+            tuneUpFrames > tuneDownFrames -> TuningDirection.TuneUp
+            tuneDownFrames > tuneUpFrames -> TuningDirection.TuneDown
+            frames.last().direction != null -> frames.last().direction ?: TuningDirection.InTune
+            averagedCents < 0.0 -> TuningDirection.TuneUp
+            averagedCents > 0.0 -> TuningDirection.TuneDown
+            else -> TuningDirection.InTune
+        }
     }
 
     private fun TuningStatus.isStableTuningStatus(): Boolean = when (this) {

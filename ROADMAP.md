@@ -1,6 +1,6 @@
 # GuitarTuner Roadmap
 
-Project version: GuitarTuner v0.0.2
+Project version: GuitarTuner v0.0.4
 
 This roadmap contains incomplete work only. GuitarTuner is an offline, open-source Android acoustic guitar tuner. The first implementation target is standard six-string acoustic guitar tuning by microphone.
 

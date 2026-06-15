@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/SysAdminDoc/GuitarTuner/refs/heads/main/logo.png" width="300" alt="GuitarTuner logo">
 </p>
 
-![Version](https://img.shields.io/badge/version-v0.0.3-blue)
+![Version](https://img.shields.io/badge/version-v0.0.4-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-lightgrey)
 
@@ -31,7 +31,7 @@ Suggested topics: `android`, `kotlin`, `jetpack-compose`, `guitar-tuner`, `pitch
 
 GuitarTuner is a privacy-first, open-source Android tuner for acoustic guitar. It uses the phone microphone locally, detects which open string was strummed, and gives clear flat/sharp plus tune-up/tune-down feedback without accounts, ads, uploads, or network permission.
 
-The current v0.0.3 build includes native Kotlin/Compose UI, YIN pitch detection with autocorrelation fallback, Auto, Guided, and Chromatic modes, guitar/bass/ukulele presets, custom tunings, fullscreen stage mode, reference tone playback, haptic confirmation, live mic level/peak diagnostics, Android source/sample-rate visibility, local settings, light/dark themes, fixture-based regression tests, bounded tuning-file import validation, and a hardened GitHub release workflow.
+The current v0.0.4 build includes native Kotlin/Compose UI, YIN pitch detection with autocorrelation fallback, Auto, Guided, and Chromatic modes, guitar/bass/ukulele presets, custom tunings, fullscreen stage mode, safer reference tone playback, haptic confirmation, live mic level/peak diagnostics, Android source/sample-rate visibility, resilient local settings, light/dark themes, fixture-based regression tests, bounded tuning-file import validation, and a hardened GitHub release workflow.
 
 ## Microphone Reliability Notes
 
@@ -102,7 +102,7 @@ The release workflow is ready in this repository, but it only runs after the pro
 
 ## Repository Status
 
-GuitarTuner v0.0.3 has a native Android scaffold with an in-project YIN pitch detector, autocorrelation fallback, overlapping live audio windows, lower default noise gate for real phone microphones, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Auto/Guided/Chromatic tuning modes, guitar/bass/ukulele presets, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a premium AMOLED tuner surface, compact live readouts, fullscreen stage mode, a local-audio privacy signal, sectioned settings controls, live raw microphone RMS/peak, input source, sample rate, explicit signal and permission states, bounded tuning-file import validation, a merged-manifest permission gate, JVM tests for standard-string, octave-error, quiet-input, live-sized fixture frames, raw PCM level diagnostics, local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
+GuitarTuner v0.0.4 has a native Android scaffold with an in-project YIN pitch detector, autocorrelation fallback, overlapping live audio windows, lower default noise gate for real phone microphones, stable-frame smoothing that preserves overshoot warnings and configured in-tune tolerance, second-harmonic octave correction, an explicit `PitchResult` contract, Auto/Guided/Chromatic tuning modes, guitar/bass/ukulele presets, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a premium AMOLED tuner surface, compact live readouts, fullscreen stage mode, a local-audio privacy signal, sectioned settings controls, safe reference tone playback, live raw microphone RMS/peak, input source, sample rate, explicit signal and permission states, bounded tuning-file import validation, DataStore recovery for local settings, a merged-manifest permission gate, JVM tests for standard-string, octave-error, quiet-input, live-sized fixture frames, raw PCM level diagnostics, local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
 ## Screenshots
 

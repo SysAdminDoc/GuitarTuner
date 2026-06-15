@@ -34,7 +34,6 @@
     <string name="action_open_settings">Open settings</string>
     <string name="action_pause">Stop listening</string>
     <string name="action_start">Start listening</string>
-    <string name="action_stop">Stop</string>
     <string name="action_fullscreen">Full screen</string>
     <string name="action_set_favorite">Set favorite</string>
     <string name="action_play_tone">Play tone</string>
@@ -103,7 +102,6 @@
     <string name="frequency_value">%1$s Hz</string>
     <string name="cents_placeholder">-- cents</string>
     <string name="cents_value">%1$s cents</string>
-    <string name="confidence_placeholder">-- confidence</string>
     <string name="confidence_value">%1$s confidence</string>
     <string name="input_level_placeholder">Input --</string>
     <string name="input_level_value">Mic %1$s / peak %2$s</string>
