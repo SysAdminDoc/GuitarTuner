@@ -108,6 +108,8 @@ GuitarTuner v0.0.4 has a native Android scaffold with an in-project YIN pitch de
 
 ![Main tuner screen](docs/screenshots/tuner-main.png)
 
+![Stable bottom listening controls](docs/screenshots/tuner-stable-controls.png)
+
 ![Settings and tuning controls](docs/screenshots/tuner-settings.png)
 
 ## Privacy Baseline
