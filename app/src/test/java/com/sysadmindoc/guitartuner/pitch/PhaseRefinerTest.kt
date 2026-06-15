@@ -34,6 +34,30 @@ class PhaseRefinerTest {
     }
 
     @Test
+    fun explicitSampleRateRefinesFallbackRecorderFrames() {
+        val trueFrequency = 110.0
+        val coarseFrequency = 111.0
+        val sampleRate = 44_100
+        val frameSize = 4096
+        val hopSize = frameSize / 2
+        val refiner = PhaseRefiner()
+
+        val continuous = FloatArray(frameSize + hopSize) { i ->
+            (sin(2.0 * PI * trueFrequency * i / sampleRate) * 0.5).toFloat()
+        }
+        val frame1 = continuous.copyOfRange(0, frameSize)
+        val frame2 = continuous.copyOfRange(hopSize, hopSize + frameSize)
+
+        refiner.refine(frame1, coarseFrequency, sampleRate)
+        val result = refiner.refine(frame2, coarseFrequency, sampleRate)
+
+        assertTrue(
+            "Fallback-rate refinement should improve coarse=$coarseFrequency toward true=$trueFrequency, got $result",
+            abs(result - trueFrequency) < abs(coarseFrequency - trueFrequency),
+        )
+    }
+
+    @Test
     fun resetClearsState() {
         val refiner = PhaseRefiner(sampleRate = 44_100)
         val frame = sineWave(440.0, 4096, 44_100)

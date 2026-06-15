@@ -23,6 +23,9 @@ class TuningAnalyzer(
             estimate.status == SignalStatus.HighNoise -> TuningMeasurement.highNoise()
             estimate.status == SignalStatus.Silence -> TuningMeasurement.waiting()
             frequency == null || estimate.status == SignalStatus.Unstable -> TuningMeasurement.noStringDetected()
+            !frequency.isFinite() || frequency <= 0.0 -> TuningMeasurement.noStringDetected(
+                confidence = estimate.confidence,
+            )
             targetSelection.mode == TuningMode.Chromatic -> analyzeChromaticFrequency(frequency, estimate.confidence)
             else -> analyzeFrequency(frequency, estimate.confidence)
         }
@@ -51,6 +54,10 @@ class TuningAnalyzer(
     }
 
     private fun analyzeFrequency(frequencyHz: Double, confidence: Double): TuningMeasurement {
+        if (strings.isEmpty()) {
+            return TuningMeasurement.noStringDetected(frequencyHz = frequencyHz, confidence = confidence)
+        }
+
         val candidate = resolveSecondHarmonicCandidate(frequencyHz)
 
         if (candidate.cents > overshootWarningCents && candidate.cents < overshootCeilingCents) {

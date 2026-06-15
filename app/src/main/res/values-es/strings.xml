@@ -111,6 +111,7 @@
     <string name="file_imported_tunings">Se importaron %1$d afinacion(es) personalizadas</string>
     <string name="file_exported_tunings">Se exportaron %1$d afinacion(es) personalizadas</string>
     <string name="file_no_custom_tunings">No hay afinaciones personalizadas para exportar</string>
+    <string name="file_error_too_large">Los archivos de afinacion deben medir 512 KB o menos.</string>
     <string name="file_error_read">No se pudo leer el archivo de afinacion.</string>
     <string name="file_error_write">No se pudo guardar el archivo de afinacion.</string>
     <string name="error_mic_init">No se pudo abrir el microfono.</string>

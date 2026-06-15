@@ -40,6 +40,7 @@ import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 fun TunerScreen(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
     activeTuning: TuningDefinition,
     tunings: List<TuningDefinition>,
     tuningMode: TuningMode,
@@ -128,6 +129,7 @@ fun TunerScreen(
                             TunerMeterPanel(
                                 state = state,
                                 hasAudioPermission = hasAudioPermission,
+                                permissionPermanentlyDenied = permissionPermanentlyDenied,
                                 activeTuning = activeTuning,
                                 tuningMode = tuningMode,
                                 guidedStringNumber = guidedStringNumber,
@@ -137,6 +139,7 @@ fun TunerScreen(
                             TunerActionButtons(
                                 state = state,
                                 hasAudioPermission = hasAudioPermission,
+                                permissionPermanentlyDenied = permissionPermanentlyDenied,
                                 onPrimaryAction = onPrimaryAction,
                                 onFullscreen = { fullscreenMode = true },
                                 onShowPrivacy = onShowPrivacy,
@@ -175,6 +178,7 @@ fun TunerScreen(
                     TunerMeterPanel(
                         state = state,
                         hasAudioPermission = hasAudioPermission,
+                        permissionPermanentlyDenied = permissionPermanentlyDenied,
                         activeTuning = activeTuning,
                         tuningMode = tuningMode,
                         guidedStringNumber = guidedStringNumber,
@@ -184,6 +188,7 @@ fun TunerScreen(
                     TunerActionButtons(
                         state = state,
                         hasAudioPermission = hasAudioPermission,
+                        permissionPermanentlyDenied = permissionPermanentlyDenied,
                         onPrimaryAction = onPrimaryAction,
                         onFullscreen = { fullscreenMode = true },
                         onShowPrivacy = onShowPrivacy,
@@ -233,6 +238,7 @@ private fun TunerScreenPreview() {
         TunerScreen(
             state = TunerSessionState(),
             hasAudioPermission = true,
+            permissionPermanentlyDenied = false,
             activeTuning = GuitarTunings.standard,
             tunings = GuitarTunings.builtIns,
             tuningMode = TuningMode.Auto,

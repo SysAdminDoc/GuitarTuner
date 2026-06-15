@@ -18,6 +18,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +39,7 @@ import java.util.Locale
 internal fun FrequencyReadout(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
     pegTurnDirections: Map<Int, PegTurnDirection>,
     guidedTarget: GuitarString?,
 ) {
@@ -51,6 +57,7 @@ internal fun FrequencyReadout(
             text = guidanceLabel(
                 state = state,
                 hasAudioPermission = hasAudioPermission,
+                permissionPermanentlyDenied = permissionPermanentlyDenied,
                 turnDirection = measurement.turnDirection(pegTurnDirections),
                 guidedTarget = guidedTarget,
             ),
@@ -164,10 +171,21 @@ private fun InputLevelStrip(
     val trackColor = MaterialTheme.colorScheme.outlineVariant
     val rmsColor = MaterialTheme.colorScheme.primary
     val peakColor = MaterialTheme.colorScheme.tertiary
+    val inputDescription = stringResource(R.string.metric_input)
+    val inputState = if (isListening) {
+        stringResource(R.string.input_level_value, formatLevelPercent(rms), formatLevelPercent(peak))
+    } else {
+        stringResource(R.string.input_level_placeholder)
+    }
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(8.dp),
+            .height(8.dp)
+            .semantics {
+                contentDescription = inputDescription
+                stateDescription = inputState
+                progressBarRangeInfo = ProgressBarRangeInfo(rms.coerceIn(0.0, 1.0).toFloat(), 0f..1f)
+            },
     ) {
         val trackHeight = 4.dp.toPx()
         val y = (size.height - trackHeight) / 2f
@@ -226,10 +244,11 @@ internal fun statusColor(status: TuningStatus): Color = when (status) {
 private fun guidanceLabel(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
     turnDirection: PegTurnDirection?,
     guidedTarget: GuitarString?,
 ): String {
-    if (!hasAudioPermission && state.permissionError) return stringResource(R.string.guidance_open_settings)
+    if (!hasAudioPermission && permissionPermanentlyDenied) return stringResource(R.string.guidance_open_settings)
     if (!hasAudioPermission) return stringResource(R.string.guidance_allow_mic)
     if (!state.isListening) return stringResource(R.string.guidance_start_listening)
     if (state.micStolen) {

@@ -153,8 +153,10 @@ private fun TunerRoute() {
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             tuningFileMessage = try {
-                val source = context.readTextFromUri(uri)
+                val source = context.readTextFromUri(uri, TunerStateHolder.MaxImportFileSize)
                 stateHolder.processImport(source)
+            } catch (_: TuningFileTooLargeException) {
+                TuningFileMessage.FileTooLarge
             } catch (_: Exception) {
                 TuningFileMessage.ReadError
             }
@@ -235,6 +237,7 @@ private fun TunerRoute() {
             TunerScreen(
                 state = state,
                 hasAudioPermission = hasAudioPermission,
+                permissionPermanentlyDenied = permanentlyDenied,
                 activeTuning = activeTuning,
                 tunings = tuningCatalog.tunings,
                 tuningMode = tuningMode,
@@ -308,9 +311,18 @@ private fun TunerRoute() {
 private fun Context.hasAudioPermission(): Boolean =
     checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
 
-private suspend fun Context.readTextFromUri(uri: Uri): String = withContext(Dispatchers.IO) {
+private suspend fun Context.readTextFromUri(uri: Uri, maxChars: Int): String = withContext(Dispatchers.IO) {
     contentResolver.openInputStream(uri)?.bufferedReader().use { reader ->
-        reader?.readText() ?: throw IOException("Could not open selected tuning file.")
+        val input = reader ?: throw IOException("Could not open selected tuning file.")
+        val text = StringBuilder()
+        val buffer = CharArray(8_192)
+        while (true) {
+            val read = input.read(buffer)
+            if (read == -1) break
+            if (text.length + read > maxChars) throw TuningFileTooLargeException()
+            text.append(buffer, 0, read)
+        }
+        text.toString()
     }
 }
 
@@ -320,3 +332,5 @@ private suspend fun Context.writeTextToUri(uri: Uri, text: String) = withContext
         output.write(text)
     }
 }
+
+private class TuningFileTooLargeException : IOException()

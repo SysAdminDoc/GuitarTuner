@@ -203,6 +203,23 @@ class TuningAnalyzerTest {
         assertEquals(TuningStatus.HighNoise, measurement.status)
     }
 
+    @Test
+    fun rejectsInvalidPitchFrequenciesWithoutCrashing() {
+        listOf(0.0, -82.41, Double.NaN, Double.POSITIVE_INFINITY).forEach { invalidFrequency ->
+            val measurement = analyzer.analyze(detectedPitch(invalidFrequency))
+
+            assertEquals("frequency=$invalidFrequency", TuningStatus.NoStringDetected, measurement.status)
+        }
+    }
+
+    @Test
+    fun emptyStringSetReturnsNoStringDetected() {
+        val measurement = TuningAnalyzer(emptyList()).analyze(detectedPitch(110.0))
+
+        assertEquals(TuningStatus.NoStringDetected, measurement.status)
+        assertEquals(110.0, measurement.frequencyHz ?: 0.0, 0.0)
+    }
+
     private fun detectedPitch(frequencyHz: Double): PitchEstimate = PitchEstimate(
         frequencyHz = frequencyHz,
         confidence = 0.95,

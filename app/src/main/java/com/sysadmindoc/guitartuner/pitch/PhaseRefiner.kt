@@ -13,7 +13,11 @@ class PhaseRefiner(
     private var hasPrevious: Boolean = false
     private var previousFrequency: Double = 0.0
 
-    fun refine(samples: FloatArray, coarseFrequencyHz: Double): Double {
+    fun refine(
+        samples: FloatArray,
+        coarseFrequencyHz: Double,
+        sampleRate: Int = this.sampleRate,
+    ): Double {
         val phase = goertzelPhase(samples, coarseFrequencyHz, sampleRate)
 
         if (!hasPrevious || abs(coarseFrequencyHz - previousFrequency) > FrequencyJumpThreshold) {

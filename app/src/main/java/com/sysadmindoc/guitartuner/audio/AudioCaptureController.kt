@@ -23,7 +23,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,28 +67,30 @@ class AudioCaptureController(
     @Volatile
     private var activeRecord: AudioRecord? = null
 
+    @Synchronized
     fun start() {
         if (captureJob?.isActive == true) return
         _state.value = _state.value.copy(
             isListening = true,
             errorMessage = null,
         )
-        captureJob = scope.launch(dispatcher) {
+        val job = scope.launch(dispatcher) {
             runCaptureLoop()
+        }
+        captureJob = job
+        job.invokeOnCompletion {
+            if (captureJob === job) {
+                captureJob = null
+            }
         }
     }
 
+    @Synchronized
     fun stop() {
         val job = captureJob
+        captureJob = null
+        job?.cancel()
         activeRecord?.safeStop()
-        if (job?.isActive == true) {
-            scope.launch(dispatcher) {
-                job.cancelAndJoin()
-                captureJob = null
-            }
-        } else {
-            captureJob = null
-        }
         measurementSmoother.reset()
         phaseRefiner.reset()
         _state.value = _state.value.copy(isListening = false, micStolen = false)
@@ -163,13 +165,15 @@ class AudioCaptureController(
     }
 
     @SuppressLint("MissingPermission")
-    private fun runCaptureLoop() {
+    private suspend fun runCaptureLoop() {
         val excludedSources = mutableSetOf<Int>()
+        val captureContext = currentCoroutineContext()
 
-        while (scope.isActive && captureJob?.isActive == true) {
+        while (captureContext.isActive) {
             val recorder = try {
                 buildAudioRecord(excludedSources)
             } catch (_: RuntimeException) {
+                if (!captureContext.isActive) return
                 _state.value = TunerSessionState(
                     isListening = false,
                     audioError = AudioError.MicInitFailed,
@@ -198,6 +202,7 @@ class AudioCaptureController(
                     Log.w(LogTag, "Source $sourceLabel produced only zeros during startup, trying next source.")
                 }
             } catch (_: RuntimeException) {
+                if (!captureContext.isActive) return
                 _state.value = TunerSessionState(
                     isListening = false,
                     pitchEstimate = _state.value.pitchEstimate.copy(status = SignalStatus.Unstable),
@@ -213,17 +218,20 @@ class AudioCaptureController(
             }
 
             if (!retryWithNextSource) {
-                _state.value = _state.value.copy(isListening = false)
+                if (captureContext.isActive) {
+                    _state.value = _state.value.copy(isListening = false)
+                }
                 return
             }
         }
     }
 
-    private fun captureReadLoop(
+    private suspend fun captureReadLoop(
         recorder: AudioRecord,
         sampleRate: Int,
         sourceLabel: String,
     ): Boolean {
+        val captureContext = currentCoroutineContext()
         val readBuffer = ShortArray(ReadBufferSize)
         val frameBuffer = FloatArray(FrameSize)
         var frameFill = 0
@@ -232,7 +240,7 @@ class AudioCaptureController(
         var hadLiveAudio = false
         var consecutiveZeroReads = 0
 
-        while (scope.isActive && captureJob?.isActive == true) {
+        while (captureContext.isActive) {
             val read = recorder.read(readBuffer, 0, readBuffer.size, AudioRecord.READ_BLOCKING)
             if (read < 0) {
                 throw IllegalStateException(readErrorMessage(read))
@@ -299,8 +307,8 @@ class AudioCaptureController(
 
         var estimate = detector.detect(samples, sampleRate)
         if (estimate.frequencyHz != null && estimate.status == SignalStatus.Detected) {
-            val coarse = estimate.frequencyHz!!
-            val refined = phaseRefiner.refine(samples, coarse)
+            val coarse = estimate.frequencyHz
+            val refined = phaseRefiner.refine(samples, coarse, sampleRate)
             if (refined > 0 && refined < detector.config.maxFrequencyHz * 2) {
                 estimate = estimate.copy(frequencyHz = refined)
             }

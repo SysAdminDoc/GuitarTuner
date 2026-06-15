@@ -12,6 +12,7 @@ fun PegTurnDirection.opposite(): PegTurnDirection = when (this) {
 
 fun encodePegTurnDirections(directions: Map<Int, PegTurnDirection>): String =
     directions
+        .filterKeys { it in SupportedStringNumbers }
         .toSortedMap(reverseOrder())
         .map { (stringNumber, direction) -> "$stringNumber=${direction.name}" }
         .joinToString(separator = ";")
@@ -22,7 +23,8 @@ fun decodePegTurnDirections(value: String?): Map<Int, PegTurnDirection> {
         .split(";")
         .mapNotNull { entry ->
             val parts = entry.split("=")
-            val stringNumber = parts.getOrNull(0)?.toIntOrNull()
+            if (parts.size != 2) return@mapNotNull null
+            val stringNumber = parts[0].toIntOrNull()?.takeIf { it in SupportedStringNumbers }
             val direction = parts.getOrNull(1)?.let { encoded ->
                 PegTurnDirection.entries.firstOrNull { it.name == encoded }
             }
@@ -34,3 +36,5 @@ fun decodePegTurnDirections(value: String?): Map<Int, PegTurnDirection> {
         }
         .toMap()
 }
+
+private val SupportedStringNumbers = 1..6

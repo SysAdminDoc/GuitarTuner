@@ -12,7 +12,7 @@ class CustomTuningJsonCodecTest {
         assertTrue(result.errors.toString(), result.errors.isEmpty())
         assertEquals(1, result.tunings.size)
         val tuning = result.tunings.single()
-        assertEquals("open_g", tuning.id)
+        assertEquals("custom_open_g", tuning.id)
         assertEquals("Open G", tuning.name)
         assertEquals(false, tuning.isBuiltIn)
         assertEquals(listOf(6, 5, 4, 3, 2, 1), tuning.strings.map { it.stringNumber })
@@ -22,13 +22,23 @@ class CustomTuningJsonCodecTest {
     fun rejectsBuiltInIdAndInvalidFrequency() {
         val result = CustomTuningJsonCodec.decode(
             validOpenGJson()
-                .replace("\"open_g\"", "\"standard\"")
+                .replace("\"custom_open_g\"", "\"standard\"")
                 .replace("73.42", "10.0"),
         )
 
         assertTrue(result.tunings.isEmpty())
         assertTrue(result.errors.any { it.contains("cannot replace") })
         assertTrue(result.errors.any { it.contains("frequencyHz") })
+    }
+
+    @Test
+    fun rejectsAnyBuiltInTuningIdCollision() {
+        val result = CustomTuningJsonCodec.decode(
+            validOpenGJson().replace("\"custom_open_g\"", "\"drop_d\""),
+        )
+
+        assertTrue(result.tunings.isEmpty())
+        assertTrue(result.errors.any { it.contains("cannot replace a built-in tuning") })
     }
 
     @Test
@@ -46,7 +56,7 @@ class CustomTuningJsonCodecTest {
           "schemaVersion": 1,
           "tunings": [
             {
-              "id": "open_g",
+              "id": "custom_open_g",
               "name": "Open G",
               "strings": [
                 { "stringNumber": 6, "name": "D", "note": "D2", "frequencyHz": 73.42 },

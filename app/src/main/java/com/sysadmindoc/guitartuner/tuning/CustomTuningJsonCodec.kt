@@ -87,8 +87,8 @@ object CustomTuningJsonCodec {
         if (!IdPattern.matches(id)) {
             errors += "$prefix.id must use lowercase letters, numbers, underscores, or hyphens."
         }
-        if (id == GuitarTunings.StandardId) {
-            errors += "$prefix.id cannot replace the built-in standard tuning."
+        if (GuitarTunings.builtIns.any { it.id == id }) {
+            errors += "$prefix.id cannot replace a built-in tuning."
         }
         if (!seenIds.add(id)) {
             errors += "$prefix.id duplicates another tuning id."

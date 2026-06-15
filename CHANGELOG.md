@@ -1,5 +1,17 @@
 # Changelog
 
+## GuitarTuner v0.0.3 - 2026-06-15
+
+- Hardened microphone capture start/stop handling so canceled capture loops cannot attach to a newer job, stale recorders are stopped promptly, and cancellation does not surface as a false microphone failure.
+- Fixed phase refinement to use the recorder's actual sample rate, with fallback 44.1 kHz regression coverage for devices that do not capture at 48 kHz.
+- Rejected custom tuning imports that collide with any built-in tuning id, not only Standard, and kept the README custom tuning example aligned with that rule.
+- Added defensive tuning-analysis guards for invalid, non-finite, and empty-string-set pitch paths so malformed estimates settle into a no-string state instead of reaching logarithm/nearest-string assumptions.
+- Sanitized persisted peg-turn direction data by dropping malformed entries and impossible string numbers before settings are re-encoded.
+- Bounded custom tuning import reads while streaming from Android document URIs and added a specific file-too-large feedback state instead of a generic read error.
+- Aligned microphone permission button labels and tuning guidance with the actual permanent-denial state, so retryable denials do not misleadingly say to open Android settings.
+- Added Back handling for Privacy and Full screen modes plus screen-reader progress semantics for the microphone input meter.
+- Hardened release signing behavior by ignoring blank signing env vars in Gradle and avoiding direct secret conditionals in the GitHub Actions decode step.
+
 ## GuitarTuner v0.0.2 - 2026-06-15
 
 - Split the tuner UI into focused Compose modules for screen chrome, meter panel, live readouts, settings sections, fullscreen mode, privacy, and state-holder logic.

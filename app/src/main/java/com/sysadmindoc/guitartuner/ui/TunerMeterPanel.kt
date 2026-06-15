@@ -39,6 +39,7 @@ import com.sysadmindoc.guitartuner.tuning.TuningMode
 internal fun TunerMeterPanel(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
     activeTuning: TuningDefinition,
     tuningMode: TuningMode,
     guidedStringNumber: Int,
@@ -72,6 +73,7 @@ internal fun TunerMeterPanel(
             FrequencyReadout(
                 state = state,
                 hasAudioPermission = hasAudioPermission,
+                permissionPermanentlyDenied = permissionPermanentlyDenied,
                 pegTurnDirections = pegTurnDirections,
                 guidedTarget = guidedTarget,
             )

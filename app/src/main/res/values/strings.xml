@@ -111,6 +111,7 @@
     <string name="file_imported_tunings">Imported %1$d custom tuning(s)</string>
     <string name="file_exported_tunings">Exported %1$d custom tuning(s)</string>
     <string name="file_no_custom_tunings">No custom tunings to export</string>
+    <string name="file_error_too_large">Tuning files must be 512 KB or smaller.</string>
     <string name="file_error_read">Could not read the tuning file.</string>
     <string name="file_error_write">Could not save the tuning file.</string>
     <string name="error_mic_init">Could not open the microphone.</string>

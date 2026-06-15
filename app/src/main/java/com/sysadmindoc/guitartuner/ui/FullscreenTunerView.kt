@@ -1,5 +1,6 @@
 package com.sysadmindoc.guitartuner.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,8 @@ internal fun FullscreenTunerView(
     state: TunerSessionState,
     onExit: () -> Unit,
 ) {
+    BackHandler(onBack = onExit)
+
     val measurement = state.measurement
     val note = measurement.target?.scientificPitch ?: "--"
     val backgroundColor = when (measurement.status) {

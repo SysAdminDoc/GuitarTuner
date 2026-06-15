@@ -1,5 +1,15 @@
 package com.sysadmindoc.guitartuner.ui
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import com.sysadmindoc.guitartuner.settings.CustomTuningRepository
+import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -108,5 +118,25 @@ class TunerStateHolderTest {
     fun measureA4_justBelowConfidenceThreshold_returnsNull() {
         val result = TunerStateHolder.measureA4FromLive(440.0, 0.79)
         assertNull(result)
+    }
+
+    @Test
+    fun processImport_oversizedSource_returnsSpecificFileTooLargeMessage() = runBlocking {
+        val holder = TunerStateHolder(
+            preferencesRepository = TunerPreferencesRepository(UnusedPreferencesDataStore),
+            customTuningRepository = CustomTuningRepository(UnusedPreferencesDataStore),
+            scope = CoroutineScope(EmptyCoroutineContext),
+        )
+
+        val result = holder.processImport("x".repeat(TunerStateHolder.MaxImportFileSize + 1))
+
+        assertEquals(TuningFileMessage.FileTooLarge, result)
+    }
+
+    private object UnusedPreferencesDataStore : DataStore<Preferences> {
+        override val data: Flow<Preferences> = flowOf(emptyPreferences())
+
+        override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences =
+            transform(emptyPreferences())
     }
 }

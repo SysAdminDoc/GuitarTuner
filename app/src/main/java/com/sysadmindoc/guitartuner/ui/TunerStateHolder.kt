@@ -69,7 +69,7 @@ class TunerStateHolder(
     }
 
     suspend fun processImport(source: String): TuningFileMessage {
-        if (source.length > MaxImportFileSize) return TuningFileMessage.ReadError
+        if (source.length > MaxImportFileSize) return TuningFileMessage.FileTooLarge
         return try {
             val result = customTuningRepository.replaceFromJson(source)
             if (result.errors.isEmpty()) {

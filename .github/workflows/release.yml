@@ -44,13 +44,19 @@ jobs:
           test -n "$GUITARTUNER_KEY_PASSWORD"
 
       - name: Decode signing keystore
-        if: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 != '' }}
         env:
           ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
           GUITARTUNER_KEYSTORE_PASSWORD: ${{ secrets.GUITARTUNER_KEYSTORE_PASSWORD }}
           GUITARTUNER_KEY_ALIAS: ${{ secrets.GUITARTUNER_KEY_ALIAS }}
           GUITARTUNER_KEY_PASSWORD: ${{ secrets.GUITARTUNER_KEY_PASSWORD }}
         run: |
+          if [ -z "$ANDROID_SIGNING_KEYSTORE_BASE64" ]; then
+            echo "No signing keystore configured; workflow-dispatch artifacts will be unsigned."
+            exit 0
+          fi
+          test -n "$GUITARTUNER_KEYSTORE_PASSWORD"
+          test -n "$GUITARTUNER_KEY_ALIAS"
+          test -n "$GUITARTUNER_KEY_PASSWORD"
           echo "$ANDROID_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/guitartuner-release.jks"
           echo "GUITARTUNER_KEYSTORE_PATH=$RUNNER_TEMP/guitartuner-release.jks" >> "$GITHUB_ENV"
           echo "GUITARTUNER_KEYSTORE_PASSWORD=$GUITARTUNER_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"

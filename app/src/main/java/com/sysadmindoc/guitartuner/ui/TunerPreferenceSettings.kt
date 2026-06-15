@@ -224,10 +224,12 @@ private fun TuningFileMessageBanner(message: TuningFileMessage?) {
         is TuningFileMessage.Exported -> stringResource(R.string.file_exported_tunings, message.count)
         TuningFileMessage.NoCustomTunings -> stringResource(R.string.file_no_custom_tunings)
         is TuningFileMessage.Error -> message.text
+        TuningFileMessage.FileTooLarge -> stringResource(R.string.file_error_too_large)
         TuningFileMessage.ReadError -> stringResource(R.string.file_error_read)
         TuningFileMessage.WriteError -> stringResource(R.string.file_error_write)
     }
     val isError = message is TuningFileMessage.Error ||
+        message is TuningFileMessage.FileTooLarge ||
         message is TuningFileMessage.ReadError ||
         message is TuningFileMessage.WriteError
     Surface(

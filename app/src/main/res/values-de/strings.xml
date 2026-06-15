@@ -111,6 +111,7 @@
     <string name="file_imported_tunings">%1$d benutzerdefinierte Stimmung(en) importiert</string>
     <string name="file_exported_tunings">%1$d benutzerdefinierte Stimmung(en) exportiert</string>
     <string name="file_no_custom_tunings">Keine benutzerdefinierten Stimmungen zum Exportieren</string>
+    <string name="file_error_too_large">Stimmungsdateien duerfen hoechstens 512 KB gross sein.</string>
     <string name="file_error_read">Stimmungsdatei konnte nicht gelesen werden.</string>
     <string name="file_error_write">Stimmungsdatei konnte nicht gespeichert werden.</string>
     <string name="error_mic_init">Mikrofon konnte nicht geoeffnet werden.</string>

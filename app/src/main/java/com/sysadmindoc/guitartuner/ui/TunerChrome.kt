@@ -80,6 +80,7 @@ internal fun TunerHeader(
 internal fun TunerActionButtons(
     state: TunerSessionState,
     hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
     onPrimaryAction: () -> Unit,
     onFullscreen: () -> Unit,
     onShowPrivacy: () -> Unit,
@@ -103,7 +104,7 @@ internal fun TunerActionButtons(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 ) {
-                    Text(primaryActionLabel(state, hasAudioPermission))
+                    Text(primaryActionLabel(state, hasAudioPermission, permissionPermanentlyDenied))
                 }
                 OutlinedButton(
                     onClick = onFullscreen,
@@ -126,7 +127,7 @@ internal fun TunerActionButtons(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             ) {
-                Text(primaryActionLabel(state, hasAudioPermission))
+                Text(primaryActionLabel(state, hasAudioPermission, permissionPermanentlyDenied))
             }
         }
         OutlinedButton(
@@ -168,8 +169,12 @@ private fun statusText(state: TunerSessionState, hasAudioPermission: Boolean): S
 }
 
 @Composable
-private fun primaryActionLabel(state: TunerSessionState, hasAudioPermission: Boolean): String = when {
-    !hasAudioPermission && state.permissionError -> stringResource(R.string.action_open_settings)
+private fun primaryActionLabel(
+    state: TunerSessionState,
+    hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
+): String = when {
+    !hasAudioPermission && permissionPermanentlyDenied -> stringResource(R.string.action_open_settings)
     !hasAudioPermission -> stringResource(R.string.action_allow_mic)
     state.isListening -> stringResource(R.string.action_pause)
     else -> stringResource(R.string.action_start)
