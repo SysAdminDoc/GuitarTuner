@@ -132,4 +132,20 @@
     <string name="fullscreen_overshoot">JETZT TIEFER</string>
     <string name="fullscreen_waiting">HOERT ZU</string>
     <string name="fullscreen_exit_hint">Zum Zurueckkehren irgendwo tippen</string>
+    <string name="a11y_meter_description">Gitarren-Stimmgeraet</string>
+    <string name="a11y_state_waiting">Warte auf eine erkannte Gitarrensaite</string>
+    <string name="a11y_state_clipping">Eingang uebersteuert; leiser spielen</string>
+    <string name="a11y_state_high_noise">Hintergrundgeraeusch ist zu hoch</string>
+    <string name="a11y_state_no_string">Keine Gitarrensaite erkannt</string>
+    <string name="a11y_in_tune">Gestimmt</string>
+    <string name="a11y_string_in_tune">%1$s, gestimmt</string>
+    <string name="a11y_tune_down_risk">tiefer stimmen, Saite gefaehrdet</string>
+    <string name="a11y_string_tune_down_risk">%1$s, tiefer stimmen, Saite gefaehrdet</string>
+    <string name="a11y_tune_direction">%1$s, %2$s Cent %3$s</string>
+    <string name="a11y_string_tune_direction">%1$s, %2$s, %3$s Cent %4$s</string>
+    <string name="a11y_string_label">Saite %1$d, %2$s, %3$s</string>
+    <string name="a11y_direction_tune_up">hoeher stimmen</string>
+    <string name="a11y_direction_tune_down">tiefer stimmen</string>
+    <string name="a11y_pitch_flat">tief</string>
+    <string name="a11y_pitch_sharp">hoch</string>
 </resources>

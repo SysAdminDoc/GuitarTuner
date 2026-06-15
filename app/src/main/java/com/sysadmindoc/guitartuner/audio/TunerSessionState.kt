@@ -13,11 +13,14 @@ data class AudioInputLevel(
     val sourceLabel: String? = null,
     val sampleRateHz: Int? = null,
     val lastReadSize: Int = 0,
+    val silenceThreshold: Double = DefaultSilenceThreshold,
 ) {
     val isEffectivelySilent: Boolean
-        get() = readCount >= SilentReadCount && rms < SilentRms && peak < SilentPeak
+        get() = readCount >= SilentReadCount && rms < silenceThreshold && peak < SilentPeak
 
     companion object {
+        const val DefaultSilenceThreshold = 0.0015
+
         fun fromPcmRead(
             samples: ShortArray,
             length: Int,
@@ -53,6 +56,7 @@ data class AudioInputLevel(
                 sourceLabel = sourceLabel,
                 sampleRateHz = sampleRateHz,
                 lastReadSize = length,
+                silenceThreshold = previous.silenceThreshold,
             )
         }
 
@@ -60,7 +64,6 @@ data class AudioInputLevel(
         private const val RmsSmoothing = 0.25
         private const val PeakDecay = 0.82
         private const val SilentReadCount = 20L
-        private const val SilentRms = 0.0015
         private const val SilentPeak = 0.003
     }
 }

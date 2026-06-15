@@ -1,5 +1,10 @@
 # Changelog
 
+## GuitarTuner v0.0.5 - 2026-06-15
+
+- Moved TalkBack accessibility descriptions to string resources so tuning state is announced in the device language (en/de/es) instead of hardcoded English.
+- Derived the UI silence threshold from the detector's configured noise gate so the "no sound reaching mic" state and pitch detector silence gate agree at all user-chosen noise gate settings.
+
 ## GuitarTuner v0.0.4 - 2026-06-15
 
 - Stabilized the listening controls so Stop listening and Full screen no longer jump as live pitch detection updates the tuner panel.

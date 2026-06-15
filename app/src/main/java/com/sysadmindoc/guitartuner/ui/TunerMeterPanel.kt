@@ -144,7 +144,11 @@ private fun TargetString(
 private fun CentsMeter(state: TunerSessionState) {
     val cents = state.measurement.cents
     val boundedCents = (cents ?: 0.0).coerceIn(-50.0, 50.0)
-    val accessibility = tuningMeterAccessibility(state.measurement)
+    val resources = androidx.compose.ui.platform.LocalContext.current.resources
+    @Suppress("LocalContextGetResourceValueCall")
+    val accessibility = tuningMeterAccessibility(state.measurement) { resId, args ->
+        if (args.isEmpty()) resources.getString(resId) else resources.getString(resId, *args)
+    }
     val trackColor = MaterialTheme.colorScheme.outlineVariant
     val centerColor = MaterialTheme.colorScheme.primary
     val flatColor = MaterialTheme.colorScheme.primary

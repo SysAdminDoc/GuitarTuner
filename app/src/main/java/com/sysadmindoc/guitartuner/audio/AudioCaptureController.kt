@@ -133,6 +133,9 @@ class AudioCaptureController(
         pitchDetector = YinPitchDetector(
             pitchDetector.config.copy(silenceRms = rms),
         )
+        _state.value = _state.value.copy(
+            inputLevel = _state.value.inputLevel.copy(silenceThreshold = rms),
+        )
     }
 
     fun setA4Hz(hz: Double) {
@@ -190,7 +193,11 @@ class AudioCaptureController(
                 val sourceLabel = recorder.audioSource.audioSourceLabel()
                 _state.value = _state.value.copy(
                     isListening = true,
-                    inputLevel = AudioInputLevel(sourceLabel = sourceLabel, sampleRateHz = recorderSampleRate),
+                    inputLevel = AudioInputLevel(
+                        sourceLabel = sourceLabel,
+                        sampleRateHz = recorderSampleRate,
+                        silenceThreshold = pitchDetector.config.silenceRms,
+                    ),
                     audioError = null,
                 )
                 Log.i(

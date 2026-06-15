@@ -132,4 +132,20 @@
     <string name="fullscreen_overshoot">TUNE DOWN NOW</string>
     <string name="fullscreen_waiting">LISTENING</string>
     <string name="fullscreen_exit_hint">Tap anywhere to return</string>
+    <string name="a11y_meter_description">Guitar tuning meter</string>
+    <string name="a11y_state_waiting">Waiting for a detected guitar string</string>
+    <string name="a11y_state_clipping">Input is clipping; play softer</string>
+    <string name="a11y_state_high_noise">Background noise is too high</string>
+    <string name="a11y_state_no_string">No guitar string detected</string>
+    <string name="a11y_in_tune">In tune</string>
+    <string name="a11y_string_in_tune">%1$s, in tune</string>
+    <string name="a11y_tune_down_risk">tune down, string at risk</string>
+    <string name="a11y_string_tune_down_risk">%1$s, tune down, string at risk</string>
+    <string name="a11y_tune_direction">%1$s, %2$s cents %3$s</string>
+    <string name="a11y_string_tune_direction">%1$s, %2$s, %3$s cents %4$s</string>
+    <string name="a11y_string_label">string %1$d, %2$s, %3$s</string>
+    <string name="a11y_direction_tune_up">tune up</string>
+    <string name="a11y_direction_tune_down">tune down</string>
+    <string name="a11y_pitch_flat">flat</string>
+    <string name="a11y_pitch_sharp">sharp</string>
 </resources>

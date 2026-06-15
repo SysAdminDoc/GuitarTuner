@@ -132,4 +132,20 @@
     <string name="fullscreen_overshoot">BAJA AHORA</string>
     <string name="fullscreen_waiting">ESCUCHANDO</string>
     <string name="fullscreen_exit_hint">Toca en cualquier lugar para volver</string>
+    <string name="a11y_meter_description">Medidor de afinacion de guitarra</string>
+    <string name="a11y_state_waiting">Esperando una cuerda de guitarra detectada</string>
+    <string name="a11y_state_clipping">La entrada esta saturada; toca mas suave</string>
+    <string name="a11y_state_high_noise">El ruido de fondo es demasiado alto</string>
+    <string name="a11y_state_no_string">No se detecto cuerda de guitarra</string>
+    <string name="a11y_in_tune">Afinada</string>
+    <string name="a11y_string_in_tune">%1$s, afinada</string>
+    <string name="a11y_tune_down_risk">baja la afinacion, cuerda en riesgo</string>
+    <string name="a11y_string_tune_down_risk">%1$s, baja la afinacion, cuerda en riesgo</string>
+    <string name="a11y_tune_direction">%1$s, %2$s cents %3$s</string>
+    <string name="a11y_string_tune_direction">%1$s, %2$s, %3$s cents %4$s</string>
+    <string name="a11y_string_label">cuerda %1$d, %2$s, %3$s</string>
+    <string name="a11y_direction_tune_up">sube la afinacion</string>
+    <string name="a11y_direction_tune_down">baja la afinacion</string>
+    <string name="a11y_pitch_flat">baja</string>
+    <string name="a11y_pitch_sharp">alta</string>
 </resources>
