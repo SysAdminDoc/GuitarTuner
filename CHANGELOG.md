@@ -2,6 +2,7 @@
 
 ## GuitarTuner v0.0.4 - 2026-06-15
 
+- Stabilized the listening controls so Stop listening and Full screen no longer jump as live pitch detection updates the tuner panel.
 - Preserved string-break overshoot warnings through stable-frame smoothing so dangerous sharp readings cannot degrade into ordinary tune-down guidance.
 - Respected analyzer-classified in-tune states during smoothing so relaxed cents tolerance settings remain authoritative.
 - Reset freeze-last-note state when listening stops or tuning/analyzer context changes, preventing stale measurements from reappearing after mode, tuning, or calibration changes.

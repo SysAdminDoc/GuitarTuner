@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -50,6 +51,7 @@ internal fun FrequencyReadout(
     val confidence = pitchResult.confidence
     val inputLevel = state.inputLevel
     Column(
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -61,10 +63,14 @@ internal fun FrequencyReadout(
                 turnDirection = measurement.turnDirection(pegTurnDirections),
                 guidedTarget = guidedTarget,
             ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 58.dp),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = statusColor(measurement.status),
             textAlign = TextAlign.Center,
+            maxLines = 2,
         )
         ReadoutMetrics(
             frequency = frequency,
@@ -78,16 +84,23 @@ internal fun FrequencyReadout(
             peak = inputLevel.peak,
             isListening = state.isListening,
         )
-        if (state.isListening && inputLevel.sourceLabel != null && inputLevel.sampleRateHz != null) {
-            Text(
-                text = stringResource(
+        if (state.isListening) {
+            val sourceText = if (inputLevel.sourceLabel != null && inputLevel.sampleRateHz != null) {
+                stringResource(
                     R.string.input_source_value,
                     inputLevel.sourceLabel,
                     inputLevel.sampleRateHz,
-                ),
+                )
+            } else {
+                " "
+            }
+            Text(
+                text = sourceText,
+                modifier = Modifier.heightIn(min = 18.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
+                maxLines = 1,
             )
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -92,21 +93,26 @@ private fun TargetString(
     val measurement = state.measurement
     val target = measurement.target ?: guidedTarget
     Column(
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(3.dp),
     ) {
         Text(
             text = tuningMode.label(),
+            modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
+            maxLines = 1,
         )
         Text(
             text = target?.scientificPitch ?: stringResource(R.string.target_auto_detect_short),
+            modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.displayLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
+            maxLines = 1,
         )
         Text(
             text = when {
@@ -123,9 +129,13 @@ private fun TargetString(
                 )
                 else -> activeTuning.name
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 44.dp),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
+            maxLines = 2,
         )
     }
 }

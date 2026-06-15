@@ -1,6 +1,7 @@
 package com.sysadmindoc.guitartuner.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -101,11 +102,13 @@ fun TunerScreen(
                 .safeDrawingPadding(),
         ) {
             val wideLayout = maxWidth >= 720.dp
+            val mobileActionReserve = if (wideLayout) 0.dp else 96.dp
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 24.dp),
+                    .padding(horizontal = 20.dp, vertical = 24.dp)
+                    .padding(bottom = mobileActionReserve),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
@@ -126,6 +129,14 @@ fun TunerScreen(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(14.dp),
                         ) {
+                            TunerActionButtons(
+                                state = state,
+                                hasAudioPermission = hasAudioPermission,
+                                permissionPermanentlyDenied = permissionPermanentlyDenied,
+                                onPrimaryAction = onPrimaryAction,
+                                onFullscreen = { fullscreenMode = true },
+                                onShowPrivacy = onShowPrivacy,
+                            )
                             TunerMeterPanel(
                                 state = state,
                                 hasAudioPermission = hasAudioPermission,
@@ -135,14 +146,6 @@ fun TunerScreen(
                                 guidedStringNumber = guidedStringNumber,
                                 pegTurnDirections = preferences.pegTurnDirections,
                                 modifier = Modifier.fillMaxWidth(),
-                            )
-                            TunerActionButtons(
-                                state = state,
-                                hasAudioPermission = hasAudioPermission,
-                                permissionPermanentlyDenied = permissionPermanentlyDenied,
-                                onPrimaryAction = onPrimaryAction,
-                                onFullscreen = { fullscreenMode = true },
-                                onShowPrivacy = onShowPrivacy,
                             )
                         }
                         TunerSettingsPanel(
@@ -185,13 +188,9 @@ fun TunerScreen(
                         pegTurnDirections = preferences.pegTurnDirections,
                         modifier = Modifier.fillMaxWidth(),
                     )
-                    TunerActionButtons(
-                        state = state,
-                        hasAudioPermission = hasAudioPermission,
-                        permissionPermanentlyDenied = permissionPermanentlyDenied,
-                        onPrimaryAction = onPrimaryAction,
-                        onFullscreen = { fullscreenMode = true },
+                    PrivacyDetailsButton(
                         onShowPrivacy = onShowPrivacy,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     TunerSettingsPanel(
                         activeTuning = activeTuning,
@@ -222,6 +221,16 @@ fun TunerScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+            }
+            if (!wideLayout) {
+                MobileActionDock(
+                    state = state,
+                    hasAudioPermission = hasAudioPermission,
+                    permissionPermanentlyDenied = permissionPermanentlyDenied,
+                    onPrimaryAction = onPrimaryAction,
+                    onFullscreen = { fullscreenMode = true },
+                    onShowPrivacy = onShowPrivacy,
+                )
             }
         }
     }
@@ -266,6 +275,36 @@ private fun TunerScreenPreview() {
             onPlayTone = {},
             tuningFileMessage = null,
             onShowPrivacy = {},
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.MobileActionDock(
+    state: TunerSessionState,
+    hasAudioPermission: Boolean,
+    permissionPermanentlyDenied: Boolean,
+    onPrimaryAction: () -> Unit,
+    onFullscreen: () -> Unit,
+    onShowPrivacy: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .fillMaxWidth(),
+        color = MaterialTheme.colorScheme.background,
+        tonalElevation = 6.dp,
+        shadowElevation = 8.dp,
+    ) {
+        TunerActionButtons(
+            state = state,
+            hasAudioPermission = hasAudioPermission,
+            permissionPermanentlyDenied = permissionPermanentlyDenied,
+            onPrimaryAction = onPrimaryAction,
+            onFullscreen = onFullscreen,
+            onShowPrivacy = onShowPrivacy,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
+            showPrivacy = false,
         )
     }
 }

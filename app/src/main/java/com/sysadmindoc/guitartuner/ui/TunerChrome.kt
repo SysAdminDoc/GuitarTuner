@@ -84,9 +84,13 @@ internal fun TunerActionButtons(
     onPrimaryAction: () -> Unit,
     onFullscreen: () -> Unit,
     onShowPrivacy: () -> Unit,
+    modifier: Modifier = Modifier,
+    showPrivacy: Boolean = true,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = if (showPrivacy) 106.dp else MinTouchTarget),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         if (state.isListening) {
@@ -96,7 +100,9 @@ internal fun TunerActionButtons(
             ) {
                 Button(
                     onClick = onPrimaryAction,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = MinTouchTarget),
                     shape = PanelShape,
                     contentPadding = CompactButtonPadding,
                     colors = ButtonDefaults.buttonColors(
@@ -104,22 +110,34 @@ internal fun TunerActionButtons(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 ) {
-                    Text(primaryActionLabel(state, hasAudioPermission, permissionPermanentlyDenied))
+                    Text(
+                        text = primaryActionLabel(state, hasAudioPermission, permissionPermanentlyDenied),
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                    )
                 }
                 OutlinedButton(
                     onClick = onFullscreen,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .defaultMinSize(minHeight = MinTouchTarget),
                     shape = PanelShape,
                     contentPadding = CompactButtonPadding,
                     border = BorderStroke(PanelBorderWidth, MaterialTheme.colorScheme.outlineVariant),
                 ) {
-                    Text(stringResource(R.string.action_fullscreen))
+                    Text(
+                        text = stringResource(R.string.action_fullscreen),
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                    )
                 }
             }
         } else {
             Button(
                 onClick = onPrimaryAction,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = MinTouchTarget),
                 shape = PanelShape,
                 contentPadding = CompactButtonPadding,
                 colors = ButtonDefaults.buttonColors(
@@ -127,20 +145,38 @@ internal fun TunerActionButtons(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             ) {
-                Text(primaryActionLabel(state, hasAudioPermission, permissionPermanentlyDenied))
+                Text(
+                    text = primaryActionLabel(state, hasAudioPermission, permissionPermanentlyDenied),
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                )
             }
         }
-        OutlinedButton(
-            onClick = onShowPrivacy,
-            modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = MinTouchTarget),
-            shape = PanelShape,
-            contentPadding = CompactButtonPadding,
-            border = BorderStroke(PanelBorderWidth, MaterialTheme.colorScheme.outlineVariant),
-        ) {
-            Text(stringResource(R.string.action_privacy))
+        if (showPrivacy) {
+            PrivacyDetailsButton(onShowPrivacy = onShowPrivacy)
         }
+    }
+}
+
+@Composable
+internal fun PrivacyDetailsButton(
+    onShowPrivacy: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedButton(
+        onClick = onShowPrivacy,
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = MinTouchTarget),
+        shape = PanelShape,
+        contentPadding = CompactButtonPadding,
+        border = BorderStroke(PanelBorderWidth, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Text(
+            text = stringResource(R.string.action_privacy),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
     }
 }
 
