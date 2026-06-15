@@ -8,6 +8,7 @@
 - Eliminated per-frame heap allocation in the audio capture loop by using a pre-allocated analysis buffer instead of `copyOf()`.
 - Added SECURITY.md with APK verification instructions and release artifact integrity guidance.
 - Added fastlane `title.txt` for IzzyOnDroid metadata completeness.
+- Enabled keep-screen-on during active listening so the phone does not dim or lock mid-tuning.
 
 ## GuitarTuner v0.0.4 - 2026-06-15
 

@@ -97,6 +97,10 @@ fun TunerScreen(
         onGuidedStringSelected(nextString)
     }
 
+    LaunchedEffect(state.isListening) {
+        view.keepScreenOn = state.isListening
+    }
+
     var fullscreenMode by remember { mutableStateOf(false) }
 
     if (fullscreenMode && state.isListening) {
