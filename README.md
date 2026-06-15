@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/SysAdminDoc/GuitarTuner/refs/heads/main/logo.png" width="300" alt="GuitarTuner logo">
 </p>
 
-![Version](https://img.shields.io/badge/version-v0.0.1-blue)
+![Version](https://img.shields.io/badge/version-v0.0.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-lightgrey)
 
@@ -19,17 +19,19 @@ Suggested topics: `android`, `kotlin`, `jetpack-compose`, `guitar-tuner`, `pitch
 - Native Android app with Kotlin, Jetpack Compose, and Material 3.
 - Offline-first design with no network permission.
 - Microphone-only pitch detection using lifecycle-bound Android `AudioRecord` capture.
-- Auto-first standard-string detection with confidence and signal feedback.
+- Auto, Guided, and Chromatic modes with guitar, bass, ukulele, built-in alternate tunings, and custom JSON tunings.
+- Premium AMOLED tuner surface with a tick-based cents scale, compact frequency/cents/confidence/input readouts, and fullscreen stage mode.
 - Live microphone diagnostics show raw level, peak level, input source, and sample rate before pitch detection succeeds.
-- Guided standard-tuning workflow for acoustic guitar when the player wants a step-by-step path.
+- Guided walkthrough with reference tone playback and per-string peg-direction calibration.
 - Clear tune-up / tune-down guidance with optional peg-direction calibration.
+- Optional haptic in-tune confirmation and freeze-last-note display after note decay.
 - AMOLED dark theme by default with an accessible light theme.
 
 ## GitHub Launch Post
 
 GuitarTuner is a privacy-first, open-source Android tuner for acoustic guitar. It uses the phone microphone locally, detects which open string was strummed, and gives clear flat/sharp plus tune-up/tune-down feedback without accounts, ads, uploads, or network permission.
 
-The current v0.0.1 build includes native Kotlin/Compose UI, YIN pitch detection with autocorrelation fallback, Auto and Guided modes, custom tunings, live mic level/peak diagnostics, Android source/sample-rate visibility, local settings, light/dark themes, fixture-based regression tests, and a GitHub release workflow.
+The current v0.0.2 build includes native Kotlin/Compose UI, YIN pitch detection with autocorrelation fallback, Auto, Guided, and Chromatic modes, guitar/bass/ukulele presets, custom tunings, fullscreen stage mode, reference tone playback, haptic confirmation, live mic level/peak diagnostics, Android source/sample-rate visibility, local settings, light/dark themes, fixture-based regression tests, and a GitHub release workflow.
 
 ## Microphone Reliability Notes
 
@@ -100,7 +102,7 @@ The release workflow is ready in this repository, but it only runs after the pro
 
 ## Repository Status
 
-GuitarTuner v0.0.1 has a native Android scaffold with an in-project YIN pitch detector, autocorrelation fallback, overlapping live audio windows, lower default noise gate for real phone microphones, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Auto and Guided tuning modes, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a polished first-screen action flow, sectioned tuning controls, a first-screen local-audio privacy note, a confidence-aware main tuner readout with live raw microphone RMS/peak, input source, sample rate, explicit signal and permission states, a standard six-string tuning model, Compose tuner screen, merged-manifest permission gate, JVM tests for standard-string, octave-error, quiet-input, live-sized fixture frames, raw PCM level diagnostics, and local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
+GuitarTuner v0.0.2 has a native Android scaffold with an in-project YIN pitch detector, autocorrelation fallback, overlapping live audio windows, lower default noise gate for real phone microphones, stable-frame smoothing, second-harmonic octave correction, an explicit `PitchResult` contract, Auto/Guided/Chromatic tuning modes, guitar/bass/ukulele presets, a low-E-to-high-E walkthrough, per-string peg-direction calibration, persisted A4 calibration, persisted cents tolerance, persisted noise gate control, persisted System/Dark/Light theme selection, built-in and custom tunings, a premium AMOLED tuner surface, compact live readouts, fullscreen stage mode, a local-audio privacy signal, sectioned settings controls, live raw microphone RMS/peak, input source, sample rate, explicit signal and permission states, a merged-manifest permission gate, JVM tests for standard-string, octave-error, quiet-input, live-sized fixture frames, raw PCM level diagnostics, local WAV fixture regression coverage, and a physical-device debug capture smoke test on a Samsung SM-S938B.
 
 ## Screenshots
 

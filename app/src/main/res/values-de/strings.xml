@@ -32,15 +32,15 @@
     <string name="guidance_with_turn">%1$s - %2$s drehen</string>
     <string name="action_allow_mic">Mikrofon erlauben</string>
     <string name="action_open_settings">Einstellungen oeffnen</string>
-    <string name="action_pause">Hoeren pausieren</string>
+    <string name="action_pause">Hoeren stoppen</string>
     <string name="action_start">Hoeren starten</string>
     <string name="action_stop">Stopp</string>
-    <string name="action_fullscreen">Voll</string>
+    <string name="action_fullscreen">Vollbild</string>
     <string name="action_set_favorite">Favorit setzen</string>
-    <string name="action_play_tone">Spielen</string>
+    <string name="action_play_tone">Ton spielen</string>
     <string name="action_import">Importieren</string>
     <string name="action_export">Exportieren</string>
-    <string name="action_privacy">Datenschutz</string>
+    <string name="action_privacy">Datenschutzdetails</string>
     <string name="setting_theme">Design</string>
     <string name="theme_system">System</string>
     <string name="theme_dark">Dunkel</string>
@@ -59,7 +59,7 @@
     <string name="section_defaults">Standardwerte</string>
     <string name="section_defaults_helper">Startverhalten und Anzeigeoptionen waehlen.</string>
     <string name="section_precision">Praezision</string>
-    <string name="section_precision_helper">Kalibrierung nur anpassen, wenn eine andere Referenz gebraucht wird.</string>
+    <string name="section_precision_helper">Kalibrierung und Erkennung nur bei Bedarf fein einstellen.</string>
     <string name="section_input_device">Mikrofon</string>
     <string name="section_input_device_helper">Waehle ein Eingangsgeraet oder lass die App entscheiden.</string>
     <string name="input_device_auto">Auto</string>
@@ -77,6 +77,7 @@
     <string name="startup_favorite">Favorit</string>
     <string name="label_tuning">Stimmung</string>
     <string name="label_current_tuning">Aktuell</string>
+    <string name="session_summary">%1$s / %2$s</string>
     <string name="label_available_tunings">Verfuegbare Stimmungen</string>
     <string name="label_mode">Modus</string>
     <string name="mode_auto">Auto</string>
@@ -91,6 +92,13 @@
     <string name="turn_left">Links</string>
     <string name="turn_right">Rechts</string>
     <string name="tuning_custom_suffix">%1$s benutzerdefiniert</string>
+    <string name="target_auto_detect_short">--</string>
+    <string name="target_detected_summary">Saite %1$d - %2$s - %3$s Hz</string>
+    <string name="metric_frequency">Frequenz</string>
+    <string name="metric_cents">Cents</string>
+    <string name="metric_confidence">Vertrauen</string>
+    <string name="metric_input">Eingang</string>
+    <string name="value_placeholder">--</string>
     <string name="frequency_placeholder">-- Hz</string>
     <string name="frequency_value">%1$s Hz</string>
     <string name="cents_placeholder">-- cents</string>
@@ -108,7 +116,7 @@
     <string name="error_mic_init">Mikrofon konnte nicht geoeffnet werden.</string>
     <string name="error_capture_stopped">Mikrofonaufnahme gestoppt.</string>
     <string name="privacy_title">Datenschutz</string>
-    <string name="privacy_inline_note">Audio verlaesst dieses Geraet nie.</string>
+    <string name="privacy_inline_note">Audio bleibt auf diesem Geraet.</string>
     <string name="privacy_summary">GuitarTuner verarbeitet Mikrofon-Audio nur lokal zum Stimmen.</string>
     <string name="privacy_done">Fertig</string>
     <string name="privacy_point_local_title">Lokale Analyse</string>
@@ -119,4 +127,10 @@
     <string name="privacy_point_permissions_body">Die App deklariert nur die Mikrofonberechtigung und keine Netzwerkberechtigung.</string>
     <string name="privacy_point_preferences_title">Lokale Einstellungen</string>
     <string name="privacy_point_preferences_body">Stimmungsoptionen bleiben im App-Speicher, bis App-Daten geloescht werden oder die App deinstalliert wird.</string>
+    <string name="fullscreen_tune_up">HOEHER</string>
+    <string name="fullscreen_tune_down">TIEFER</string>
+    <string name="fullscreen_in_tune">GESTIMMT</string>
+    <string name="fullscreen_overshoot">JETZT TIEFER</string>
+    <string name="fullscreen_waiting">HOERT ZU</string>
+    <string name="fullscreen_exit_hint">Zum Zurueckkehren irgendwo tippen</string>
 </resources>

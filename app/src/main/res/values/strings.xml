@@ -32,15 +32,15 @@
     <string name="guidance_with_turn">%1$s - turn %2$s</string>
     <string name="action_allow_mic">Allow microphone</string>
     <string name="action_open_settings">Open settings</string>
-    <string name="action_pause">Pause listening</string>
+    <string name="action_pause">Stop listening</string>
     <string name="action_start">Start listening</string>
     <string name="action_stop">Stop</string>
-    <string name="action_fullscreen">Full</string>
+    <string name="action_fullscreen">Full screen</string>
     <string name="action_set_favorite">Set favorite</string>
-    <string name="action_play_tone">Play</string>
+    <string name="action_play_tone">Play tone</string>
     <string name="action_import">Import</string>
     <string name="action_export">Export</string>
-    <string name="action_privacy">Privacy</string>
+    <string name="action_privacy">Privacy details</string>
     <string name="setting_theme">Theme</string>
     <string name="theme_system">System</string>
     <string name="theme_dark">Dark</string>
@@ -59,7 +59,7 @@
     <string name="section_defaults">Defaults</string>
     <string name="section_defaults_helper">Pick startup behavior and display preferences.</string>
     <string name="section_precision">Precision</string>
-    <string name="section_precision_helper">Adjust calibration only when you need a nonstandard reference.</string>
+    <string name="section_precision_helper">Fine-tune calibration and detection only when needed.</string>
     <string name="section_input_device">Microphone</string>
     <string name="section_input_device_helper">Choose a specific input device or let the app decide.</string>
     <string name="input_device_auto">Auto</string>
@@ -77,6 +77,7 @@
     <string name="startup_favorite">Favorite</string>
     <string name="label_tuning">Tuning</string>
     <string name="label_current_tuning">Current</string>
+    <string name="session_summary">%1$s / %2$s</string>
     <string name="label_available_tunings">Available tunings</string>
     <string name="label_mode">Mode</string>
     <string name="mode_auto">Auto</string>
@@ -91,6 +92,13 @@
     <string name="turn_left">Left</string>
     <string name="turn_right">Right</string>
     <string name="tuning_custom_suffix">%1$s custom</string>
+    <string name="target_auto_detect_short">--</string>
+    <string name="target_detected_summary">String %1$d - %2$s - %3$s Hz</string>
+    <string name="metric_frequency">Frequency</string>
+    <string name="metric_cents">Cents</string>
+    <string name="metric_confidence">Confidence</string>
+    <string name="metric_input">Input</string>
+    <string name="value_placeholder">--</string>
     <string name="frequency_placeholder">-- Hz</string>
     <string name="frequency_value">%1$s Hz</string>
     <string name="cents_placeholder">-- cents</string>
@@ -108,7 +116,7 @@
     <string name="error_mic_init">Could not open the microphone.</string>
     <string name="error_capture_stopped">Microphone capture stopped.</string>
     <string name="privacy_title">Privacy</string>
-    <string name="privacy_inline_note">Audio never leaves this device.</string>
+    <string name="privacy_inline_note">Audio stays on this device.</string>
     <string name="privacy_summary">GuitarTuner processes microphone audio locally for tuning only.</string>
     <string name="privacy_done">Done</string>
     <string name="privacy_point_local_title">Local analysis</string>
@@ -119,4 +127,10 @@
     <string name="privacy_point_permissions_body">The app declares microphone permission only and has no network permission.</string>
     <string name="privacy_point_preferences_title">Local preferences</string>
     <string name="privacy_point_preferences_body">Tuning preferences stay in app storage until app data is cleared or the app is uninstalled.</string>
+    <string name="fullscreen_tune_up">TUNE UP</string>
+    <string name="fullscreen_tune_down">TUNE DOWN</string>
+    <string name="fullscreen_in_tune">IN TUNE</string>
+    <string name="fullscreen_overshoot">TUNE DOWN NOW</string>
+    <string name="fullscreen_waiting">LISTENING</string>
+    <string name="fullscreen_exit_hint">Tap anywhere to return</string>
 </resources>

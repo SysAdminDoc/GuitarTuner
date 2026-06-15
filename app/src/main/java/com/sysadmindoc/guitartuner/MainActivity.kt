@@ -35,9 +35,11 @@ import com.sysadmindoc.guitartuner.tuning.CustomTuningJsonCodec
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningTargetSelection
+import com.sysadmindoc.guitartuner.ui.PrimaryAction
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
-import com.sysadmindoc.guitartuner.ui.TuningFileMessage
 import com.sysadmindoc.guitartuner.ui.TunerScreen
+import com.sysadmindoc.guitartuner.ui.TunerStateHolder
+import com.sysadmindoc.guitartuner.ui.TuningFileMessage
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +82,9 @@ private fun TunerRoute() {
     }
     val customTuningRepository = remember(context.applicationContext) {
         CustomTuningRepository(context.applicationContext.tunerPreferencesDataStore)
+    }
+    val stateHolder = remember(preferencesRepository, customTuningRepository, scope) {
+        TunerStateHolder(preferencesRepository, customTuningRepository, scope)
     }
     val preferences by preferencesRepository.preferences.collectAsStateWithLifecycle(
         initialValue = StoredTunerPreferences(),
@@ -147,20 +152,11 @@ private fun TunerRoute() {
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
-            try {
+            tuningFileMessage = try {
                 val source = context.readTextFromUri(uri)
-                if (source.length > MaxImportFileSize) {
-                    tuningFileMessage = TuningFileMessage.ReadError
-                    return@launch
-                }
-                val result = customTuningRepository.replaceFromJson(source)
-                tuningFileMessage = if (result.errors.isEmpty()) {
-                    TuningFileMessage.Imported(result.tunings.size)
-                } else {
-                    TuningFileMessage.Error(result.errors.joinToString(separator = "\n"))
-                }
+                stateHolder.processImport(source)
             } catch (_: Exception) {
-                tuningFileMessage = TuningFileMessage.ReadError
+                TuningFileMessage.ReadError
             }
         }
     }
@@ -171,13 +167,13 @@ private fun TunerRoute() {
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             try {
-                val customOnly = uncalibratedTuningCatalog.tunings.filterNot { it.isBuiltIn }
-                if (customOnly.isEmpty()) {
+                val result = stateHolder.buildExportJson(uncalibratedTuningCatalog)
+                if (result == null) {
                     tuningFileMessage = TuningFileMessage.NoCustomTunings
-                    return@launch
+                } else {
+                    context.writeTextToUri(uri, result.first)
+                    tuningFileMessage = result.second
                 }
-                context.writeTextToUri(uri, CustomTuningJsonCodec.encode(customOnly))
-                tuningFileMessage = TuningFileMessage.Exported(customOnly.size)
             } catch (_: Exception) {
                 tuningFileMessage = TuningFileMessage.WriteError
             }
@@ -245,72 +241,46 @@ private fun TunerRoute() {
                 guidedStringNumber = guidedStringNumber,
                 preferences = preferences,
                 onPrimaryAction = {
-                    when {
-                        !hasAudioPermission && permanentlyDenied -> {
+                    when (TunerStateHolder.determinePrimaryAction(
+                        hasAudioPermission, permanentlyDenied, state.isListening,
+                    )) {
+                        PrimaryAction.OpenSettings -> {
                             val intent = Intent(
                                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                                 Uri.fromParts("package", context.packageName, null),
                             )
                             context.startActivity(intent)
                         }
-                        !hasAudioPermission -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-                        state.isListening -> controller.stop()
-                        else -> controller.start()
+                        PrimaryAction.RequestPermission ->
+                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        PrimaryAction.Stop -> controller.stop()
+                        PrimaryAction.Start -> controller.start()
                     }
                 },
-                onStop = controller::stop,
-                onTuningModeSelected = { mode ->
-                    tuningMode = mode
-                },
-                onGuidedStringSelected = { stringNumber ->
-                    guidedStringNumber = stringNumber
-                },
+                onTuningModeSelected = { mode -> tuningMode = mode },
+                onGuidedStringSelected = { stringNumber -> guidedStringNumber = stringNumber },
                 onStartupModeSelected = { mode ->
-                    selectedTuningId = when (mode) {
-                        com.sysadmindoc.guitartuner.settings.StartupTuningMode.StandardDefault ->
-                            GuitarTunings.StandardId
-                        com.sysadmindoc.guitartuner.settings.StartupTuningMode.LastUsed ->
-                            preferences.lastUsedTuningId
-                        com.sysadmindoc.guitartuner.settings.StartupTuningMode.Favorite ->
-                            preferences.favoriteTuningId
-                    }
-                    scope.launch { preferencesRepository.setStartupMode(mode) }
+                    selectedTuningId = stateHolder.setStartupMode(mode, preferences)
                 },
-                onSetFavoriteTuning = {
-                    scope.launch { preferencesRepository.setFavoriteTuning(activeTuning.id) }
-                },
-                onThemeModeSelected = { mode ->
-                    scope.launch { preferencesRepository.setThemeMode(mode) }
-                },
-                onFreezeAfterDecayChanged = { enabled ->
-                    scope.launch { preferencesRepository.setFreezeAfterDecay(enabled) }
-                },
-                onHapticEnabledChanged = { enabled ->
-                    scope.launch { preferencesRepository.setHapticEnabled(enabled) }
-                },
+                onSetFavoriteTuning = { stateHolder.setFavoriteTuning(activeTuning.id) },
+                onThemeModeSelected = { mode -> stateHolder.setThemeMode(mode) },
+                onFreezeAfterDecayChanged = { enabled -> stateHolder.setFreezeAfterDecay(enabled) },
+                onHapticEnabledChanged = { enabled -> stateHolder.setHapticEnabled(enabled) },
                 onMeasureA4 = {
-                    val freq = state.pitchEstimate.frequencyHz
-                    val confidence = state.pitchEstimate.confidence
-                    if (freq != null && freq in 400.0..480.0 && confidence >= 0.8) {
-                        val rounded = kotlin.math.round(freq).coerceIn(400.0, 480.0)
-                        scope.launch { preferencesRepository.setA4Hz(rounded) }
-                    }
+                    val measured = TunerStateHolder.measureA4FromLive(
+                        state.pitchEstimate.frequencyHz, state.pitchEstimate.confidence,
+                    )
+                    if (measured != null) stateHolder.setA4Hz(measured)
                 },
-                onA4CalibrationChanged = { a4Hz ->
-                    scope.launch { preferencesRepository.setA4Hz(a4Hz) }
-                },
-                onCentsToleranceChanged = { cents ->
-                    scope.launch { preferencesRepository.setCentsTolerance(cents) }
-                },
-                onNoiseGateChanged = { rms ->
-                    scope.launch { preferencesRepository.setNoiseGateRms(rms) }
-                },
+                onA4CalibrationChanged = { a4Hz -> stateHolder.setA4Hz(a4Hz) },
+                onCentsToleranceChanged = { cents -> stateHolder.setCentsTolerance(cents) },
+                onNoiseGateChanged = { rms -> stateHolder.setNoiseGateRms(rms) },
                 onPegTurnDirectionChanged = { stringNumber, direction ->
-                    scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }
+                    stateHolder.setPegTurnDirection(stringNumber, direction)
                 },
                 onTuningSelected = { tuning ->
                     selectedTuningId = tuning.id
-                    scope.launch { preferencesRepository.rememberLastUsedTuning(tuning.id) }
+                    stateHolder.selectTuning(tuning)
                 },
                 onImportTunings = {
                     importLauncher.launch(arrayOf("application/json", "text/json", "text/plain"))
@@ -350,5 +320,3 @@ private suspend fun Context.writeTextToUri(uri: Uri, text: String) = withContext
         output.write(text)
     }
 }
-
-private const val MaxImportFileSize = 512_000

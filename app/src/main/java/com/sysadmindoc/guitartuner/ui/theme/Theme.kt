@@ -16,11 +16,11 @@ import com.sysadmindoc.guitartuner.settings.ThemeMode
 private val AmoledDarkScheme = darkColorScheme(
     primary = Color(0xFF3DDC84),
     onPrimary = Color(0xFF001F10),
-    primaryContainer = Color(0xFF123523),
+    primaryContainer = Color(0xFF0D2F1C),
     onPrimaryContainer = Color(0xFFD6F9E3),
-    secondary = Color(0xFF9BD4B3),
+    secondary = Color(0xFF8DCFA9),
     onSecondary = Color(0xFF052414),
-    secondaryContainer = Color(0xFF1A2A20),
+    secondaryContainer = Color(0xFF102017),
     onSecondaryContainer = Color(0xFFD8EADB),
     tertiary = Color(0xFFFFC857),
     onTertiary = Color(0xFF2B1A00),
@@ -32,14 +32,14 @@ private val AmoledDarkScheme = darkColorScheme(
     onErrorContainer = Color(0xFFFFDAD6),
     background = Color.Black,
     onBackground = Color(0xFFF5F5F5),
-    surface = Color(0xFF0E1511),
+    surface = Color(0xFF050806),
     onSurface = Color(0xFFF5F5F5),
-    onSurfaceVariant = Color(0xFFC8D0CA),
-    surfaceVariant = Color(0xFF18211C),
+    onSurfaceVariant = Color(0xFFC4CEC6),
+    surfaceVariant = Color(0xFF0D1711),
     inverseSurface = Color(0xFFE0E6DF),
     inverseOnSurface = Color(0xFF172019),
-    outline = Color(0xFF65706A),
-    outlineVariant = Color(0xFF303A34),
+    outline = Color(0xFF516058),
+    outlineVariant = Color(0xFF223026),
 )
 
 private val LightScheme = lightColorScheme(
@@ -72,14 +72,19 @@ private val LightScheme = lightColorScheme(
 )
 
 private val GuitarTunerTypography = Typography(
+    displayLarge = TextStyle(
+        fontSize = 92.sp,
+        lineHeight = 96.sp,
+        fontWeight = FontWeight.Bold,
+    ),
     displaySmall = TextStyle(
-        fontSize = 42.sp,
-        lineHeight = 46.sp,
+        fontSize = 54.sp,
+        lineHeight = 58.sp,
         fontWeight = FontWeight.Bold,
     ),
     headlineMedium = TextStyle(
-        fontSize = 30.sp,
-        lineHeight = 36.sp,
+        fontSize = 28.sp,
+        lineHeight = 34.sp,
         fontWeight = FontWeight.SemiBold,
     ),
     headlineSmall = TextStyle(

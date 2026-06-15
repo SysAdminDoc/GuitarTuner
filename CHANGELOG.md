@@ -1,5 +1,15 @@
 # Changelog
 
+## GuitarTuner v0.0.2 - 2026-06-15
+
+- Split the tuner UI into focused Compose modules for screen chrome, meter panel, live readouts, settings sections, fullscreen mode, privacy, and state-holder logic.
+- Added a premium AMOLED tuner surface with a tick-based cents meter, compact frequency/cents/confidence/input readouts, clearer target hierarchy, and an always-visible local-audio trust signal.
+- Refined settings into independent scan-friendly sections with calmer selected states, consistent rectangular 8 dp controls, safer long-label wrapping, and stronger touch-target consistency.
+- Removed the duplicate active listening stop action by replacing the old Pause/Stop pair with one clear Stop listening action plus Full screen.
+- Replaced corrupted fullscreen tuning symbols with localized text states, safer overshoot wording, and a tap-to-return hint.
+- Improved privacy screen spacing and screen-reader grouping while keeping the app's microphone-only, no-network privacy model explicit.
+- Added `.kotlin/` to `.gitignore` so Gradle/Kotlin build caches stay out of source control.
+
 ## GuitarTuner v0.0.1 - 2026-06-12
 
 - Created local repository planning baseline.

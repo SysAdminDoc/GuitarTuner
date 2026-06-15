@@ -1,6 +1,6 @@
 # GuitarTuner Roadmap
 
-Project version: GuitarTuner v0.0.1
+Project version: GuitarTuner v0.0.2
 
 This roadmap contains incomplete work only. GuitarTuner is an offline, open-source Android acoustic guitar tuner. The first implementation target is standard six-string acoustic guitar tuning by microphone.
 
@@ -28,12 +28,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 
 ### P1
 
-- [ ] P1 — Split TunerScreen.kt and extract a testable state holder
-  Why: file is ~1500 lines after feature additions; blocks UI testing and invites merge conflicts.
-  Where: ui/TunerScreen.kt, MainActivity.kt.
-  Acceptance: no file over ~400 lines in ui/; permission/import/export logic unit-tested; behavior identical.
-  Complexity: M
-
 - [ ] P1 — Version bump to v0.1.0 and first tagged release
   Why: all P0/P1 features are shipped; the release workflow is configured but no signed release exists.
   Where: app/build.gradle.kts, README.md badges, CHANGELOG.md.
@@ -43,11 +37,6 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
 - [ ] P1 — Re-capture screenshots on physical device
   Why: UI has changed significantly (chromatic mode, fullscreen, haptic toggle, mic picker, overshoot state); stale screenshots mislead users.
   Where: docs/screenshots/, fastlane/metadata/android/en-US/images/phoneScreenshots/, README.md.
-  Complexity: S
-
-- [ ] P1 — Refresh README feature list and description
-  Why: README doesn't mention chromatic mode, bass/ukulele presets, mic picker, fullscreen mode, haptic confirmation, overshoot warning, phase refinement, reference tone playback, or A4 measurement. Feature list is stale vs shipped code.
-  Where: README.md (Current Direction, Repository Status, features list), fastlane/metadata/android/en-US/full_description.txt.
   Complexity: S
 
 ### P2
@@ -88,13 +77,9 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Why: complex start/stop/close state machine and @Volatile field interactions have zero test coverage; audit found race windows in stop() and rebuildAnalyzer().
   Where: test/ new AudioCaptureControllerTest.kt (requires recorder abstraction or Robolectric).
 
-- [ ] P2 — Add PrivacyScreen accessibility semantics
-  Why: text blocks lack contentDescription; screen reader users get poor navigation of the privacy information.
-  Where: ui/PrivacyScreen.kt.
-
 - [ ] P3 — Responsive font sizing in FullscreenTunerView
-  Why: hardcoded 96.sp/64.sp may overflow small phones or be tiny on tablets.
-  Where: ui/TunerScreen.kt FullscreenTunerView composable.
+  Why: fullscreen copy is cleaner now, but it still needs live small-phone/tablet visual proof before closing.
+  Where: ui/FullscreenTunerView.kt.
 
 ## MVP Acceptance Criteria
 

@@ -1,0 +1,227 @@
+package com.sysadmindoc.guitartuner.ui
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.sysadmindoc.guitartuner.R
+import com.sysadmindoc.guitartuner.audio.TunerSessionState
+import com.sysadmindoc.guitartuner.settings.PegTurnDirection
+import com.sysadmindoc.guitartuner.tuning.GuitarString
+import com.sysadmindoc.guitartuner.tuning.TuningDefinition
+import com.sysadmindoc.guitartuner.tuning.TuningMode
+
+@Composable
+internal fun TunerMeterPanel(
+    state: TunerSessionState,
+    hasAudioPermission: Boolean,
+    activeTuning: TuningDefinition,
+    tuningMode: TuningMode,
+    guidedStringNumber: Int,
+    pegTurnDirections: Map<Int, PegTurnDirection>,
+    modifier: Modifier = Modifier,
+) {
+    val guidedTarget = if (tuningMode == TuningMode.Guided) {
+        activeTuning.strings.firstOrNull { it.stringNumber == guidedStringNumber }
+    } else {
+        null
+    }
+    Surface(
+        modifier = modifier,
+        shape = PanelShape,
+        color = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        border = BorderStroke(PanelBorderWidth, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            TargetString(
+                state = state,
+                guidedTarget = guidedTarget,
+                activeTuning = activeTuning,
+                tuningMode = tuningMode,
+            )
+            CentsMeter(state)
+            FrequencyReadout(
+                state = state,
+                hasAudioPermission = hasAudioPermission,
+                pegTurnDirections = pegTurnDirections,
+                guidedTarget = guidedTarget,
+            )
+            TrustSignal()
+        }
+    }
+}
+
+@Composable
+private fun TargetString(
+    state: TunerSessionState,
+    guidedTarget: GuitarString?,
+    activeTuning: TuningDefinition,
+    tuningMode: TuningMode,
+) {
+    val measurement = state.measurement
+    val target = measurement.target ?: guidedTarget
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(3.dp),
+    ) {
+        Text(
+            text = tuningMode.label(),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = target?.scientificPitch ?: stringResource(R.string.target_auto_detect_short),
+            style = MaterialTheme.typography.displayLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = when {
+                measurement.target != null -> stringResource(
+                    R.string.target_detected_summary,
+                    measurement.target.stringNumber,
+                    measurement.target.name,
+                    formatOneDecimal(measurement.target.frequencyHz),
+                )
+                guidedTarget != null -> stringResource(
+                    R.string.target_guided_prompt,
+                    guidedTarget.stringNumber,
+                    guidedTarget.scientificPitch,
+                )
+                else -> activeTuning.name
+            },
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun CentsMeter(state: TunerSessionState) {
+    val cents = state.measurement.cents
+    val boundedCents = (cents ?: 0.0).coerceIn(-50.0, 50.0)
+    val accessibility = tuningMeterAccessibility(state.measurement)
+    val trackColor = MaterialTheme.colorScheme.outlineVariant
+    val centerColor = MaterialTheme.colorScheme.primary
+    val flatColor = MaterialTheme.colorScheme.primary
+    val sharpColor = MaterialTheme.colorScheme.tertiary
+    val markerColor = statusColor(state.measurement.status)
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(104.dp)
+                .semantics {
+                    contentDescription = accessibility.contentDescription
+                    stateDescription = accessibility.stateDescription
+                    progressBarRangeInfo = ProgressBarRangeInfo(accessibility.progressCents, -50f..50f)
+                    liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val y = size.height / 2f
+                val left = 16.dp.toPx()
+                val right = size.width - 16.dp.toPx()
+                val centerX = size.width / 2f
+                drawLine(
+                    color = trackColor,
+                    start = Offset(left, y),
+                    end = Offset(right, y),
+                    strokeWidth = 2.dp.toPx(),
+                    cap = StrokeCap.Round,
+                )
+                for (tick in -50..50 step 5) {
+                    val fraction = (tick + 50) / 100f
+                    val x = left + fraction * (right - left)
+                    val isMajor = tick % 10 == 0
+                    val tickHeight = if (isMajor) 28.dp.toPx() else 18.dp.toPx()
+                    val tickColor = when {
+                        tick < 0 -> flatColor
+                        tick > 0 -> sharpColor
+                        else -> centerColor
+                    }
+                    drawLine(
+                        color = tickColor.copy(alpha = if (isMajor) 0.9f else 0.56f),
+                        start = Offset(x, y - tickHeight / 2f),
+                        end = Offset(x, y + tickHeight / 2f),
+                        strokeWidth = if (isMajor) 2.dp.toPx() else 1.5.dp.toPx(),
+                        cap = StrokeCap.Round,
+                    )
+                }
+                drawLine(
+                    color = centerColor,
+                    start = Offset(centerX, y - 38.dp.toPx()),
+                    end = Offset(centerX, y + 38.dp.toPx()),
+                    strokeWidth = 2.dp.toPx(),
+                    cap = StrokeCap.Round,
+                )
+                val markerX = centerX + (boundedCents / 50.0).toFloat() * ((right - left) / 2f)
+                drawLine(
+                    color = markerColor,
+                    start = Offset(markerX, y - 31.dp.toPx()),
+                    end = Offset(markerX, y + 31.dp.toPx()),
+                    strokeWidth = 7.dp.toPx(),
+                    cap = StrokeCap.Round,
+                )
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(R.string.meter_flat),
+                style = MaterialTheme.typography.labelMedium,
+                color = flatColor,
+            )
+            Text(
+                text = stringResource(R.string.meter_in_tune),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = stringResource(R.string.meter_sharp),
+                style = MaterialTheme.typography.labelMedium,
+                color = sharpColor,
+            )
+        }
+    }
+}

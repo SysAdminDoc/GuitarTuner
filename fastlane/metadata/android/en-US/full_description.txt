@@ -1,13 +1,16 @@
 GuitarTuner is a free, open-source, offline acoustic guitar tuner for Android. It listens through the phone microphone, identifies the strummed string, and gives clear tune-up or tune-down feedback.
 
 Features:
+- Premium AMOLED tuner screen with compact frequency, cents, confidence, and input-level readouts
 - Auto mode detects whichever open string you play
 - Guided mode walks through each string step by step
 - Chromatic mode shows the nearest note for any pitch
+- Fullscreen stage mode for distance viewing while tuning
 - Reference tone playback lets you tune by ear
 - Custom tunings via JSON import/export
-- Built-in tunings: Standard, Half-step down, Drop D, Open G, DADGAD
+- Built-in tunings: Standard, Half-step down, Drop D, Open G, DADGAD, bass, ukulele
 - A4 calibration (default 440 Hz), adjustable cents tolerance, noise gate
+- Microphone input picker when Android exposes multiple input devices
 - Per-string peg-direction calibration for tune-up/tune-down guidance
 - String-break overshoot warning when pitch is dangerously high
 - Haptic in-tune confirmation (optional)
