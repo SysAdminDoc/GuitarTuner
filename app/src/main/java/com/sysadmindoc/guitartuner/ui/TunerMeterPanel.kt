@@ -15,10 +15,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
@@ -35,6 +40,7 @@ import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
 import com.sysadmindoc.guitartuner.tuning.TuningMode
+import com.sysadmindoc.guitartuner.tuning.TuningStatus
 
 @Composable
 internal fun TunerMeterPanel(
@@ -71,6 +77,7 @@ internal fun TunerMeterPanel(
                 tuningMode = tuningMode,
             )
             CentsMeter(state)
+            PitchHistoryTimeline(state)
             FrequencyReadout(
                 state = state,
                 hasAudioPermission = hasAudioPermission,
@@ -241,3 +248,68 @@ private fun CentsMeter(state: TunerSessionState) {
         }
     }
 }
+
+@Composable
+private fun PitchHistoryTimeline(state: TunerSessionState) {
+    val history = remember { mutableStateListOf<Float>() }
+    val cents = state.measurement.cents
+    val hasDetection = state.measurement.status == TuningStatus.InTune ||
+        state.measurement.status == TuningStatus.TuneUp ||
+        state.measurement.status == TuningStatus.TuneDown ||
+        state.measurement.status == TuningStatus.Overshoot
+
+    LaunchedEffect(cents, hasDetection) {
+        if (hasDetection && cents != null) {
+            history.add(cents.coerceIn(-50.0, 50.0).toFloat())
+            while (history.size > HistoryMaxSamples) {
+                history.removeAt(0)
+            }
+        }
+    }
+
+    LaunchedEffect(state.isListening) {
+        if (!state.isListening) history.clear()
+    }
+
+    if (history.size < 2) return
+
+    val lineColor = MaterialTheme.colorScheme.primary
+    val zeroColor = MaterialTheme.colorScheme.outlineVariant
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+    ) {
+        val pad = 8.dp.toPx()
+        val left = pad
+        val right = size.width - pad
+        val top = 2.dp.toPx()
+        val bottom = size.height - 2.dp.toPx()
+        val centerY = (top + bottom) / 2f
+        val width = right - left
+        val height = bottom - top
+
+        drawLine(
+            color = zeroColor,
+            start = Offset(left, centerY),
+            end = Offset(right, centerY),
+            strokeWidth = 1.dp.toPx(),
+        )
+
+        val path = Path()
+        val count = history.size
+        for (i in 0 until count) {
+            val x = left + (i.toFloat() / (HistoryMaxSamples - 1)) * width
+            val y = centerY - (history[i] / 50f) * (height / 2f)
+            if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+        }
+        drawPath(
+            path = path,
+            color = lineColor,
+            style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round),
+        )
+    }
+}
+
+private const val HistoryMaxSamples = 120
