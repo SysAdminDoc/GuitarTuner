@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">TUNE DOWN NOW</string>
     <string name="fullscreen_waiting">LISTENING</string>
     <string name="fullscreen_exit_hint">Tap anywhere to return</string>
+    <string name="stretch_mode_start">New strings</string>
+    <string name="stretch_mode_stop">Exit stretch</string>
+    <string name="stretch_pass">Pass %1$d</string>
+    <string name="stretch_settled">Strings settled</string>
+    <string name="stretch_max_drift">Max drift: %1$s cents</string>
+    <string name="stretch_prompt">Stretch your strings, then continue</string>
     <string name="a11y_meter_description">Guitar tuning meter</string>
     <string name="a11y_state_waiting">Waiting for a detected guitar string</string>
     <string name="a11y_state_clipping">Input is clipping; play softer</string>

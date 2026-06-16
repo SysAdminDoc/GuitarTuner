@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">지금 음을 내리세요</string>
     <string name="fullscreen_waiting">듣는 중</string>
     <string name="fullscreen_exit_hint">아무 곳이나 탭하여 돌아가기</string>
+    <string name="stretch_mode_start">새 줄</string>
+    <string name="stretch_mode_stop">스트레칭 종료</string>
+    <string name="stretch_pass">패스 %1$d</string>
+    <string name="stretch_settled">줄이 안정되었습니다</string>
+    <string name="stretch_max_drift">최대 드리프트: %1$s cents</string>
+    <string name="stretch_prompt">줄을 늘린 후 계속하세요</string>
     <string name="a11y_meter_description">기타 튜닝 미터</string>
     <string name="a11y_state_waiting">기타 줄 감지를 기다리는 중</string>
     <string name="a11y_state_clipping">입력이 클리핑 중입니다. 더 부드럽게 연주하세요</string>

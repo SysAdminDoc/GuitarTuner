@@ -42,5 +42,5 @@ fun nextGuidedStringNumber(
     return strings.guidedOrder()[nextIndex].stringNumber
 }
 
-private fun List<GuitarString>.guidedOrder(): List<GuitarString> =
+internal fun List<GuitarString>.guidedOrder(): List<GuitarString> =
     sortedByDescending { it.stringNumber }

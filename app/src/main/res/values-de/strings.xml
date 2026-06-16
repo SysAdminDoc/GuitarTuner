@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">JETZT TIEFER</string>
     <string name="fullscreen_waiting">HOERT ZU</string>
     <string name="fullscreen_exit_hint">Zum Zurueckkehren irgendwo tippen</string>
+    <string name="stretch_mode_start">Neue Saiten</string>
+    <string name="stretch_mode_stop">Dehnmodus beenden</string>
+    <string name="stretch_pass">Durchlauf %1$d</string>
+    <string name="stretch_settled">Saiten eingespielt</string>
+    <string name="stretch_max_drift">Max. Drift: %1$s Cent</string>
+    <string name="stretch_prompt">Saiten dehnen, dann weiter</string>
     <string name="a11y_meter_description">Gitarren-Stimmgeraet</string>
     <string name="a11y_state_waiting">Warte auf eine erkannte Gitarrensaite</string>
     <string name="a11y_state_clipping">Eingang uebersteuert; leiser spielen</string>

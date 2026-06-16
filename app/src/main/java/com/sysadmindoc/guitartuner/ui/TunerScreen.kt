@@ -36,6 +36,7 @@ import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
 import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
+import com.sysadmindoc.guitartuner.tuning.guidedOrder
 import com.sysadmindoc.guitartuner.tuning.guidedTuningStep
 import com.sysadmindoc.guitartuner.tuning.nextGuidedStringNumber
 import kotlinx.coroutines.delay
@@ -88,16 +89,46 @@ fun TunerScreen(
         previousInTune = currentlyInTune
     }
 
+    var stretchModeActive by remember { mutableStateOf(false) }
+    var stretchPassNumber by remember { mutableStateOf(0) }
+    var stretchPreviousCents by remember { mutableStateOf(emptyMap<Int, Double>()) }
+    var stretchCurrentCents by remember { mutableStateOf(emptyMap<Int, Double>()) }
+    val stretchMaxDrift = if (stretchPassNumber >= 2 && stretchPreviousCents.isNotEmpty()) {
+        stretchPreviousCents.maxOfOrNull { (stringNum, prevCents) ->
+            val curCents = stretchCurrentCents[stringNum] ?: prevCents
+            kotlin.math.abs(curCents - prevCents)
+        } ?: 0.0
+    } else {
+        null
+    }
+    val stretchSettled = stretchMaxDrift != null && stretchMaxDrift <= preferences.centsTolerance
+
     LaunchedEffect(currentlyInTune, tuningMode, guidedStringNumber) {
         if (!currentlyInTune || tuningMode != TuningMode.Guided || !preferences.autoAdvanceGuided) return@LaunchedEffect
         val step = guidedTuningStep(activeTuning.strings, guidedStringNumber) ?: return@LaunchedEffect
-        if (step.index >= step.total - 1) return@LaunchedEffect
+
+        if (stretchModeActive && currentlyInTune) {
+            val cents = state.measurement.cents ?: 0.0
+            stretchCurrentCents = stretchCurrentCents + (guidedStringNumber to cents)
+        }
+
+        val isLastStep = step.index >= step.total - 1
+        if (isLastStep && !stretchModeActive) return@LaunchedEffect
+
         delay(1500)
-        val nextString = nextGuidedStringNumber(activeTuning.strings, guidedStringNumber)
         if (preferences.hapticEnabled) {
             view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
         }
-        onGuidedStringSelected(nextString)
+        if (isLastStep && stretchModeActive) {
+            stretchPreviousCents = stretchCurrentCents
+            stretchCurrentCents = emptyMap()
+            stretchPassNumber += 1
+            val firstString = activeTuning.strings.guidedOrder().firstOrNull()?.stringNumber ?: return@LaunchedEffect
+            onGuidedStringSelected(firstString)
+        } else {
+            val nextString = nextGuidedStringNumber(activeTuning.strings, guidedStringNumber)
+            onGuidedStringSelected(nextString)
+        }
     }
 
     if (state.isListening) {
@@ -178,6 +209,23 @@ fun TunerScreen(
                             tuningMode = tuningMode,
                             guidedStringNumber = guidedStringNumber,
                             preferences = preferences,
+                            stretchModeActive = stretchModeActive,
+                            stretchPassNumber = stretchPassNumber,
+                            stretchMaxDrift = stretchMaxDrift,
+                            stretchSettled = stretchSettled,
+                            onStretchModeToggle = {
+                                if (stretchModeActive) {
+                                    stretchModeActive = false
+                                    stretchPassNumber = 0
+                                    stretchPreviousCents = emptyMap()
+                                    stretchCurrentCents = emptyMap()
+                                } else {
+                                    stretchModeActive = true
+                                    stretchPassNumber = 1
+                                    stretchPreviousCents = emptyMap()
+                                    stretchCurrentCents = emptyMap()
+                                }
+                            },
                             onTuningModeSelected = onTuningModeSelected,
                             onGuidedStringSelected = onGuidedStringSelected,
                             onStartupModeSelected = onStartupModeSelected,
@@ -226,6 +274,23 @@ fun TunerScreen(
                         tuningMode = tuningMode,
                         guidedStringNumber = guidedStringNumber,
                         preferences = preferences,
+                        stretchModeActive = stretchModeActive,
+                        stretchPassNumber = stretchPassNumber,
+                        stretchMaxDrift = stretchMaxDrift,
+                        stretchSettled = stretchSettled,
+                        onStretchModeToggle = {
+                            if (stretchModeActive) {
+                                stretchModeActive = false
+                                stretchPassNumber = 0
+                                stretchPreviousCents = emptyMap()
+                                stretchCurrentCents = emptyMap()
+                            } else {
+                                stretchModeActive = true
+                                stretchPassNumber = 1
+                                stretchPreviousCents = emptyMap()
+                                stretchCurrentCents = emptyMap()
+                            }
+                        },
                         onTuningModeSelected = onTuningModeSelected,
                         onGuidedStringSelected = onGuidedStringSelected,
                         onStartupModeSelected = onStartupModeSelected,

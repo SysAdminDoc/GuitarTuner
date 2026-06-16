@@ -5,6 +5,7 @@
 - Version bump to v0.1.0, reflecting feature-complete MVP status.
 - Eliminated per-frame heap allocation in YinPitchDetector by reusing pre-allocated buffers for DC-offset removal and YIN difference computation (~37 KB/frame saved at ~21 fps).
 - Custom tuning import now accepts 1-12 strings (was hardcoded to exactly 6), enabling bass and ukulele custom tuning imports. Minimum frequency lowered to 20 Hz for 5-string bass coverage.
+- Added new-string stretch-and-settle mode in Guided: activates multi-pass walkthrough with per-string drift tracking between passes. Reports max drift in cents and declares "strings settled" when drift falls within tolerance. Localized in all 8 languages.
 
 ## GuitarTuner v0.0.5 (audit) - 2026-06-15
 

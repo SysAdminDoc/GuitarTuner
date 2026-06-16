@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">立即调低</string>
     <string name="fullscreen_waiting">正在聆听</string>
     <string name="fullscreen_exit_hint">点击任意位置返回</string>
+    <string name="stretch_mode_start">新弦</string>
+    <string name="stretch_mode_stop">退出拉伸</string>
+    <string name="stretch_pass">第 %1$d 遍</string>
+    <string name="stretch_settled">弦已稳定</string>
+    <string name="stretch_max_drift">最大偏移: %1$s 音分</string>
+    <string name="stretch_prompt">拉伸琴弦后继续</string>
     <string name="a11y_meter_description">吉他调音表</string>
     <string name="a11y_state_waiting">等待检测到吉他弦音</string>
     <string name="a11y_state_clipping">输入信号过载，请轻一些弹奏</string>

@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">今すぐ音を下げる</string>
     <string name="fullscreen_waiting">聴き取り中</string>
     <string name="fullscreen_exit_hint">タップして戻る</string>
+    <string name="stretch_mode_start">新しい弦</string>
+    <string name="stretch_mode_stop">ストレッチ終了</string>
+    <string name="stretch_pass">パス %1$d</string>
+    <string name="stretch_settled">弦が安定しました</string>
+    <string name="stretch_max_drift">最大ドリフト: %1$sセント</string>
+    <string name="stretch_prompt">弦を伸ばしてから続けてください</string>
     <string name="a11y_meter_description">ギターチューナーメーター</string>
     <string name="a11y_state_waiting">ギターの弦の検出を待っています</string>
     <string name="a11y_state_clipping">入力がクリッピングしています。もっと弱く弾いてください</string>

@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">BAISSE MAINTENANT</string>
     <string name="fullscreen_waiting">ECOUTE</string>
     <string name="fullscreen_exit_hint">Touche n\'importe ou pour revenir</string>
+    <string name="stretch_mode_start">Cordes neuves</string>
+    <string name="stretch_mode_stop">Quitter l\'etirement</string>
+    <string name="stretch_pass">Passage %1$d</string>
+    <string name="stretch_settled">Cordes stabilisees</string>
+    <string name="stretch_max_drift">Derive max : %1$s cents</string>
+    <string name="stretch_prompt">Etirez les cordes, puis continuez</string>
     <string name="a11y_meter_description">Accordeur de guitare</string>
     <string name="a11y_state_waiting">En attente d\'une corde de guitare detectee</string>
     <string name="a11y_state_clipping">Signal sature; joue plus doucement</string>

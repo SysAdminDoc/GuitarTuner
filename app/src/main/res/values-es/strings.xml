@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">BAJA AHORA</string>
     <string name="fullscreen_waiting">ESCUCHANDO</string>
     <string name="fullscreen_exit_hint">Toca en cualquier lugar para volver</string>
+    <string name="stretch_mode_start">Cuerdas nuevas</string>
+    <string name="stretch_mode_stop">Salir de estiramiento</string>
+    <string name="stretch_pass">Pasada %1$d</string>
+    <string name="stretch_settled">Cuerdas asentadas</string>
+    <string name="stretch_max_drift">Deriva max: %1$s cents</string>
+    <string name="stretch_prompt">Estira las cuerdas y continua</string>
     <string name="a11y_meter_description">Medidor de afinacion de guitarra</string>
     <string name="a11y_state_waiting">Esperando una cuerda de guitarra detectada</string>
     <string name="a11y_state_clipping">La entrada esta saturada; toca mas suave</string>

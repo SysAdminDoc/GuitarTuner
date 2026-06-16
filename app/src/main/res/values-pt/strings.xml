@@ -142,6 +142,12 @@
     <string name="fullscreen_overshoot">BAIXE AGORA</string>
     <string name="fullscreen_waiting">OUVINDO</string>
     <string name="fullscreen_exit_hint">Toque em qualquer lugar para voltar</string>
+    <string name="stretch_mode_start">Cordas novas</string>
+    <string name="stretch_mode_stop">Sair do alongamento</string>
+    <string name="stretch_pass">Passagem %1$d</string>
+    <string name="stretch_settled">Cordas estabilizadas</string>
+    <string name="stretch_max_drift">Desvio max: %1$s cents</string>
+    <string name="stretch_prompt">Estique as cordas e continue</string>
     <string name="a11y_meter_description">Afinador de guitarra</string>
     <string name="a11y_state_waiting">Aguardando uma corda de guitarra detectada</string>
     <string name="a11y_state_clipping">Entrada saturada; toque mais suave</string>

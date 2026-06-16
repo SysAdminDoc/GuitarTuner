@@ -62,6 +62,11 @@ internal fun ModeSection(
     tuningMode: TuningMode,
     guidedStringNumber: Int,
     preferences: StoredTunerPreferences,
+    stretchModeActive: Boolean,
+    stretchPassNumber: Int,
+    stretchMaxDrift: Double?,
+    stretchSettled: Boolean,
+    onStretchModeToggle: () -> Unit,
     onTuningModeSelected: (TuningMode) -> Unit,
     onGuidedStringSelected: (Int) -> Unit,
     onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
@@ -99,6 +104,11 @@ internal fun ModeSection(
                 activeTuning = activeTuning,
                 guidedStringNumber = guidedStringNumber,
                 preferences = preferences,
+                stretchModeActive = stretchModeActive,
+                stretchPassNumber = stretchPassNumber,
+                stretchMaxDrift = stretchMaxDrift,
+                stretchSettled = stretchSettled,
+                onStretchModeToggle = onStretchModeToggle,
                 onGuidedStringSelected = onGuidedStringSelected,
                 onPegTurnDirectionChanged = onPegTurnDirectionChanged,
                 onPlayTone = onPlayTone,
@@ -112,11 +122,49 @@ private fun GuidedModeControls(
     activeTuning: TuningDefinition,
     guidedStringNumber: Int,
     preferences: StoredTunerPreferences,
+    stretchModeActive: Boolean,
+    stretchPassNumber: Int,
+    stretchMaxDrift: Double?,
+    stretchSettled: Boolean,
+    onStretchModeToggle: () -> Unit,
     onGuidedStringSelected: (Int) -> Unit,
     onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onPlayTone: (Double) -> Unit,
 ) {
     val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber) ?: return
+
+    OutlinedButton(
+        onClick = onStretchModeToggle,
+        modifier = Modifier.fillMaxWidth(),
+        shape = PanelShape,
+        contentPadding = CompactButtonPadding,
+    ) {
+        Text(
+            if (stretchModeActive) stringResource(R.string.stretch_mode_stop)
+            else stringResource(R.string.stretch_mode_start),
+        )
+    }
+    if (stretchModeActive) {
+        val passLabel = stringResource(R.string.stretch_pass, stretchPassNumber)
+        val statusLabel = when {
+            stretchSettled -> stringResource(R.string.stretch_settled)
+            stretchMaxDrift != null -> stringResource(
+                R.string.stretch_max_drift,
+                formatOneDecimal(stretchMaxDrift),
+            )
+            else -> stringResource(R.string.stretch_prompt)
+        }
+        Text(
+            text = "$passLabel — $statusLabel",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (stretchSettled) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            fontWeight = if (stretchSettled) FontWeight.SemiBold else FontWeight.Normal,
+        )
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
