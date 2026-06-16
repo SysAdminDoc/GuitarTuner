@@ -60,6 +60,9 @@
     <string name="setting_cents_tolerance">Tolerancia em cents</string>
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Porta de ruido</string>
+    <string name="setting_meter_style">Medidor</string>
+    <string name="meter_style_normal">Normal</string>
+    <string name="meter_style_strobe">Estroboscopico</string>
     <string name="section_tuning_helper">Escolha a afinacao antes de comecar a ouvir.</string>
     <string name="section_mode_helper">Auto detecta a corda mais proxima; Guiado avanca corda por corda; Cromatico mostra qualquer nota.</string>
     <string name="section_defaults">Padroes</string>

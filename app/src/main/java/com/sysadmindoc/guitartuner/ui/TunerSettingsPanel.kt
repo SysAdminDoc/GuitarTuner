@@ -29,6 +29,7 @@ internal fun TunerSettingsPanel(
     onHapticEnabledChanged: (Boolean) -> Unit,
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
+    onMeterStyleSelected: (com.sysadmindoc.guitartuner.settings.MeterStyle) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
@@ -69,6 +70,7 @@ internal fun TunerSettingsPanel(
             onHapticEnabledChanged = onHapticEnabledChanged,
             onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
             onSpokenFeedbackChanged = onSpokenFeedbackChanged,
+            onMeterStyleSelected = onMeterStyleSelected,
         )
         PrecisionSection(
             preferences = preferences,

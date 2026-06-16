@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.InputDeviceInfo
+import com.sysadmindoc.guitartuner.settings.MeterStyle
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.settings.ThemeMode
@@ -29,6 +30,7 @@ internal fun DefaultsSection(
     onHapticEnabledChanged: (Boolean) -> Unit,
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
+    onMeterStyleSelected: (MeterStyle) -> Unit,
 ) {
     SettingsSection(
         title = stringResource(R.string.section_defaults),
@@ -92,6 +94,22 @@ internal fun DefaultsSection(
             checked = preferences.spokenFeedback,
             onCheckedChange = onSpokenFeedbackChanged,
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            for (style in MeterStyle.entries) {
+                SelectableOptionButton(
+                    label = when (style) {
+                        MeterStyle.Normal -> stringResource(R.string.meter_style_normal)
+                        MeterStyle.Strobe -> stringResource(R.string.meter_style_strobe)
+                    },
+                    selected = preferences.meterStyle == style,
+                    onClick = { onMeterStyleSelected(style) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
     }
 }
 

@@ -16,8 +16,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
+import com.sysadmindoc.guitartuner.settings.MeterStyle
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
@@ -51,6 +54,7 @@ internal fun TunerMeterPanel(
     tuningMode: TuningMode,
     guidedStringNumber: Int,
     pegTurnDirections: Map<Int, PegTurnDirection>,
+    meterStyle: MeterStyle = MeterStyle.Normal,
     modifier: Modifier = Modifier,
 ) {
     val guidedTarget = if (tuningMode == TuningMode.Guided) {
@@ -76,7 +80,10 @@ internal fun TunerMeterPanel(
                 activeTuning = activeTuning,
                 tuningMode = tuningMode,
             )
-            CentsMeter(state)
+            when (meterStyle) {
+                MeterStyle.Normal -> CentsMeter(state)
+                MeterStyle.Strobe -> StrobeMeter(state)
+            }
             PitchHistoryTimeline(state)
             FrequencyReadout(
                 state = state,
@@ -248,6 +255,86 @@ private fun CentsMeter(state: TunerSessionState) {
         }
     }
 }
+
+@Composable
+private fun StrobeMeter(state: TunerSessionState) {
+    val cents = state.measurement.cents ?: 0.0
+    val hasDetection = state.measurement.status == TuningStatus.InTune ||
+        state.measurement.status == TuningStatus.TuneUp ||
+        state.measurement.status == TuningStatus.TuneDown
+
+    val phase = remember { mutableFloatStateOf(0f) }
+    val bandColor = statusColor(state.measurement.status)
+    val bgColor = MaterialTheme.colorScheme.surface
+    val inTuneColor = MaterialTheme.colorScheme.primary
+
+    LaunchedEffect(hasDetection) {
+        if (!hasDetection) return@LaunchedEffect
+        var lastNanos = 0L
+        while (true) {
+            withFrameNanos { nanos ->
+                if (lastNanos > 0L) {
+                    val dtSec = (nanos - lastNanos) / 1_000_000_000f
+                    val speed = (cents / 50.0).toFloat() * StrobeMaxSpeed
+                    phase.floatValue = (phase.floatValue + speed * dtSec) % (2f * Math.PI.toFloat())
+                }
+                lastNanos = nanos
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(104.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val bandWidth = 24.dp.toPx()
+                val numBands = (size.width / bandWidth).toInt() + 2
+                val phaseOffset = phase.floatValue / (2f * Math.PI.toFloat()) * bandWidth
+                for (i in -1..numBands) {
+                    val x = i * bandWidth + phaseOffset
+                    val brightness = (kotlin.math.cos(
+                        2.0 * Math.PI * (x / bandWidth),
+                    ).toFloat() + 1f) / 2f
+                    drawRect(
+                        color = bandColor.copy(alpha = brightness * 0.7f),
+                        topLeft = Offset(x, 0f),
+                        size = androidx.compose.ui.geometry.Size(bandWidth / 2f, size.height),
+                    )
+                }
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(R.string.meter_flat),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = stringResource(R.string.meter_in_tune),
+                style = MaterialTheme.typography.labelMedium,
+                color = inTuneColor,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = stringResource(R.string.meter_sharp),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.tertiary,
+            )
+        }
+    }
+}
+
+private const val StrobeMaxSpeed = 12f
 
 @Composable
 private fun PitchHistoryTimeline(state: TunerSessionState) {

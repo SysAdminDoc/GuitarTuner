@@ -37,6 +37,7 @@ data class StoredTunerPreferences(
     val hapticEnabled: Boolean = false,
     val autoAdvanceGuided: Boolean = true,
     val spokenFeedback: Boolean = false,
+    val meterStyle: MeterStyle = MeterStyle.Normal,
     val a4Hz: Double = 440.0,
     val centsTolerance: Double = 5.0,
     val noiseGateRms: Double = 0.0015,
@@ -59,4 +60,9 @@ enum class StartupTuningMode {
     StandardDefault,
     LastUsed,
     Favorite,
+}
+
+enum class MeterStyle {
+    Normal,
+    Strobe,
 }

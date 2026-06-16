@@ -45,6 +45,7 @@ class TunerPreferencesRepository(
                 hapticEnabled = storedPreferences[HapticEnabledKey] ?: false,
                 autoAdvanceGuided = storedPreferences[AutoAdvanceGuidedKey] ?: true,
                 spokenFeedback = storedPreferences[SpokenFeedbackKey] ?: false,
+                meterStyle = storedPreferences[MeterStyleKey].toMeterStyle(),
                 a4Hz = storedPreferences[A4HzKey].sanitizeA4Hz(),
                 centsTolerance = storedPreferences[CentsToleranceKey].sanitizeCentsTolerance(),
                 noiseGateRms = storedPreferences[NoiseGateRmsKey].sanitizeNoiseGateRms(),
@@ -101,6 +102,12 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setMeterStyle(style: MeterStyle) {
+        dataStore.edit { preferences ->
+            preferences[MeterStyleKey] = style.name
+        }
+    }
+
     suspend fun setA4Hz(a4Hz: Double) {
         val calibration = PitchCalibration(a4Hz)
         dataStore.edit { preferences ->
@@ -139,6 +146,9 @@ class TunerPreferencesRepository(
     private fun String?.toThemeMode(): ThemeMode =
         ThemeMode.entries.firstOrNull { it.name == this } ?: ThemeMode.System
 
+    private fun String?.toMeterStyle(): MeterStyle =
+        MeterStyle.entries.firstOrNull { it.name == this } ?: MeterStyle.Normal
+
     private fun Double?.sanitizeA4Hz(): Double =
         this?.takeIf { it in 400.0..480.0 } ?: PitchCalibration().a4Hz
 
@@ -157,6 +167,7 @@ class TunerPreferencesRepository(
         val HapticEnabledKey = booleanPreferencesKey("haptic_enabled")
         val AutoAdvanceGuidedKey = booleanPreferencesKey("auto_advance_guided")
         val SpokenFeedbackKey = booleanPreferencesKey("spoken_feedback")
+        val MeterStyleKey = stringPreferencesKey("meter_style")
         val A4HzKey = doublePreferencesKey("a4_hz")
         val CentsToleranceKey = doublePreferencesKey("cents_tolerance")
         val NoiseGateRmsKey = doublePreferencesKey("noise_gate_rms")

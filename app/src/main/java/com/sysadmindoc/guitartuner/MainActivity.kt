@@ -297,6 +297,7 @@ private fun TunerRoute() {
                 onHapticEnabledChanged = { enabled -> stateHolder.setHapticEnabled(enabled) },
                 onAutoAdvanceGuidedChanged = { enabled -> stateHolder.setAutoAdvanceGuided(enabled) },
                 onSpokenFeedbackChanged = { enabled -> stateHolder.setSpokenFeedback(enabled) },
+                onMeterStyleSelected = { style -> stateHolder.setMeterStyle(style) },
                 onMeasureA4 = {
                     val measured = TunerStateHolder.measureA4FromLive(
                         state.pitchEstimate.frequencyHz, state.pitchEstimate.confidence,

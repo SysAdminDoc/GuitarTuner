@@ -60,6 +60,10 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setSpokenFeedback(enabled) }
     }
 
+    fun setMeterStyle(style: com.sysadmindoc.guitartuner.settings.MeterStyle) {
+        scope.launch { preferencesRepository.setMeterStyle(style) }
+    }
+
     fun setA4Hz(a4Hz: Double) {
         scope.launch { preferencesRepository.setA4Hz(a4Hz) }
     }

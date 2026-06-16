@@ -60,6 +60,9 @@
     <string name="setting_cents_tolerance">Cents tolerance</string>
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Noise gate</string>
+    <string name="setting_meter_style">Meter</string>
+    <string name="meter_style_normal">Normal</string>
+    <string name="meter_style_strobe">Strobe</string>
     <string name="section_tuning_helper">Choose the tuning before you start listening.</string>
     <string name="section_mode_helper">Auto detects the nearest string; Guided walks one string at a time; Chromatic shows any note.</string>
     <string name="section_defaults">Defaults</string>

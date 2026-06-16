@@ -60,6 +60,7 @@ fun TunerScreen(
     onHapticEnabledChanged: (Boolean) -> Unit,
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
+    onMeterStyleSelected: (com.sysadmindoc.guitartuner.settings.MeterStyle) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,
@@ -166,6 +167,7 @@ fun TunerScreen(
                                 tuningMode = tuningMode,
                                 guidedStringNumber = guidedStringNumber,
                                 pegTurnDirections = preferences.pegTurnDirections,
+                                meterStyle = preferences.meterStyle,
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }
@@ -184,6 +186,7 @@ fun TunerScreen(
                             onHapticEnabledChanged = onHapticEnabledChanged,
                             onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
                             onSpokenFeedbackChanged = onSpokenFeedbackChanged,
+                            onMeterStyleSelected = onMeterStyleSelected,
                             onMeasureA4 = onMeasureA4,
                             onA4CalibrationChanged = onA4CalibrationChanged,
                             onCentsToleranceChanged = onCentsToleranceChanged,
@@ -209,6 +212,7 @@ fun TunerScreen(
                         tuningMode = tuningMode,
                         guidedStringNumber = guidedStringNumber,
                         pegTurnDirections = preferences.pegTurnDirections,
+                        meterStyle = preferences.meterStyle,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     PrivacyDetailsButton(
@@ -230,6 +234,7 @@ fun TunerScreen(
                         onHapticEnabledChanged = onHapticEnabledChanged,
                         onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
                         onSpokenFeedbackChanged = onSpokenFeedbackChanged,
+                        onMeterStyleSelected = onMeterStyleSelected,
                         onMeasureA4 = onMeasureA4,
                         onA4CalibrationChanged = onA4CalibrationChanged,
                         onCentsToleranceChanged = onCentsToleranceChanged,
@@ -288,6 +293,7 @@ private fun TunerScreenPreview() {
             onHapticEnabledChanged = {},
             onAutoAdvanceGuidedChanged = {},
             onSpokenFeedbackChanged = {},
+            onMeterStyleSelected = {},
             onMeasureA4 = {},
             onA4CalibrationChanged = {},
             onCentsToleranceChanged = {},

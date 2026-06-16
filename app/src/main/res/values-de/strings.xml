@@ -60,6 +60,9 @@
     <string name="setting_cents_tolerance">Cent-Toleranz</string>
     <string name="cents_tolerance_value">%1$s cents</string>
     <string name="setting_noise_gate">Rauschschwelle</string>
+    <string name="setting_meter_style">Anzeige</string>
+    <string name="meter_style_normal">Normal</string>
+    <string name="meter_style_strobe">Stroboskop</string>
     <string name="section_tuning_helper">Stimmung waehlen, bevor das Hoeren startet.</string>
     <string name="section_mode_helper">Auto erkennt die naechste Saite; Gefuehrt geht Saite fuer Saite; Chromatisch zeigt jede Note.</string>
     <string name="section_defaults">Standardwerte</string>
