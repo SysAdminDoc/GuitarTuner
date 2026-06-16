@@ -213,6 +213,32 @@ class TuningAnalyzerTest {
     }
 
     @Test
+    fun octaveHysteresisResistsShortG3G4Flips() {
+        val hysteresisAnalyzer = TuningAnalyzer(StandardGuitarTuning.strings)
+        val g3Hz = 196.0
+        val g4Hz = 392.0
+
+        val firstResult = hysteresisAnalyzer.analyze(detectedPitch(g4Hz))
+        assertEquals("G", firstResult.target?.name)
+
+        var flipCount = 0
+        val sequence = listOf(g4Hz, g3Hz * 2.01, g4Hz, g3Hz * 1.99, g4Hz, g4Hz, g4Hz, g4Hz)
+        var previousTarget: String? = firstResult.target?.name
+        for (freq in sequence) {
+            val result = hysteresisAnalyzer.analyze(detectedPitch(freq))
+            if (result.target?.name != previousTarget) {
+                flipCount++
+            }
+            previousTarget = result.target?.name
+        }
+
+        assertTrue(
+            "Octave hysteresis should suppress most G3/G4 flips (got $flipCount)",
+            flipCount <= 1,
+        )
+    }
+
+    @Test
     fun emptyStringSetReturnsNoStringDetected() {
         val measurement = TuningAnalyzer(emptyList()).analyze(detectedPitch(110.0))
 

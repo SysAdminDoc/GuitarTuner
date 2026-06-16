@@ -13,6 +13,7 @@
 - Added synthetic noise-profile tests covering white noise, quiet ambient, impulse clicks, loud noise, and guitar-in-noise scenarios to verify the detector rejects non-musical signals.
 - Added a scrolling pitch history timeline below the cents meter showing recent cents-over-time during active tuning.
 - Added spoken tuning feedback using Android TextToSpeech: announces note, direction, and cents offset after each stable detection with 2-second debouncing. Localized for en/de/es/pt/fr. Works independently of TalkBack.
+- Added inter-frame octave hysteresis to the second-harmonic correction in TuningAnalyzer. When the previous frame resolved to one octave, requires 40 cents stronger evidence to switch, suppressing G3/G4 and low-E octave flips.
 
 ## GuitarTuner v0.0.4 - 2026-06-15
 

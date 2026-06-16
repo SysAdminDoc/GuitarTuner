@@ -12,10 +12,13 @@ class TuningAnalyzer(
     private val maxAutoDetectCents: Double = 250.0,
     private val maxGuidedDetectCents: Double = 300.0,
     private val octaveCorrectionMinImprovementCents: Double = 80.0,
+    private val octaveHysteresisCents: Double = 40.0,
     private val overshootWarningCents: Double = 300.0,
     private val overshootCeilingCents: Double = 450.0,
     private val a4Hz: Double = 440.0,
 ) {
+    @Volatile
+    private var previousResolvedHalf = false
     fun analyze(estimate: PitchEstimate): TuningMeasurement {
         val frequency = estimate.frequencyHz
         return when {
@@ -97,15 +100,24 @@ class TuningAnalyzer(
         val halfFrequency = frequencyHz / 2.0
         val minimumSupportedFrequency = strings.minOf { it.frequencyHz } * 0.75
         if (halfFrequency <= minimumSupportedFrequency) {
+            previousResolvedHalf = false
             return rawCandidate
         }
 
         val halfCandidate = candidateFor(halfFrequency)
         val rawDistance = abs(rawCandidate.cents)
         val halfDistance = abs(halfCandidate.cents)
-        return if (rawDistance - halfDistance >= octaveCorrectionMinImprovementCents) {
+        val improvement = rawDistance - halfDistance
+        val threshold = if (previousResolvedHalf) {
+            octaveCorrectionMinImprovementCents - octaveHysteresisCents
+        } else {
+            octaveCorrectionMinImprovementCents + octaveHysteresisCents
+        }
+        return if (improvement >= threshold) {
+            previousResolvedHalf = true
             halfCandidate
         } else {
+            previousResolvedHalf = false
             rawCandidate
         }
     }
