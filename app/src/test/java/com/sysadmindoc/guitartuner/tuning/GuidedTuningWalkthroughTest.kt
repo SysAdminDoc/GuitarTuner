@@ -1,6 +1,8 @@
 package com.sysadmindoc.guitartuner.tuning
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class GuidedTuningWalkthroughTest {
@@ -8,9 +10,9 @@ class GuidedTuningWalkthroughTest {
     fun startsAtLowEAndWalksToHighE() {
         val strings = StandardGuitarTuning.strings
 
-        assertEquals("E2", guidedTuningStep(strings, 6).string.scientificPitch)
-        assertEquals("A2", guidedTuningStep(strings, nextGuidedStringNumber(strings, 6)).string.scientificPitch)
-        assertEquals("E4", guidedTuningStep(strings, 1).string.scientificPitch)
+        assertEquals("E2", guidedTuningStep(strings, 6)!!.string.scientificPitch)
+        assertEquals("A2", guidedTuningStep(strings, nextGuidedStringNumber(strings, 6))!!.string.scientificPitch)
+        assertEquals("E4", guidedTuningStep(strings, 1)!!.string.scientificPitch)
     }
 
     @Test
@@ -25,7 +27,19 @@ class GuidedTuningWalkthroughTest {
     fun invalidSelectionFallsBackToFirstStep() {
         val step = guidedTuningStep(StandardGuitarTuning.strings, 99)
 
-        assertEquals(1, step.stepNumber)
+        assertNotNull(step)
+        assertEquals(1, step!!.stepNumber)
         assertEquals("E2", step.string.scientificPitch)
+    }
+
+    @Test
+    fun emptyStringsReturnsNull() {
+        assertNull(guidedTuningStep(emptyList(), 1))
+    }
+
+    @Test
+    fun emptyStringsPreservesSelectedStringNumber() {
+        assertEquals(3, previousGuidedStringNumber(emptyList(), 3))
+        assertEquals(3, nextGuidedStringNumber(emptyList(), 3))
     }
 }

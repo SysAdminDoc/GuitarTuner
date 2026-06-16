@@ -6,5 +6,11 @@ data class GuitarString(
     val scientificPitch: String,
     val frequencyHz: Double,
 ) {
+    init {
+        require(frequencyHz.isFinite() && frequencyHz > 0.0) {
+            "GuitarString frequency must be a positive finite value."
+        }
+    }
+
     val displayName: String = "$stringNumber - $scientificPitch"
 }

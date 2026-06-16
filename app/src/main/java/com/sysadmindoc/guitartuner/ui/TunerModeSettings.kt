@@ -116,7 +116,7 @@ private fun GuidedModeControls(
     onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onPlayTone: (Double) -> Unit,
 ) {
-    val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber)
+    val guidedStep = guidedTuningStep(activeTuning.strings, guidedStringNumber) ?: return
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

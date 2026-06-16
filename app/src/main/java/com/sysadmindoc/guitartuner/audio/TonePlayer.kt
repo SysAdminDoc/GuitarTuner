@@ -11,6 +11,7 @@ internal fun isPlayableReferenceToneFrequency(frequencyHz: Double): Boolean =
     frequencyHz.isFinite() && frequencyHz in 20.0..5_000.0
 
 class TonePlayer {
+    @Volatile
     private var track: AudioTrack? = null
 
     val isPlaying: Boolean

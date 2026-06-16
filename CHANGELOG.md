@@ -1,5 +1,14 @@
 # Changelog
 
+## GuitarTuner v0.0.5 (audit) - 2026-06-15
+
+- Fixed locale config to declare all 8 supported locales (was missing pt/fr/ja/ko/zh) so Android per-app language settings shows all available translations.
+- Fixed thread safety in SpokenFeedbackController: synchronized speak/stop/close methods and marked ready field volatile to prevent concurrent access corruption.
+- Fixed thread visibility in TonePlayer: marked track field volatile so playback completion callback sees consistent state across threads.
+- Fixed keepScreenOn cleanup in TunerScreen: replaced LaunchedEffect with the reusable KeepScreenOn DisposableEffect composable so the flag is properly cleared when the composable leaves composition.
+- Added frequency validation to GuitarString constructor to reject negative, zero, NaN, or infinite frequencies that would corrupt pitch detection math.
+- Made guidedTuningStep return nullable to handle empty string lists without crashing; updated all call sites and added empty-strings test coverage.
+
 ## GuitarTuner v0.0.5 - 2026-06-15
 
 - Moved TalkBack accessibility descriptions to string resources so tuning state is announced in the device language (en/de/es) instead of hardcoded English.

@@ -89,7 +89,7 @@ fun TunerScreen(
 
     LaunchedEffect(currentlyInTune, tuningMode, guidedStringNumber) {
         if (!currentlyInTune || tuningMode != TuningMode.Guided || !preferences.autoAdvanceGuided) return@LaunchedEffect
-        val step = guidedTuningStep(activeTuning.strings, guidedStringNumber)
+        val step = guidedTuningStep(activeTuning.strings, guidedStringNumber) ?: return@LaunchedEffect
         if (step.index >= step.total - 1) return@LaunchedEffect
         delay(1500)
         val nextString = nextGuidedStringNumber(activeTuning.strings, guidedStringNumber)
@@ -99,8 +99,8 @@ fun TunerScreen(
         onGuidedStringSelected(nextString)
     }
 
-    LaunchedEffect(state.isListening) {
-        view.keepScreenOn = state.isListening
+    if (state.isListening) {
+        KeepScreenOn()
     }
 
     var fullscreenMode by remember { mutableStateOf(false) }

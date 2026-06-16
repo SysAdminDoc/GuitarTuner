@@ -7,6 +7,8 @@ import java.util.Locale
 
 class SpokenFeedbackController(context: Context) : Closeable {
     private var tts: TextToSpeech? = null
+
+    @Volatile
     private var ready = false
     private var lastSpokenText: String? = null
     private var lastSpeakTimeMs = 0L
@@ -20,6 +22,7 @@ class SpokenFeedbackController(context: Context) : Closeable {
         }
     }
 
+    @Synchronized
     fun speak(text: String) {
         if (!ready || text.isBlank()) return
         val now = System.currentTimeMillis()
@@ -29,11 +32,13 @@ class SpokenFeedbackController(context: Context) : Closeable {
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tuner_feedback")
     }
 
+    @Synchronized
     fun stop() {
         tts?.stop()
         lastSpokenText = null
     }
 
+    @Synchronized
     override fun close() {
         tts?.stop()
         tts?.shutdown()
