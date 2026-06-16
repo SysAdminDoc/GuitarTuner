@@ -36,6 +36,7 @@ data class StoredTunerPreferences(
     val freezeAfterDecay: Boolean = false,
     val hapticEnabled: Boolean = false,
     val autoAdvanceGuided: Boolean = true,
+    val spokenFeedback: Boolean = false,
     val a4Hz: Double = 440.0,
     val centsTolerance: Double = 5.0,
     val noiseGateRms: Double = 0.0015,

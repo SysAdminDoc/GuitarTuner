@@ -50,6 +50,11 @@
     <string name="setting_haptic_helper">Vibrate when a string reaches the in-tune zone.</string>
     <string name="setting_auto_advance">Auto-advance in Guided</string>
     <string name="setting_auto_advance_helper">Move to the next string automatically after holding in tune.</string>
+    <string name="setting_spoken_feedback">Spoken feedback</string>
+    <string name="setting_spoken_feedback_helper">Announce note, direction, and cents aloud after each detection.</string>
+    <string name="tts_in_tune">%1$s, in tune</string>
+    <string name="tts_tune_up">%1$s, tune up, %2$s cents</string>
+    <string name="tts_tune_down">%1$s, tune down, %2$s cents</string>
     <string name="action_measure_a4">Measure A4 from microphone</string>
     <string name="setting_a4_calibration">A4 calibration</string>
     <string name="setting_cents_tolerance">Cents tolerance</string>

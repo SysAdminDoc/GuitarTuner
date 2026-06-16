@@ -56,6 +56,10 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setAutoAdvanceGuided(enabled) }
     }
 
+    fun setSpokenFeedback(enabled: Boolean) {
+        scope.launch { preferencesRepository.setSpokenFeedback(enabled) }
+    }
+
     fun setA4Hz(a4Hz: Double) {
         scope.launch { preferencesRepository.setA4Hz(a4Hz) }
     }

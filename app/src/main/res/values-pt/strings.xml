@@ -50,6 +50,11 @@
     <string name="setting_haptic_helper">Vibra quando uma corda atinge a zona afinada.</string>
     <string name="setting_auto_advance">Avanco automatico no Guiado</string>
     <string name="setting_auto_advance_helper">Avanca para a proxima corda automaticamente ao manter afinada.</string>
+    <string name="setting_spoken_feedback">Retorno falado</string>
+    <string name="setting_spoken_feedback_helper">Anuncia nota, direcao e cents em voz alta apos cada deteccao.</string>
+    <string name="tts_in_tune">%1$s, afinado</string>
+    <string name="tts_tune_up">%1$s, suba a afinacao, %2$s cents</string>
+    <string name="tts_tune_down">%1$s, baixe a afinacao, %2$s cents</string>
     <string name="action_measure_a4">Medir A4 pelo microfone</string>
     <string name="setting_a4_calibration">Calibracao A4</string>
     <string name="setting_cents_tolerance">Tolerancia em cents</string>

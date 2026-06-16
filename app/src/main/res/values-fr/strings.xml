@@ -50,6 +50,11 @@
     <string name="setting_haptic_helper">Vibre quand une corde atteint la zone accordee.</string>
     <string name="setting_auto_advance">Avance auto en Guide</string>
     <string name="setting_auto_advance_helper">Passe a la corde suivante automatiquement une fois l\'accord maintenu.</string>
+    <string name="setting_spoken_feedback">Retour vocal</string>
+    <string name="setting_spoken_feedback_helper">Annonce la note, la direction et les cents a voix haute apres chaque detection.</string>
+    <string name="tts_in_tune">%1$s, accorde</string>
+    <string name="tts_tune_up">%1$s, montez l\'accordage, %2$s cents</string>
+    <string name="tts_tune_down">%1$s, baissez l\'accordage, %2$s cents</string>
     <string name="action_measure_a4">Mesurer A4 depuis le micro</string>
     <string name="setting_a4_calibration">Calibration A4</string>
     <string name="setting_cents_tolerance">Tolerance en cents</string>

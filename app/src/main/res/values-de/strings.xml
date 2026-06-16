@@ -50,6 +50,11 @@
     <string name="setting_haptic_helper">Vibriert, wenn eine Saite den Stimmbereich erreicht.</string>
     <string name="setting_auto_advance">Auto-Weiterschaltung bei Gefuehrt</string>
     <string name="setting_auto_advance_helper">Springt automatisch zur naechsten Saite, wenn die aktuelle gestimmt ist.</string>
+    <string name="setting_spoken_feedback">Sprachrueckmeldung</string>
+    <string name="setting_spoken_feedback_helper">Spricht Note, Richtung und Cents nach jeder Erkennung laut aus.</string>
+    <string name="tts_in_tune">%1$s, gestimmt</string>
+    <string name="tts_tune_up">%1$s, hoeher stimmen, %2$s Cent</string>
+    <string name="tts_tune_down">%1$s, tiefer stimmen, %2$s Cent</string>
     <string name="action_measure_a4">A4 vom Mikrofon messen</string>
     <string name="setting_a4_calibration">A4-Kalibrierung</string>
     <string name="setting_cents_tolerance">Cent-Toleranz</string>

@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sysadmindoc.guitartuner.audio.AudioCaptureController
+import com.sysadmindoc.guitartuner.audio.SpokenFeedbackController
 import com.sysadmindoc.guitartuner.audio.TonePlayer
 import com.sysadmindoc.guitartuner.settings.CustomTuningRepository
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
@@ -34,6 +35,7 @@ import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.CustomTuningJsonCodec
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.TuningMode
+import com.sysadmindoc.guitartuner.tuning.TuningStatus
 import com.sysadmindoc.guitartuner.tuning.TuningTargetSelection
 import com.sysadmindoc.guitartuner.ui.PrimaryAction
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
@@ -72,6 +74,7 @@ private fun TunerRoute() {
         )
     }
     val tonePlayer = remember { TonePlayer() }
+    val spokenFeedback = remember(context) { SpokenFeedbackController(context) }
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
     var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
     var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Auto) }
@@ -145,6 +148,28 @@ private fun TunerRoute() {
 
     LaunchedEffect(preferences.noiseGateRms) {
         controller.setNoiseGateRms(preferences.noiseGateRms)
+    }
+
+    val ttsResources = context.resources
+    @Suppress("LocalContextGetResourceValueCall")
+    LaunchedEffect(state.measurement, preferences.spokenFeedback, state.isListening) {
+        if (!preferences.spokenFeedback || !state.isListening) {
+            spokenFeedback.stop()
+            return@LaunchedEffect
+        }
+        val measurement = state.measurement
+        val target = measurement.target ?: return@LaunchedEffect
+        val note = target.scientificPitch
+        val cents = kotlin.math.abs(measurement.cents ?: 0.0).let {
+            String.format(java.util.Locale.US, "%.0f", it)
+        }
+        val text = when (measurement.status) {
+            TuningStatus.InTune -> ttsResources.getString(R.string.tts_in_tune, note)
+            TuningStatus.TuneUp -> ttsResources.getString(R.string.tts_tune_up, note, cents)
+            TuningStatus.TuneDown -> ttsResources.getString(R.string.tts_tune_down, note, cents)
+            else -> return@LaunchedEffect
+        }
+        spokenFeedback.speak(text)
     }
 
     val importLauncher = rememberLauncherForActivityResult(
@@ -227,6 +252,7 @@ private fun TunerRoute() {
             lifecycle.removeObserver(observer)
             controller.close()
             tonePlayer.stop()
+            spokenFeedback.close()
         }
     }
 
@@ -270,6 +296,7 @@ private fun TunerRoute() {
                 onFreezeAfterDecayChanged = { enabled -> stateHolder.setFreezeAfterDecay(enabled) },
                 onHapticEnabledChanged = { enabled -> stateHolder.setHapticEnabled(enabled) },
                 onAutoAdvanceGuidedChanged = { enabled -> stateHolder.setAutoAdvanceGuided(enabled) },
+                onSpokenFeedbackChanged = { enabled -> stateHolder.setSpokenFeedback(enabled) },
                 onMeasureA4 = {
                     val measured = TunerStateHolder.measureA4FromLive(
                         state.pitchEstimate.frequencyHz, state.pitchEstimate.confidence,

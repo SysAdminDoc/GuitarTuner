@@ -12,6 +12,7 @@
 - Added Portuguese (Brazilian) and French localizations covering all UI and accessibility strings.
 - Added synthetic noise-profile tests covering white noise, quiet ambient, impulse clicks, loud noise, and guitar-in-noise scenarios to verify the detector rejects non-musical signals.
 - Added a scrolling pitch history timeline below the cents meter showing recent cents-over-time during active tuning.
+- Added spoken tuning feedback using Android TextToSpeech: announces note, direction, and cents offset after each stable detection with 2-second debouncing. Localized for en/de/es/pt/fr. Works independently of TalkBack.
 
 ## GuitarTuner v0.0.4 - 2026-06-15
 
