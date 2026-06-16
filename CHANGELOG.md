@@ -9,6 +9,8 @@
 - Added SECURITY.md with APK verification instructions and release artifact integrity guidance.
 - Added fastlane `title.txt` for IzzyOnDroid metadata completeness.
 - Enabled keep-screen-on during active listening so the phone does not dim or lock mid-tuning.
+- Added Portuguese (Brazilian) and French localizations covering all UI and accessibility strings.
+- Added synthetic noise-profile tests covering white noise, quiet ambient, impulse clicks, loud noise, and guitar-in-noise scenarios to verify the detector rejects non-musical signals.
 
 ## GuitarTuner v0.0.4 - 2026-06-15
 
