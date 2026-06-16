@@ -18,6 +18,9 @@ data class PitchDetectorConfig(
 class YinPitchDetector(
     val config: PitchDetectorConfig = PitchDetectorConfig(),
 ) {
+    private var centeredBuffer = DoubleArray(0)
+    private var yinBuffer = DoubleArray(0)
+
     fun detect(samples: FloatArray, sampleRate: Int): PitchEstimate {
         if (samples.size < MinimumSamples) {
             return PitchEstimate.silence()
@@ -121,19 +124,25 @@ class YinPitchDetector(
     }
 
     private fun removeDcOffset(samples: FloatArray): DoubleArray {
+        if (centeredBuffer.size < samples.size) {
+            centeredBuffer = DoubleArray(samples.size)
+        }
         var mean = 0.0
         for (sample in samples) {
             mean += sample
         }
         mean /= samples.size
-
-        return DoubleArray(samples.size) { index ->
-            samples[index] - mean
+        for (index in samples.indices) {
+            centeredBuffer[index] = samples[index] - mean
         }
+        return centeredBuffer
     }
 
     private fun differenceFunction(samples: DoubleArray, maxTau: Int): DoubleArray {
-        val yin = DoubleArray(maxTau + 1)
+        val requiredSize = maxTau + 1
+        if (yinBuffer.size < requiredSize) {
+            yinBuffer = DoubleArray(requiredSize)
+        }
         val windowSize = samples.size - maxTau
         for (tau in 1..maxTau) {
             var difference = 0.0
@@ -141,9 +150,9 @@ class YinPitchDetector(
                 val delta = samples[index] - samples[index + tau]
                 difference += delta * delta
             }
-            yin[tau] = difference
+            yinBuffer[tau] = difference
         }
-        return yin
+        return yinBuffer
     }
 
     private fun cumulativeMeanNormalizedDifference(yin: DoubleArray) {

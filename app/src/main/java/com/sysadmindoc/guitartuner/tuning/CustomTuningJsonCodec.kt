@@ -96,8 +96,8 @@ object CustomTuningJsonCodec {
         if (name.isBlank()) {
             errors += "$prefix.name is required."
         }
-        if (dto.strings.size != GuitarStringCount) {
-            errors += "$prefix.strings must contain exactly $GuitarStringCount strings."
+        if (dto.strings.size !in MinStringCount..MaxStringCount) {
+            errors += "$prefix.strings must contain between $MinStringCount and $MaxStringCount strings."
         }
 
         val seenStringNumbers = mutableSetOf<Int>()
@@ -124,8 +124,8 @@ object CustomTuningJsonCodec {
         seenStringNumbers: MutableSet<Int>,
         errors: MutableList<String>,
     ): GuitarString? {
-        if (dto.stringNumber !in 1..GuitarStringCount) {
-            errors += "$prefix.stringNumber must be between 1 and $GuitarStringCount."
+        if (dto.stringNumber !in 1..MaxStringCount) {
+            errors += "$prefix.stringNumber must be between 1 and $MaxStringCount."
         }
         if (!seenStringNumbers.add(dto.stringNumber)) {
             errors += "$prefix.stringNumber duplicates another string."
@@ -153,8 +153,9 @@ object CustomTuningJsonCodec {
     }
 
     private const val SupportedSchemaVersion = 1
-    private const val GuitarStringCount = 6
-    private const val MinFrequencyHz = 40.0
+    private const val MinStringCount = 1
+    private const val MaxStringCount = 12
+    private const val MinFrequencyHz = 20.0
     private const val MaxFrequencyHz = 500.0
     private val IdPattern = Regex("[a-z0-9][a-z0-9_-]{1,48}")
 }

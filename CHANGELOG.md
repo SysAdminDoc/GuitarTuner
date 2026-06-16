@@ -1,5 +1,10 @@
 # Changelog
 
+## GuitarTuner v0.0.5 (continued) - 2026-06-15
+
+- Eliminated per-frame heap allocation in YinPitchDetector by reusing pre-allocated buffers for DC-offset removal and YIN difference computation (~37 KB/frame saved at ~21 fps).
+- Custom tuning import now accepts 1-12 strings (was hardcoded to exactly 6), enabling bass and ukulele custom tuning imports. Minimum frequency lowered to 20 Hz for 5-string bass coverage.
+
 ## GuitarTuner v0.0.5 (audit) - 2026-06-15
 
 - Fixed locale config to declare all 8 supported locales (was missing pt/fr/ja/ko/zh) so Android per-app language settings shows all available translations.
