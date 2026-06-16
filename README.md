@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/SysAdminDoc/GuitarTuner/refs/heads/main/logo.png" width="300" alt="GuitarTuner logo">
 </p>
 
-![Version](https://img.shields.io/badge/version-v0.0.4-blue)
+![Version](https://img.shields.io/badge/version-v0.0.5-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-lightgrey)
 
