@@ -89,6 +89,9 @@ fun TunerScreen(
         previousInTune = currentlyInTune
     }
 
+    var sessionResults by remember { mutableStateOf(emptyMap<Int, Double>()) }
+    var showSessionSummary by remember { mutableStateOf(false) }
+
     var stretchModeActive by remember { mutableStateOf(false) }
     var stretchPassNumber by remember { mutableStateOf(0) }
     var stretchPreviousCents by remember { mutableStateOf(emptyMap<Int, Double>()) }
@@ -107,13 +110,18 @@ fun TunerScreen(
         if (!currentlyInTune || tuningMode != TuningMode.Guided || !preferences.autoAdvanceGuided) return@LaunchedEffect
         val step = guidedTuningStep(activeTuning.strings, guidedStringNumber) ?: return@LaunchedEffect
 
-        if (stretchModeActive && currentlyInTune) {
-            val cents = state.measurement.cents ?: 0.0
+        val cents = state.measurement.cents ?: 0.0
+        sessionResults = sessionResults + (guidedStringNumber to cents)
+
+        if (stretchModeActive) {
             stretchCurrentCents = stretchCurrentCents + (guidedStringNumber to cents)
         }
 
         val isLastStep = step.index >= step.total - 1
-        if (isLastStep && !stretchModeActive) return@LaunchedEffect
+        if (isLastStep && !stretchModeActive) {
+            showSessionSummary = true
+            return@LaunchedEffect
+        }
 
         delay(1500)
         if (preferences.hapticEnabled) {
@@ -129,6 +137,11 @@ fun TunerScreen(
             val nextString = nextGuidedStringNumber(activeTuning.strings, guidedStringNumber)
             onGuidedStringSelected(nextString)
         }
+    }
+
+    LaunchedEffect(tuningMode, activeTuning.id) {
+        sessionResults = emptyMap()
+        showSessionSummary = false
     }
 
     if (state.isListening) {
@@ -202,6 +215,17 @@ fun TunerScreen(
                                 meterStyle = preferences.meterStyle,
                                 modifier = Modifier.fillMaxWidth(),
                             )
+                            if (showSessionSummary) {
+                                SessionSummaryCard(
+                                    strings = activeTuning.strings,
+                                    results = sessionResults,
+                                    onDismiss = {
+                                        showSessionSummary = false
+                                        sessionResults = emptyMap()
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
                         }
                         TunerSettingsPanel(
                             activeTuning = activeTuning,
@@ -264,6 +288,17 @@ fun TunerScreen(
                         meterStyle = preferences.meterStyle,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    if (showSessionSummary) {
+                        SessionSummaryCard(
+                            strings = activeTuning.strings,
+                            results = sessionResults,
+                            onDismiss = {
+                                showSessionSummary = false
+                                sessionResults = emptyMap()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
                     PrivacyDetailsButton(
                         onShowPrivacy = onShowPrivacy,
                         modifier = Modifier.fillMaxWidth(),
