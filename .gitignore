@@ -30,6 +30,10 @@ Thumbs.db
 *.swp
 *.swo
 
+# JVM crash logs
+hs_err_pid*.log
+replay_pid*.log
+
 # Local agent / working files
 CLAUDE.md
 CODEX_CHANGELOG.md
