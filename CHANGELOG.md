@@ -7,6 +7,7 @@
 - Custom tuning import now accepts 1-12 strings (was hardcoded to exactly 6), enabling bass and ukulele custom tuning imports. Minimum frequency lowered to 20 Hz for 5-string bass coverage.
 - Added new-string stretch-and-settle mode in Guided: activates multi-pass walkthrough with per-string drift tracking between passes. Reports max drift in cents and declares "strings settled" when drift falls within tolerance. Localized in all 8 languages.
 - Added tuning session summary card: when a guided walkthrough completes (last string hits in-tune), a summary card shows each string's final cents offset with color-coded accuracy.
+- Added AudioCaptureController lifecycle and concurrency tests covering state transitions, permission flow, settings mutations, start/stop cycles, and idle-state robustness.
 
 ## GuitarTuner v0.0.5 (audit) - 2026-06-15
 
