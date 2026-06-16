@@ -3,6 +3,7 @@ package com.sysadmindoc.guitartuner.ui
 import com.sysadmindoc.guitartuner.settings.CustomTuningRepository
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
+import com.sysadmindoc.guitartuner.settings.MeterStyle
 import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
 import com.sysadmindoc.guitartuner.settings.ThemeMode
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
@@ -60,7 +61,7 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setSpokenFeedback(enabled) }
     }
 
-    fun setMeterStyle(style: com.sysadmindoc.guitartuner.settings.MeterStyle) {
+    fun setMeterStyle(style: MeterStyle) {
         scope.launch { preferencesRepository.setMeterStyle(style) }
     }
 

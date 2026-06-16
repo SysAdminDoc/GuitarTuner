@@ -258,14 +258,14 @@ private fun CentsMeter(state: TunerSessionState) {
 
 @Composable
 private fun StrobeMeter(state: TunerSessionState) {
-    val cents = state.measurement.cents ?: 0.0
     val hasDetection = state.measurement.status == TuningStatus.InTune ||
         state.measurement.status == TuningStatus.TuneUp ||
         state.measurement.status == TuningStatus.TuneDown
 
+    val currentCents = remember { mutableFloatStateOf(0f) }
+    currentCents.floatValue = (state.measurement.cents ?: 0.0).coerceIn(-50.0, 50.0).toFloat()
     val phase = remember { mutableFloatStateOf(0f) }
     val bandColor = statusColor(state.measurement.status)
-    val bgColor = MaterialTheme.colorScheme.surface
     val inTuneColor = MaterialTheme.colorScheme.primary
 
     LaunchedEffect(hasDetection) {
@@ -275,7 +275,7 @@ private fun StrobeMeter(state: TunerSessionState) {
             withFrameNanos { nanos ->
                 if (lastNanos > 0L) {
                     val dtSec = (nanos - lastNanos) / 1_000_000_000f
-                    val speed = (cents / 50.0).toFloat() * StrobeMaxSpeed
+                    val speed = (currentCents.floatValue / 50f) * StrobeMaxSpeed
                     phase.floatValue = (phase.floatValue + speed * dtSec) % (2f * Math.PI.toFloat())
                 }
                 lastNanos = nanos

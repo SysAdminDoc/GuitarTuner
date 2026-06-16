@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.audio.InputDeviceInfo
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
+import com.sysadmindoc.guitartuner.settings.MeterStyle
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
@@ -60,7 +61,7 @@ fun TunerScreen(
     onHapticEnabledChanged: (Boolean) -> Unit,
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
-    onMeterStyleSelected: (com.sysadmindoc.guitartuner.settings.MeterStyle) -> Unit,
+    onMeterStyleSelected: (MeterStyle) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
     onCentsToleranceChanged: (Double) -> Unit,

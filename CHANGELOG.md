@@ -8,6 +8,7 @@
 - Fixed keepScreenOn cleanup in TunerScreen: replaced LaunchedEffect with the reusable KeepScreenOn DisposableEffect composable so the flag is properly cleared when the composable leaves composition.
 - Added frequency validation to GuitarString constructor to reject negative, zero, NaN, or infinite frequencies that would corrupt pitch detection math.
 - Made guidedTuningStep return nullable to handle empty string lists without crashing; updated all call sites and added empty-strings test coverage.
+- Fixed strobe meter animation: cents value was captured once when detection started and never updated, freezing the drift speed. Now reads live cents each frame so strobe speed tracks the actual pitch offset.
 
 ## GuitarTuner v0.0.5 - 2026-06-15
 
