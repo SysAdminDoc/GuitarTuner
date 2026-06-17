@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -36,6 +38,8 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
+import androidx.compose.ui.unit.sp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.MeterStyle
@@ -120,14 +124,21 @@ private fun TargetString(
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
-        Text(
-            text = target?.scientificPitch ?: stringResource(R.string.target_auto_detect_short),
-            modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.displayLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-        )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val density = LocalDensity.current
+            val noteMaxSp = with(density) { (maxWidth / 3).toSp() }
+            val noteFontSize = min(92.sp, noteMaxSp)
+            Text(
+                text = target?.scientificPitch ?: stringResource(R.string.target_auto_detect_short),
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.Bold,
+                fontSize = noteFontSize,
+                lineHeight = noteFontSize * 1.05f,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+            )
+        }
         Text(
             text = when {
                 measurement.target != null -> stringResource(

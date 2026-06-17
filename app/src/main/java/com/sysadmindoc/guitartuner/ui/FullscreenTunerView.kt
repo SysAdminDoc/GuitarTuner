@@ -3,6 +3,7 @@ package com.sysadmindoc.guitartuner.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +18,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
@@ -70,40 +73,53 @@ internal fun FullscreenTunerView(
         contentColor = contentColor,
     ) {
         KeepScreenOn()
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .safeDrawingPadding()
                 .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = note,
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.displayLarge,
-                fontWeight = FontWeight.Bold,
-                fontSize = 92.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-            )
-            Spacer(Modifier.size(16.dp))
-            Text(
-                text = directionText,
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.displayMedium,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 34.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-            )
-            Spacer(Modifier.size(18.dp))
-            Text(
-                text = stringResource(R.string.fullscreen_exit_hint),
-                style = MaterialTheme.typography.bodyMedium,
-                color = contentColor.copy(alpha = 0.72f),
-                textAlign = TextAlign.Center,
-            )
+            val density = LocalDensity.current
+            val availableWidth = maxWidth - 48.dp
+            val noteMaxSp = with(density) { (availableWidth / 3).toSp() }
+            val noteFontSize = min(92.sp, noteMaxSp)
+            val directionMaxSp = with(density) { (availableWidth / 10).toSp() }
+            val directionFontSize = min(34.sp, directionMaxSp)
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = note,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.displayLarge,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = noteFontSize,
+                    lineHeight = noteFontSize * 1.05f,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                )
+                Spacer(Modifier.size(16.dp))
+                Text(
+                    text = directionText,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.displayMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = directionFontSize,
+                    lineHeight = directionFontSize * 1.2f,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                )
+                Spacer(Modifier.size(18.dp))
+                Text(
+                    text = stringResource(R.string.fullscreen_exit_hint),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = contentColor.copy(alpha = 0.72f),
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
