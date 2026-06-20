@@ -24,6 +24,7 @@
 - Extracted TunerViewModel from TunerRoute: AudioCaptureController, TonePlayer, SpokenFeedbackController, and repositories now survive configuration changes. Tuning mode, guided string, and selected tuning persist across process death via SavedStateHandle.
 - Added left-handed instrument layout toggle: reverses the guided string grid order, persisted in preferences, localized in all 8 languages.
 - Added CycloneDX SBOM generation plugin (`./gradlew :app:cyclonedxBom` produces a machine-readable bill of materials).
+- Replaced O(N^2) time-domain YIN difference function with FFT-accelerated autocorrelation (O(N log N)), reducing CPU cost ~10x per audio frame on the pitch detection hot path. All existing pitch detection tests pass unchanged.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 

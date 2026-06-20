@@ -143,14 +143,25 @@ class YinPitchDetector(
         if (yinBuffer.size < requiredSize) {
             yinBuffer = DoubleArray(requiredSize)
         }
-        val windowSize = samples.size - maxTau
+        val n = samples.size
+        val fftSize = Fft.nextPowerOfTwo(n * 2)
+        val (fftReal, fftImag) = Fft.forwardReal(samples, fftSize)
+        for (i in 0 until fftSize) {
+            val r = fftReal[i]
+            val im = fftImag[i]
+            fftReal[i] = r * r + im * im
+            fftImag[i] = 0.0
+        }
+        val autocorrelation = Fft.inverse(fftReal, fftImag, fftSize)
+        var energySum = 0.0
+        for (i in 0 until n) {
+            energySum += samples[i] * samples[i]
+        }
+        var tailEnergy = energySum
+        yinBuffer[0] = 0.0
         for (tau in 1..maxTau) {
-            var difference = 0.0
-            for (index in 0 until windowSize) {
-                val delta = samples[index] - samples[index + tau]
-                difference += delta * delta
-            }
-            yinBuffer[tau] = difference
+            tailEnergy -= samples[n - tau] * samples[n - tau]
+            yinBuffer[tau] = energySum + tailEnergy - 2.0 * autocorrelation[tau]
         }
         return yinBuffer
     }

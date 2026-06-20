@@ -30,13 +30,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
 
 ### P2
 
-- [ ] P2 — FFT-accelerated YIN difference function
-  Why: `differenceFunction()` in `YinPitchDetector.kt:141-156` is O(N^2) — ~2.5M multiplications per 4096-sample frame at ~23 fps. This is the primary CPU bottleneck on low-end devices and causes thermal throttling during extended use. FFT-accelerated YIN (Wiener-Khinchin theorem) reduces to O(N log N).
-  Evidence: sevagh/pitch-detection C++ library demonstrates FFT-YIN; pYIN paper (Mauch 2014).
-  Touches: `pitch/YinPitchDetector.kt` — replace time-domain loop with FFT-based autocorrelation.
-  Acceptance: `differenceFunction` uses FFT; unit tests pass; CPU usage measurably lower on a Snapdragon 6xx device.
-  Complexity: M
-
 - [ ] P2 — Solfege / international note naming option
   Why: non-English markets (Romance languages, East Asia) expect Do/Re/Mi/Fa/Sol/La/Si notation. No Android tuner app offers this as a setting. billthefarmer/tuner offers it but with no localization-aware toggle.
   Evidence: billthefarmer/tuner solfege support; Moekadu uses scientific pitch only; community requests on r/guitar from non-English speakers.
