@@ -81,6 +81,184 @@ This roadmap contains incomplete work only. GuitarTuner is an offline, open-sour
   Acceptance: each alternate tuning has at least one WAV fixture with golden-target regression coverage.
   Complexity: M
 
+## Research-Driven Additions (2026-06-19)
+
+### P0
+
+- [ ] P0 — Fix `ignoreUnknownKeys = false` in CustomTuningJsonCodec
+  Why: current setting means any future schema addition (new field in exported JSON) breaks import on older app versions. Forward-compatible JSON parsing requires `ignoreUnknownKeys = true`.
+  Evidence: kotlinx-serialization docs; Choona uses `ignoreUnknownKeys = true`.
+  Touches: `tuning/CustomTuningJsonCodec.kt` — change `Json { ignoreUnknownKeys = false }` to `true`.
+  Acceptance: importing a tuning JSON file containing unknown extra fields succeeds without error.
+  Complexity: S
+
+- [ ] P0 — Fix `CustomTuningRepository` silent data loss on partial decode errors
+  Why: `.takeIf { it.errors.isEmpty() }?.tunings ?: emptyList()` drops ALL custom tunings if any single entry has a validation error. User loses all custom tunings with no error message.
+  Evidence: code inspection of `settings/CustomTuningRepository.kt`.
+  Touches: `settings/CustomTuningRepository.kt` — return valid tunings and surface errors for invalid ones.
+  Acceptance: if 3 of 4 tunings are valid, 3 load successfully; user sees a message about the 1 invalid tuning.
+  Complexity: S
+
+- [ ] P0 — Translate session summary strings for all 7 non-English locales
+  Why: `session_complete`, `session_cents_value`, `session_dismiss` are missing from de/es/pt/fr/ja/ko/zh. Users completing a guided session see English fallback text.
+  Evidence: `diff` between `values/strings.xml` (167 entries) and `values-de/strings.xml` (164 entries).
+  Touches: all 7 `values-*/strings.xml` files.
+  Acceptance: `grep -c '<string ' values-*/strings.xml` shows 167 for all locales.
+  Complexity: S
+
+### P1
+
+- [ ] P1 — Add StrobeMeter accessibility semantics
+  Why: strobe mode is completely invisible to TalkBack users — the `StrobeMeter` composable has no `contentDescription`, `stateDescription`, `liveRegion`, or `progressBarRangeInfo`. Screen reader users who switch to Strobe style hear nothing.
+  Evidence: code inspection of `ui/TunerMeterPanel.kt:270-345` — Box has no `semantics` block, unlike CentsMeter which has full semantics.
+  Touches: `ui/TunerMeterPanel.kt` (StrobeMeter composable).
+  Acceptance: TalkBack announces tuning direction and cents offset when StrobeMeter is active.
+  Complexity: S
+
+- [ ] P1 — Add FullscreenTunerView accessibility liveRegion
+  Why: fullscreen mode updates note and direction text every frame but does not declare `liveRegion`. TalkBack won't announce changes, making fullscreen mode unusable for blind users.
+  Evidence: code inspection of `ui/FullscreenTunerView.kt`; CentsMeter sets `liveRegion = LiveRegionMode.Polite`.
+  Touches: `ui/FullscreenTunerView.kt`.
+  Acceptance: TalkBack announces note and direction updates in fullscreen mode.
+  Complexity: S
+
+- [ ] P1 — Fix HapticFeedbackConstants.CONFIRM for API 26-29
+  Why: `HapticFeedbackConstants.CONFIRM` was added in API 30 (Android 11), but `minSdk` is 26. On API 26-29 devices, haptic confirmation silently does nothing.
+  Evidence: Android API reference; `ui/TunerScreen.kt:87,128` uses CONFIRM without API check.
+  Touches: `ui/TunerScreen.kt` — check `Build.VERSION.SDK_INT >= 30` and fall back to `HapticFeedbackConstants.LONG_PRESS`.
+  Acceptance: haptic feedback fires on API 26+ devices.
+  Complexity: S
+
+- [ ] P1 — Submit to IzzyOnDroid
+  Why: IzzyOnDroid is the fastest path to the privacy-first Android audience. Fastlane metadata is nearly complete (`title.txt` exists, screenshots exist). F-Droid requires reproducible builds; IzzyOnDroid does not.
+  Evidence: IzzyOnDroid inclusion policy; Choona is already listed on IzzyOnDroid.
+  Touches: fastlane metadata (add `featureGraphic.png`), GitHub release with signed APK.
+  Acceptance: app listed on IzzyOnDroid repo, installable via F-Droid client with IzzyOnDroid repo.
+  Complexity: S
+
+- [ ] P1 — Extract ViewModel from TunerRoute
+  Why: `AudioCaptureController` + `TunerStateHolder` created via `remember` in `TunerRoute` (~340 lines of DI/plumbing) is not lifecycle-safe across process death. Configuration changes lose state. Prerequisite for v1.0 stability.
+  Evidence: `MainActivity.kt` — all state is `remember`-based with no SavedStateHandle or ViewModel.
+  Touches: new `TunerViewModel.kt`, refactor `MainActivity.kt` TunerRoute to delegate to ViewModel.
+  Acceptance: process death and recreation (via developer options "Don't keep activities") preserves tuning mode, calibration, and listening state.
+  Complexity: M
+
+- [ ] P1 — Move deviceTypeLabel/audioSourceLabel to string resources
+  Why: `deviceTypeLabel()` ("Built-in mic", "Wired headset") and `audioSourceLabel()` ("Voice recognition", "Mic") return English-only strings visible in the UI, not in string resources.
+  Evidence: `audio/AudioCaptureController.kt:420-428,454-461`.
+  Touches: `AudioCaptureController.kt`, all `values-*/strings.xml` files.
+  Acceptance: mic device picker and diagnostics display show translated labels in all 8 locales.
+  Complexity: S
+
+### P2
+
+- [ ] P2 — FFT-accelerated YIN difference function
+  Why: `differenceFunction()` in `YinPitchDetector.kt:141-156` is O(N^2) — ~2.5M multiplications per 4096-sample frame at ~23 fps. This is the primary CPU bottleneck on low-end devices and causes thermal throttling during extended use. FFT-accelerated YIN (Wiener-Khinchin theorem) reduces to O(N log N).
+  Evidence: sevagh/pitch-detection C++ library demonstrates FFT-YIN; pYIN paper (Mauch 2014).
+  Touches: `pitch/YinPitchDetector.kt` — replace time-domain loop with FFT-based autocorrelation.
+  Acceptance: `differenceFunction` uses FFT; unit tests pass; CPU usage measurably lower on a Snapdragon 6xx device.
+  Complexity: M
+
+- [ ] P2 — Add PitchHistoryTimeline accessibility annotation
+  Why: `PitchHistoryTimeline` Canvas has no semantics — screenreader users get no information from the pitch history graph.
+  Evidence: `ui/TunerMeterPanel.kt:350-410` — Canvas has no `semantics` block.
+  Touches: `ui/TunerMeterPanel.kt`.
+  Acceptance: TalkBack announces a summary (e.g., "Pitch history: trending toward in tune") when timeline is visible.
+  Complexity: S
+
+- [ ] P2 — F-Droid submission with reproducible builds
+  Why: F-Droid is the primary distribution channel for privacy-first Android users. The manifest gate and no-network permission make this app a natural F-Droid fit.
+  Evidence: F-Droid reproducible builds documentation; Moekadu is already on F-Droid.
+  Touches: fastlane metadata completion, build reproducibility verification, F-Droid metadata YAML.
+  Acceptance: app listed on f-droid.org, installable from F-Droid client.
+  Complexity: M
+
+- [ ] P2 — Solfege / international note naming option
+  Why: non-English markets (Romance languages, East Asia) expect Do/Re/Mi/Fa/Sol/La/Si notation. No Android tuner app offers this as a setting. billthefarmer/tuner offers it but with no localization-aware toggle.
+  Evidence: billthefarmer/tuner solfege support; Moekadu uses scientific pitch only; community requests on r/guitar from non-English speakers.
+  Touches: `tuning/GuitarString.kt` (add note name formatting), `settings/TunerSettings.kt` (new preference), `ui/TunerMeterPanel.kt`, all `values-*/strings.xml`.
+  Acceptance: setting to switch between scientific pitch (C4) and solfege (Do4); default follows locale.
+  Complexity: M
+
+- [ ] P2 — Remove dead `sampleRate` constructor parameter from PhaseRefiner
+  Why: `PhaseRefiner(private val sampleRate: Int = 48_000)` declares a field that is never read — `refine()` takes `sampleRate` as a parameter. Dead code causes confusion about which sample rate is authoritative.
+  Evidence: code inspection of `pitch/PhaseRefiner.kt`.
+  Touches: `pitch/PhaseRefiner.kt`, `audio/AudioCaptureController.kt` (constructor call site).
+  Acceptance: field removed; tests pass.
+  Complexity: S
+
+- [ ] P2 — Refactor TunerScreen stretch-mode logic duplication
+  Why: `onStretchModeToggle` lambda body is duplicated verbatim between wide-layout and narrow-layout branches in `TunerScreen.kt` (lines 240-252 and 316-328).
+  Evidence: code inspection of `ui/TunerScreen.kt`.
+  Touches: `ui/TunerScreen.kt` — extract to a shared lambda variable.
+  Acceptance: one copy of the stretch toggle logic; both layout paths reference the same lambda.
+  Complexity: S
+
+- [ ] P2 — In-app custom tuning editor
+  Why: JSON import/export is a power-user flow. Intermediate users wanting to create a custom tuning (e.g., Open C, NST) must edit JSON externally. A simple in-app editor with string count + note/frequency pickers would serve a much wider audience.
+  Evidence: Choona offers in-app tuning editor with note/octave entry; community request frequency on r/guitar.
+  Touches: new `ui/TuningEditorScreen.kt`, `tuning/CustomTuningJsonCodec.kt`, `settings/CustomTuningRepository.kt`.
+  Acceptance: user can create, edit, and delete custom tunings from within the app without JSON knowledge.
+  Complexity: L
+
+- [ ] P2 — App shortcut to start tuning immediately
+  Why: tuner is a 30-second utility — every tap between launch and listening is friction. An app shortcut (long-press launcher icon → "Quick Tune") would start listening immediately.
+  Evidence: Android Static Shortcuts API (API 25+); GuitarTuna offers this.
+  Touches: `AndroidManifest.xml` (shortcut XML), `MainActivity.kt` (intent handling).
+  Acceptance: long-press launcher icon shows "Quick Tune" shortcut; tapping it launches directly to listening mode.
+  Complexity: S
+
+### P3
+
+- [ ] P3 — Replace PitchHistoryTimeline mutableStateListOf with circular buffer
+  Why: `removeAt(0)` on `SnapshotStateList` is O(n) per frame at ~23 fps. A circular buffer with a fixed-size `FloatArray` and head/tail indices would be O(1).
+  Evidence: code inspection of `ui/TunerMeterPanel.kt:361`.
+  Touches: `ui/TunerMeterPanel.kt` (PitchHistoryTimeline composable).
+  Acceptance: timeline rendering unchanged; no `removeAt(0)` calls.
+  Complexity: S
+
+- [ ] P3 — Capo / transposition support
+  Why: capo usage shifts all string frequencies by N semitones. Players tuning with a capo need the tuner to show target notes relative to the capo position. Multiple commercial tuners support this; no OSS Android tuner does.
+  Evidence: GuitarTuna premium feature; Fender Tune community request; r/guitar threads.
+  Touches: `tuning/TuningAnalyzer.kt` (semitone offset), new capo setting in preferences, UI selector.
+  Acceptance: setting capo to fret 2 shifts all target frequencies up 2 semitones; chromatic mode shows transposed note names.
+  Complexity: M
+
+- [ ] P3 — Left-handed instrument layout indicator
+  Why: beginner left-handed players may be confused by string numbering in guided mode. A simple toggle to mirror the guided string display would improve onboarding.
+  Evidence: Simply Tune by Fender offers left-handed diagrams; community request on beginner forums.
+  Touches: `ui/TunerModeSettings.kt` (guided string display), new preference.
+  Acceptance: guided mode shows strings in reverse visual order when left-handed toggle is on; tuning logic unchanged.
+  Complexity: S
+
+- [ ] P3 — SessionSummaryCard accessibility grouping
+  Why: `SessionSummaryCard` uses plain `Text` items with no `semantics(mergeDescendants = true)` — TalkBack announces each value separately ("6", "E2", "minus 2 cents") instead of as a combined row.
+  Evidence: code inspection of `ui/SessionSummaryCard.kt`.
+  Touches: `ui/SessionSummaryCard.kt`.
+  Acceptance: TalkBack announces each string row as a single phrase (e.g., "String 6, E2, minus 2 cents").
+  Complexity: S
+
+- [ ] P3 — TunerHeader status dot contentDescription
+  Why: the colored status dot (8dp `Box` with background color) has no `contentDescription` — color-blind users have no semantic signal from it.
+  Evidence: code inspection of `ui/TunerChrome.kt`.
+  Touches: `ui/TunerChrome.kt`.
+  Acceptance: TalkBack announces the status dot state (e.g., "Listening", "In tune", "Error").
+  Complexity: S
+
+- [ ] P3 — SBOM generation for supply chain transparency
+  Why: privacy-conscious users and F-Droid reviewers value a machine-readable bill of materials. CycloneDX Gradle plugin generates one at build time.
+  Evidence: F-Droid reproducible build requirements; CycloneDX Gradle plugin.
+  Touches: `app/build.gradle.kts` (add `org.cyclonedx.bom` plugin), CI workflow.
+  Acceptance: `./gradlew cyclonedxBom` produces `build/reports/bom.json`.
+  Complexity: S
+
+- [ ] P3 — A4 calibration at 0.1 Hz granularity
+  Why: `measureA4FromLive()` rounds to the nearest integer Hz (`kotlin.math.round(frequencyHz)`). A4 calibration at 1 Hz resolution is coarse when the phase refiner can deliver sub-cent accuracy. The 432-445 Hz range benefits from 0.1 Hz steps.
+  Evidence: Peterson iStroboSoft offers 0.1 Hz calibration; Moekadu #100 requests calibration in cents.
+  Touches: `ui/TunerStateHolder.kt` (measureA4FromLive), `settings/TunerPreferencesRepository.kt`, calibration UI stepper.
+  Acceptance: A4 calibration accepts and persists values like 432.0, 440.5, 443.7.
+  Complexity: S
+
 ## MVP Acceptance Criteria
 
 - The app can tune standard acoustic guitar strings from E2 through E4.
