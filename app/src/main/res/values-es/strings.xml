@@ -177,6 +177,9 @@
     <string name="source_unprocessed">Sin procesar</string>
     <string name="source_default">Android predeterminado</string>
     <string name="source_generic">Fuente %1$d</string>
+    <string name="setting_capo">Cejilla</string>
+    <string name="capo_off">Desactivado</string>
+    <string name="capo_fret_value">Traste %1$d</string>
     <string name="setting_left_handed">Zurdo</string>
     <string name="setting_left_handed_helper">Invertir el orden de las cuerdas en el modo guiado.</string>
     <string name="shortcut_quick_tune">Afinar rapido</string>

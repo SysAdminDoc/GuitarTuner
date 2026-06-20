@@ -43,6 +43,7 @@ data class StoredTunerPreferences(
     val noiseGateRms: Double = 0.0015,
     val pegTurnDirections: Map<Int, PegTurnDirection> = emptyMap(),
     val leftHanded: Boolean = false,
+    val capoFret: Int = 0,
 ) {
     init {
         PitchCalibration(a4Hz)

@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
@@ -51,6 +52,7 @@ class TunerPreferencesRepository(
                 noiseGateRms = storedPreferences[NoiseGateRmsKey].sanitizeNoiseGateRms(),
                 pegTurnDirections = decodePegTurnDirections(storedPreferences[PegDirectionsKey]),
                 leftHanded = storedPreferences[LeftHandedKey] ?: false,
+                capoFret = (storedPreferences[CapoFretKey] ?: 0).coerceIn(0, MaxCapoFret),
             )
         }
 
@@ -130,6 +132,12 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setCapoFret(fret: Int) {
+        dataStore.edit { preferences ->
+            preferences[CapoFretKey] = fret.coerceIn(0, MaxCapoFret)
+        }
+    }
+
     suspend fun setLeftHanded(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[LeftHandedKey] = enabled
@@ -180,5 +188,7 @@ class TunerPreferencesRepository(
         val NoiseGateRmsKey = doublePreferencesKey("noise_gate_rms")
         val PegDirectionsKey = stringPreferencesKey("peg_directions")
         val LeftHandedKey = booleanPreferencesKey("left_handed")
+        val CapoFretKey = intPreferencesKey("capo_fret")
+        const val MaxCapoFret = 12
     }
 }

@@ -1,5 +1,7 @@
 package com.sysadmindoc.guitartuner.tuning
 
+import kotlin.math.pow
+
 object StandardGuitarTuning {
     val strings: List<GuitarString> = listOf(
         GuitarString(stringNumber = 6, name = "Low E", scientificPitch = "E2", frequencyHz = 82.41),
@@ -134,12 +136,23 @@ object GuitarTunings {
     fun catalog(
         customTunings: List<TuningDefinition>,
         a4Hz: Double = ReferenceA4Hz,
+        capoFret: Int = 0,
     ): TuningCatalog =
         TuningCatalog(
             (builtIns + customTunings.filterNot { custom ->
                 builtIns.any { builtIn -> builtIn.id == custom.id }
-            }).map { tuning -> tuning.withA4Calibration(a4Hz) },
+            }).map { tuning -> tuning.withA4Calibration(a4Hz).withCapo(capoFret) },
         )
+
+    private fun TuningDefinition.withCapo(fret: Int): TuningDefinition {
+        if (fret <= 0) return this
+        val ratio = 2.0.pow(fret / 12.0)
+        return copy(
+            strings = strings.map { string ->
+                string.copy(frequencyHz = string.frequencyHz * ratio)
+            },
+        )
+    }
 
     private fun TuningDefinition.withA4Calibration(a4Hz: Double): TuningDefinition {
         val ratio = a4Hz / ReferenceA4Hz

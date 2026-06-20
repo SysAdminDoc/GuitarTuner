@@ -177,6 +177,9 @@
     <string name="source_unprocessed">未処理</string>
     <string name="source_default">Android既定</string>
     <string name="source_generic">ソース %1$d</string>
+    <string name="setting_capo">カポ</string>
+    <string name="capo_off">オフ</string>
+    <string name="capo_fret_value">フレット %1$d</string>
     <string name="setting_left_handed">左利き</string>
     <string name="setting_left_handed_helper">ガイドモードの弦の順序を反転します。</string>
     <string name="shortcut_quick_tune">すぐチューニング</string>

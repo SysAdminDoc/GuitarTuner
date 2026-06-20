@@ -177,6 +177,9 @@
     <string name="source_unprocessed">Unprocessed</string>
     <string name="source_default">Android default</string>
     <string name="source_generic">Source %1$d</string>
+    <string name="setting_capo">Capo</string>
+    <string name="capo_off">Off</string>
+    <string name="capo_fret_value">Fret %1$d</string>
     <string name="setting_left_handed">Left-handed</string>
     <string name="setting_left_handed_helper">Reverse the string order in guided mode.</string>
     <string name="shortcut_quick_tune">Quick tune</string>

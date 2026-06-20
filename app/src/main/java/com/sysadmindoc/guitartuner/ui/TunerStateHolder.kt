@@ -77,6 +77,10 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setNoiseGateRms(rms) }
     }
 
+    fun setCapoFret(fret: Int) {
+        scope.launch { preferencesRepository.setCapoFret(fret) }
+    }
+
     fun setLeftHanded(enabled: Boolean) {
         scope.launch { preferencesRepository.setLeftHanded(enabled) }
     }

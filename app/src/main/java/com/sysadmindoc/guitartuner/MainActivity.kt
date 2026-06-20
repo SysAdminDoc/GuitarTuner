@@ -76,8 +76,8 @@ private fun TunerRoute(quickTune: Boolean = false) {
     val uncalibratedTuningCatalog = remember(customTunings) {
         GuitarTunings.catalog(customTunings)
     }
-    val tuningCatalog = remember(customTunings, preferences.a4Hz) {
-        GuitarTunings.catalog(customTunings, preferences.a4Hz)
+    val tuningCatalog = remember(customTunings, preferences.a4Hz, preferences.capoFret) {
+        GuitarTunings.catalog(customTunings, preferences.a4Hz, preferences.capoFret)
     }
     val inputDevices = remember(controller) { controller.availableInputDevices() }
     val startupTuningId = preferences.startupTuningId()
@@ -277,6 +277,7 @@ private fun TunerRoute(quickTune: Boolean = false) {
                 onAutoAdvanceGuidedChanged = { enabled -> stateHolder.setAutoAdvanceGuided(enabled) },
                 onSpokenFeedbackChanged = { enabled -> stateHolder.setSpokenFeedback(enabled) },
                 onLeftHandedChanged = { enabled -> stateHolder.setLeftHanded(enabled) },
+                onCapoFretChanged = { fret -> stateHolder.setCapoFret(fret) },
                 onMeterStyleSelected = { style -> stateHolder.setMeterStyle(style) },
                 onMeasureA4 = {
                     val measured = TunerStateHolder.measureA4FromLive(

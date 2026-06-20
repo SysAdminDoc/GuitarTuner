@@ -31,6 +31,7 @@ internal fun DefaultsSection(
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
     onLeftHandedChanged: (Boolean) -> Unit,
+    onCapoFretChanged: (Int) -> Unit,
     onMeterStyleSelected: (MeterStyle) -> Unit,
 ) {
     SettingsSection(
@@ -100,6 +101,16 @@ internal fun DefaultsSection(
             helper = stringResource(R.string.setting_left_handed_helper),
             checked = preferences.leftHanded,
             onCheckedChange = onLeftHandedChanged,
+        )
+        NumericSettingRow(
+            label = stringResource(R.string.setting_capo),
+            value = if (preferences.capoFret == 0) stringResource(R.string.capo_off) else stringResource(R.string.capo_fret_value, preferences.capoFret),
+            decreaseLabel = "-",
+            increaseLabel = "+",
+            canDecrease = preferences.capoFret > 0,
+            canIncrease = preferences.capoFret < 12,
+            onDecrease = { onCapoFretChanged(preferences.capoFret - 1) },
+            onIncrease = { onCapoFretChanged(preferences.capoFret + 1) },
         )
         Row(
             modifier = Modifier.fillMaxWidth(),

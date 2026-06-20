@@ -44,15 +44,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: user can create, edit, and delete custom tunings from within the app without JSON knowledge.
   Complexity: L
 
-### P3
-
-- [ ] P3 — Capo / transposition support
-  Why: capo usage shifts all string frequencies by N semitones. Players tuning with a capo need the tuner to show target notes relative to the capo position. Multiple commercial tuners support this; no OSS Android tuner does.
-  Evidence: GuitarTuna premium feature; Fender Tune community request; r/guitar threads.
-  Touches: `tuning/TuningAnalyzer.kt` (semitone offset), new capo setting in preferences, UI selector.
-  Acceptance: setting capo to fret 2 shifts all target frequencies up 2 semitones; chromatic mode shows transposed note names.
-  Complexity: M
-
 ## MVP Acceptance Criteria
 
 - The app can tune standard acoustic guitar strings from E2 through E4.
