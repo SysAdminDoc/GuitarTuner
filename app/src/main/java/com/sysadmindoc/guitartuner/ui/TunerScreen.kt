@@ -109,6 +109,19 @@ fun TunerScreen(
         null
     }
     val stretchSettled = stretchMaxDrift != null && stretchMaxDrift <= preferences.centsTolerance
+    val onStretchModeToggle: () -> Unit = {
+        if (stretchModeActive) {
+            stretchModeActive = false
+            stretchPassNumber = 0
+            stretchPreviousCents = emptyMap()
+            stretchCurrentCents = emptyMap()
+        } else {
+            stretchModeActive = true
+            stretchPassNumber = 1
+            stretchPreviousCents = emptyMap()
+            stretchCurrentCents = emptyMap()
+        }
+    }
 
     LaunchedEffect(currentlyInTune, tuningMode, guidedStringNumber) {
         if (!currentlyInTune || tuningMode != TuningMode.Guided || !preferences.autoAdvanceGuided) return@LaunchedEffect
@@ -244,19 +257,7 @@ fun TunerScreen(
                             stretchPassNumber = stretchPassNumber,
                             stretchMaxDrift = stretchMaxDrift,
                             stretchSettled = stretchSettled,
-                            onStretchModeToggle = {
-                                if (stretchModeActive) {
-                                    stretchModeActive = false
-                                    stretchPassNumber = 0
-                                    stretchPreviousCents = emptyMap()
-                                    stretchCurrentCents = emptyMap()
-                                } else {
-                                    stretchModeActive = true
-                                    stretchPassNumber = 1
-                                    stretchPreviousCents = emptyMap()
-                                    stretchCurrentCents = emptyMap()
-                                }
-                            },
+                            onStretchModeToggle = onStretchModeToggle,
                             onTuningModeSelected = onTuningModeSelected,
                             onGuidedStringSelected = onGuidedStringSelected,
                             onStartupModeSelected = onStartupModeSelected,

@@ -6,9 +6,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-class PhaseRefiner(
-    private val sampleRate: Int = 48_000,
-) {
+class PhaseRefiner {
     private var previousPhase: Double = 0.0
     private var hasPrevious: Boolean = false
     private var previousFrequency: Double = 0.0
@@ -16,7 +14,7 @@ class PhaseRefiner(
     fun refine(
         samples: FloatArray,
         coarseFrequencyHz: Double,
-        sampleRate: Int = this.sampleRate,
+        sampleRate: Int,
     ): Double {
         val phase = goertzelPhase(samples, coarseFrequencyHz, sampleRate)
 

@@ -60,20 +60,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: setting to switch between scientific pitch (C4) and solfege (Do4); default follows locale.
   Complexity: M
 
-- [ ] P2 — Remove dead `sampleRate` constructor parameter from PhaseRefiner
-  Why: `PhaseRefiner(private val sampleRate: Int = 48_000)` declares a field that is never read — `refine()` takes `sampleRate` as a parameter. Dead code causes confusion about which sample rate is authoritative.
-  Evidence: code inspection of `pitch/PhaseRefiner.kt`.
-  Touches: `pitch/PhaseRefiner.kt`, `audio/AudioCaptureController.kt` (constructor call site).
-  Acceptance: field removed; tests pass.
-  Complexity: S
-
-- [ ] P2 — Refactor TunerScreen stretch-mode logic duplication
-  Why: `onStretchModeToggle` lambda body is duplicated verbatim between wide-layout and narrow-layout branches in `TunerScreen.kt` (lines 240-252 and 316-328).
-  Evidence: code inspection of `ui/TunerScreen.kt`.
-  Touches: `ui/TunerScreen.kt` — extract to a shared lambda variable.
-  Acceptance: one copy of the stretch toggle logic; both layout paths reference the same lambda.
-  Complexity: S
-
 - [ ] P2 — In-app custom tuning editor
   Why: JSON import/export is a power-user flow. Intermediate users wanting to create a custom tuning (e.g., Open C, NST) must edit JSON externally. A simple in-app editor with string count + note/frequency pickers would serve a much wider audience.
   Evidence: Choona offers in-app tuning editor with note/octave entry; community request frequency on r/guitar.

@@ -14,7 +14,7 @@ class PhaseRefinerTest {
         val sampleRate = 44_100
         val frameSize = 4096
         val hopSize = frameSize / 2
-        val refiner = PhaseRefiner(sampleRate = sampleRate)
+        val refiner = PhaseRefiner()
 
         val continuous = FloatArray(frameSize + hopSize) { i ->
             (sin(2.0 * PI * trueFrequency * i / sampleRate) * 0.5).toFloat()
@@ -22,8 +22,8 @@ class PhaseRefinerTest {
         val frame1 = continuous.copyOfRange(0, frameSize)
         val frame2 = continuous.copyOfRange(hopSize, hopSize + frameSize)
 
-        val r1 = refiner.refine(frame1, coarseFrequency)
-        val result = refiner.refine(frame2, coarseFrequency)
+        val r1 = refiner.refine(frame1, coarseFrequency, sampleRate)
+        val result = refiner.refine(frame2, coarseFrequency, sampleRate)
 
         val coarseError = abs(coarseFrequency - trueFrequency)
         val refinedError = abs(result - trueFrequency)
@@ -59,19 +59,19 @@ class PhaseRefinerTest {
 
     @Test
     fun resetClearsState() {
-        val refiner = PhaseRefiner(sampleRate = 44_100)
+        val refiner = PhaseRefiner()
         val frame = sineWave(440.0, 4096, 44_100)
-        refiner.refine(frame, 440.0)
+        refiner.refine(frame, 440.0, 44_100)
         refiner.reset()
-        val result = refiner.refine(frame, 440.0)
+        val result = refiner.refine(frame, 440.0, 44_100)
         assertTrue(abs(result - 440.0) < 0.01)
     }
 
     @Test
     fun doesNotOverCorrectLargeJumps() {
-        val refiner = PhaseRefiner(sampleRate = 44_100)
-        refiner.refine(sineWave(82.41, 4096, 44_100), 82.41)
-        val result = refiner.refine(sineWave(196.0, 4096, 44_100), 196.0)
+        val refiner = PhaseRefiner()
+        refiner.refine(sineWave(82.41, 4096, 44_100), 82.41, 44_100)
+        val result = refiner.refine(sineWave(196.0, 4096, 44_100), 196.0, 44_100)
         assertTrue(abs(result - 196.0) < 0.01)
     }
 

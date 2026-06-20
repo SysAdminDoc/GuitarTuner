@@ -13,6 +13,8 @@
 - Added liveRegion to fullscreen tuner view so TalkBack announces note and direction updates.
 - Fixed haptic confirmation on API 26-29 devices: falls back to LONG_PRESS when CONFIRM constant is unavailable (added in API 30).
 - Moved device type and audio source labels to string resources with translations in all 8 locales so mic picker and diagnostics display in the device language.
+- Removed dead `sampleRate` constructor parameter from PhaseRefiner; `refine()` now requires `sampleRate` as an explicit parameter at every call site.
+- Extracted duplicated stretch-mode toggle logic in TunerScreen into a shared lambda.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 
