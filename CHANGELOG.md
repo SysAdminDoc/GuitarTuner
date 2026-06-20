@@ -28,6 +28,7 @@
 - Added alternate-tuning detection tests: 10 new tests covering Drop D, Open G, DADGAD, Half-step down, bass standard, and ukulele standard with synthetic guitar-like signals.
 - Added capo/transposition support: stepper control (fret 0-12) shifts all target frequencies up by the selected number of semitones. Persisted in preferences, localized in all 8 languages.
 - Added solfege/international note naming option: toggle between scientific pitch (C4, E2) and solfege (Do4, Mi2) in settings. Maps all chromatic notes including sharps and flats to Do/Re/Mi/Fa/Sol/La/Si notation. Localized in all 8 languages.
+- Added in-app custom tuning editor: create, edit, and delete custom tunings without JSON knowledge. Per-string name, pitch, and frequency entry with 1-12 string support. Localized in all 8 languages.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 

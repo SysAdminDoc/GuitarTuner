@@ -93,6 +93,14 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }
     }
 
+    fun saveTuning(tuning: com.sysadmindoc.guitartuner.tuning.TuningDefinition) {
+        scope.launch { customTuningRepository.saveTuning(tuning) }
+    }
+
+    fun deleteTuning(tuningId: String) {
+        scope.launch { customTuningRepository.deleteTuning(tuningId) }
+    }
+
     suspend fun processImport(source: String): TuningFileMessage {
         if (source.length > MaxImportFileSize) return TuningFileMessage.FileTooLarge
         return try {

@@ -14,6 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.defaultMinSize
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
@@ -27,6 +29,8 @@ internal fun TuningSection(
     activeTuning: TuningDefinition,
     tunings: List<TuningDefinition>,
     onTuningSelected: (TuningDefinition) -> Unit,
+    onCreateTuning: () -> Unit = {},
+    onEditTuning: (TuningDefinition) -> Unit = {},
 ) {
     SettingsSection(
         title = stringResource(R.string.label_tuning),
@@ -53,6 +57,29 @@ internal fun TuningSection(
             activeTuning = activeTuning,
             onTuningSelected = onTuningSelected,
         )
+        if (!activeTuning.isBuiltIn) {
+            OutlinedButton(
+                onClick = { onEditTuning(activeTuning) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = MinTouchTarget),
+                shape = PanelShape,
+                contentPadding = CompactButtonPadding,
+            ) {
+                Text(stringResource(R.string.action_edit_tuning))
+            }
+        }
+        OutlinedButton(
+            onClick = onCreateTuning,
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = MinTouchTarget),
+            shape = PanelShape,
+            contentPadding = CompactButtonPadding,
+            border = BorderStroke(PanelBorderWidth, MaterialTheme.colorScheme.outlineVariant),
+        ) {
+            Text(stringResource(R.string.action_create_tuning))
+        }
     }
 }
 

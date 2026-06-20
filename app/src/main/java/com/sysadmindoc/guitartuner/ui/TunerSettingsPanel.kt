@@ -45,6 +45,8 @@ internal fun TunerSettingsPanel(
     onNoiseGateChanged: (Double) -> Unit,
     onPegTurnDirectionChanged: (Int, PegTurnDirection) -> Unit,
     onTuningSelected: (TuningDefinition) -> Unit,
+    onCreateTuning: () -> Unit,
+    onEditTuning: (TuningDefinition) -> Unit,
     onImportTunings: () -> Unit,
     onExportTunings: () -> Unit,
     inputDevices: List<InputDeviceInfo>,
@@ -59,7 +61,7 @@ internal fun TunerSettingsPanel(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        TuningSection(activeTuning, tunings, onTuningSelected)
+        TuningSection(activeTuning, tunings, onTuningSelected, onCreateTuning, onEditTuning)
         ModeSection(
             activeTuning = activeTuning,
             tuningMode = tuningMode,

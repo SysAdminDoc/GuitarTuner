@@ -31,6 +31,7 @@ import com.sysadmindoc.guitartuner.tuning.TuningStatus
 import com.sysadmindoc.guitartuner.ui.PrimaryAction
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
 import com.sysadmindoc.guitartuner.ui.TunerScreen
+import com.sysadmindoc.guitartuner.ui.TuningEditorScreen
 import com.sysadmindoc.guitartuner.ui.TunerStateHolder
 import com.sysadmindoc.guitartuner.ui.TunerViewModel
 import com.sysadmindoc.guitartuner.ui.TuningFileMessage
@@ -65,6 +66,8 @@ private fun TunerRoute(quickTune: Boolean = false) {
     val spokenFeedback = vm.spokenFeedback
 
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
+    var editingTuning by remember { mutableStateOf<com.sysadmindoc.guitartuner.tuning.TuningDefinition?>(null) }
+    var showCreateEditor by remember { mutableStateOf(false) }
     var tuningFileMessage by remember { mutableStateOf<TuningFileMessage?>(null) }
 
     val preferences by vm.preferencesRepository.preferences.collectAsStateWithLifecycle(
@@ -238,6 +241,24 @@ private fun TunerRoute(quickTune: Boolean = false) {
     GuitarTunerTheme(themeMode = preferences.themeMode) {
         if (showPrivacy) {
             PrivacyScreen(onBack = { showPrivacy = false })
+        } else if (showCreateEditor || editingTuning != null) {
+            TuningEditorScreen(
+                existingTuning = editingTuning,
+                onSave = { tuning ->
+                    stateHolder.saveTuning(tuning)
+                    editingTuning = null
+                    showCreateEditor = false
+                },
+                onDelete = if (editingTuning != null) { id ->
+                    stateHolder.deleteTuning(id)
+                    if (vm.selectedTuningId == id) vm.selectedTuningId = null
+                    editingTuning = null
+                } else null,
+                onBack = {
+                    editingTuning = null
+                    showCreateEditor = false
+                },
+            )
         } else {
             TunerScreen(
                 state = state,
@@ -296,6 +317,8 @@ private fun TunerRoute(quickTune: Boolean = false) {
                     vm.selectedTuningId = tuning.id
                     stateHolder.selectTuning(tuning)
                 },
+                onCreateTuning = { showCreateEditor = true },
+                onEditTuning = { tuning -> editingTuning = tuning },
                 onImportTunings = {
                     importLauncher.launch(arrayOf("application/json", "text/json", "text/plain"))
                 },

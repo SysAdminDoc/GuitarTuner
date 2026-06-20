@@ -36,6 +36,32 @@ class CustomTuningRepository(
                 ?: emptyList()
         }
 
+    suspend fun saveTuning(tuning: TuningDefinition) {
+        dataStore.edit { preferences ->
+            val existing = preferences[CustomTuningsJsonKey]
+                ?.let { CustomTuningJsonCodec.decode(it) }
+                ?.tunings
+                ?: emptyList()
+            val updated = existing.filterNot { it.id == tuning.id } + tuning
+            preferences[CustomTuningsJsonKey] = CustomTuningJsonCodec.encode(updated)
+        }
+    }
+
+    suspend fun deleteTuning(tuningId: String) {
+        dataStore.edit { preferences ->
+            val existing = preferences[CustomTuningsJsonKey]
+                ?.let { CustomTuningJsonCodec.decode(it) }
+                ?.tunings
+                ?: emptyList()
+            val updated = existing.filterNot { it.id == tuningId }
+            if (updated.isEmpty()) {
+                preferences.remove(CustomTuningsJsonKey)
+            } else {
+                preferences[CustomTuningsJsonKey] = CustomTuningJsonCodec.encode(updated)
+            }
+        }
+    }
+
     suspend fun replaceFromJson(source: String): CustomTuningImportResult {
         val result = CustomTuningJsonCodec.decode(source)
         if (result.errors.isNotEmpty()) return result

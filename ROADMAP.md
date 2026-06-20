@@ -28,15 +28,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
 
 ## Research-Driven Additions (2026-06-19)
 
-### P2
-
-- [ ] P2 — In-app custom tuning editor
-  Why: JSON import/export is a power-user flow. Intermediate users wanting to create a custom tuning (e.g., Open C, NST) must edit JSON externally. A simple in-app editor with string count + note/frequency pickers would serve a much wider audience.
-  Evidence: Choona offers in-app tuning editor with note/octave entry; community request frequency on r/guitar.
-  Touches: new `ui/TuningEditorScreen.kt`, `tuning/CustomTuningJsonCodec.kt`, `settings/CustomTuningRepository.kt`.
-  Acceptance: user can create, edit, and delete custom tunings from within the app without JSON knowledge.
-  Complexity: L
-
 ## MVP Acceptance Criteria
 
 - The app can tune standard acoustic guitar strings from E2 through E4.
