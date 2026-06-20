@@ -9,6 +9,9 @@
 - Fixed fullscreen view font sizing to cap by both width and height, preventing overflow on small screens.
 - Removed fixed minimum height constraints from meter panel and readout text to prevent blank space on compact screens.
 - Moved blocked roadmap items to Roadmap_Blocked.md to keep ROADMAP.md actionable-only.
+- Added TalkBack accessibility semantics to strobe meter mode (contentDescription, stateDescription, progressBarRangeInfo, liveRegion) matching the normal meter's existing accessibility support.
+- Added liveRegion to fullscreen tuner view so TalkBack announces note and direction updates.
+- Fixed haptic confirmation on API 26-29 devices: falls back to LONG_PRESS when CONFIRM constant is unavailable (added in API 30).
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 

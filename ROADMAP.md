@@ -30,27 +30,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
 
 ### P1
 
-- [ ] P1 — Add StrobeMeter accessibility semantics
-  Why: strobe mode is completely invisible to TalkBack users — the `StrobeMeter` composable has no `contentDescription`, `stateDescription`, `liveRegion`, or `progressBarRangeInfo`. Screen reader users who switch to Strobe style hear nothing.
-  Evidence: code inspection of `ui/TunerMeterPanel.kt:270-345` — Box has no `semantics` block, unlike CentsMeter which has full semantics.
-  Touches: `ui/TunerMeterPanel.kt` (StrobeMeter composable).
-  Acceptance: TalkBack announces tuning direction and cents offset when StrobeMeter is active.
-  Complexity: S
-
-- [ ] P1 — Add FullscreenTunerView accessibility liveRegion
-  Why: fullscreen mode updates note and direction text every frame but does not declare `liveRegion`. TalkBack won't announce changes, making fullscreen mode unusable for blind users.
-  Evidence: code inspection of `ui/FullscreenTunerView.kt`; CentsMeter sets `liveRegion = LiveRegionMode.Polite`.
-  Touches: `ui/FullscreenTunerView.kt`.
-  Acceptance: TalkBack announces note and direction updates in fullscreen mode.
-  Complexity: S
-
-- [ ] P1 — Fix HapticFeedbackConstants.CONFIRM for API 26-29
-  Why: `HapticFeedbackConstants.CONFIRM` was added in API 30 (Android 11), but `minSdk` is 26. On API 26-29 devices, haptic confirmation silently does nothing.
-  Evidence: Android API reference; `ui/TunerScreen.kt:87,128` uses CONFIRM without API check.
-  Touches: `ui/TunerScreen.kt` — check `Build.VERSION.SDK_INT >= 30` and fall back to `HapticFeedbackConstants.LONG_PRESS`.
-  Acceptance: haptic feedback fires on API 26+ devices.
-  Complexity: S
-
 - [ ] P1 — Extract ViewModel from TunerRoute
   Why: `AudioCaptureController` + `TunerStateHolder` created via `remember` in `TunerRoute` (~340 lines of DI/plumbing) is not lifecycle-safe across process death. Configuration changes lose state. Prerequisite for v1.0 stability.
   Evidence: `MainActivity.kt` — all state is `remember`-based with no SavedStateHandle or ViewModel.

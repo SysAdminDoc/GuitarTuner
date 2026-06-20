@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import android.os.Build
 import android.view.HapticFeedbackConstants
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -84,7 +85,10 @@ fun TunerScreen(
     val currentlyInTune = state.measurement.status == TuningStatus.InTune
     LaunchedEffect(currentlyInTune) {
         if (currentlyInTune && !previousInTune && preferences.hapticEnabled) {
-            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            view.performHapticFeedback(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM
+                else HapticFeedbackConstants.LONG_PRESS,
+            )
         }
         previousInTune = currentlyInTune
     }
@@ -125,7 +129,10 @@ fun TunerScreen(
 
         delay(1500)
         if (preferences.hapticEnabled) {
-            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            view.performHapticFeedback(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM
+                else HapticFeedbackConstants.LONG_PRESS,
+            )
         }
         if (isLastStep && stretchModeActive) {
             stretchPreviousCents = stretchCurrentCents

@@ -290,6 +290,12 @@ private fun StrobeMeter(state: TunerSessionState) {
         }
     }
 
+    val resources = androidx.compose.ui.platform.LocalContext.current.resources
+    @Suppress("LocalContextGetResourceValueCall")
+    val accessibility = tuningMeterAccessibility(state.measurement) { resId, args ->
+        if (args.isEmpty()) resources.getString(resId) else resources.getString(resId, *args)
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -297,7 +303,13 @@ private fun StrobeMeter(state: TunerSessionState) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(104.dp),
+                .height(104.dp)
+                .semantics {
+                    contentDescription = accessibility.contentDescription
+                    stateDescription = accessibility.stateDescription
+                    progressBarRangeInfo = ProgressBarRangeInfo(accessibility.progressCents, -50f..50f)
+                    liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                },
             contentAlignment = Alignment.Center,
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
