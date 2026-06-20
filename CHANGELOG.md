@@ -20,6 +20,7 @@
 - Added TalkBack accessibility grouping to session summary card so each string row is announced as one phrase.
 - Added contentDescription to the status dot in the tuner header for color-blind accessibility.
 - Refined A4 calibration to 0.1 Hz granularity: measure-from-live rounds to 0.1 Hz, stepper increments by 0.5 Hz, display shows decimals when non-integer.
+- Replaced pitch history timeline SnapshotStateList with a circular FloatArray buffer for O(1) per-frame updates instead of O(n) removeAt(0).
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 

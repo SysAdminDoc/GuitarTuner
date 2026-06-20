@@ -17,7 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
@@ -357,7 +357,9 @@ private const val StrobeMaxSpeed = 12f
 
 @Composable
 private fun PitchHistoryTimeline(state: TunerSessionState) {
-    val history = remember { mutableStateListOf<Float>() }
+    val buffer = remember { FloatArray(HistoryMaxSamples) }
+    val head = remember { mutableIntStateOf(0) }
+    val count = remember { mutableIntStateOf(0) }
     val cents = state.measurement.cents
     val hasDetection = state.measurement.status == TuningStatus.InTune ||
         state.measurement.status == TuningStatus.TuneUp ||
@@ -366,23 +368,30 @@ private fun PitchHistoryTimeline(state: TunerSessionState) {
 
     LaunchedEffect(cents, hasDetection) {
         if (hasDetection && cents != null) {
-            history.add(cents.coerceIn(-50.0, 50.0).toFloat())
-            while (history.size > HistoryMaxSamples) {
-                history.removeAt(0)
+            val writeIndex = (head.intValue + count.intValue) % HistoryMaxSamples
+            buffer[writeIndex] = cents.coerceIn(-50.0, 50.0).toFloat()
+            if (count.intValue < HistoryMaxSamples) {
+                count.intValue++
+            } else {
+                head.intValue = (head.intValue + 1) % HistoryMaxSamples
             }
         }
     }
 
     LaunchedEffect(state.isListening) {
-        if (!state.isListening) history.clear()
+        if (!state.isListening) {
+            head.intValue = 0
+            count.intValue = 0
+        }
     }
 
-    if (history.size < 2) return
+    if (count.intValue < 2) return
 
     val lineColor = MaterialTheme.colorScheme.primary
     val zeroColor = MaterialTheme.colorScheme.outlineVariant
 
-    val lastCents = history.lastOrNull() ?: 0f
+    val lastIndex = (head.intValue + count.intValue - 1) % HistoryMaxSamples
+    val lastCents = buffer[lastIndex]
     val trendDescription = stringResource(
         when {
             kotlin.math.abs(lastCents) <= 5f -> R.string.a11y_in_tune
@@ -390,6 +399,9 @@ private fun PitchHistoryTimeline(state: TunerSessionState) {
             else -> R.string.a11y_pitch_sharp
         },
     )
+
+    val currentHead = head.intValue
+    val currentCount = count.intValue
 
     Canvas(
         modifier = Modifier
@@ -416,10 +428,10 @@ private fun PitchHistoryTimeline(state: TunerSessionState) {
         )
 
         val path = Path()
-        val count = history.size
-        for (i in 0 until count) {
+        for (i in 0 until currentCount) {
+            val bufferIndex = (currentHead + i) % HistoryMaxSamples
             val x = left + (i.toFloat() / (HistoryMaxSamples - 1)) * width
-            val y = centerY - (history[i] / 50f) * (height / 2f)
+            val y = centerY - (buffer[bufferIndex] / 50f) * (height / 2f)
             if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
         drawPath(

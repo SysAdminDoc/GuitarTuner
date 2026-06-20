@@ -69,13 +69,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
 
 ### P3
 
-- [ ] P3 — Replace PitchHistoryTimeline mutableStateListOf with circular buffer
-  Why: `removeAt(0)` on `SnapshotStateList` is O(n) per frame at ~23 fps. A circular buffer with a fixed-size `FloatArray` and head/tail indices would be O(1).
-  Evidence: code inspection of `ui/TunerMeterPanel.kt:361`.
-  Touches: `ui/TunerMeterPanel.kt` (PitchHistoryTimeline composable).
-  Acceptance: timeline rendering unchanged; no `removeAt(0)` calls.
-  Complexity: S
-
 - [ ] P3 — Capo / transposition support
   Why: capo usage shifts all string frequencies by N semitones. Players tuning with a capo need the tuner to show target notes relative to the capo position. Multiple commercial tuners support this; no OSS Android tuner does.
   Evidence: GuitarTuna premium feature; Fender Tune community request; r/guitar threads.
