@@ -164,4 +164,7 @@
     <string name="a11y_direction_tune_down">음을 내리세요</string>
     <string name="a11y_pitch_flat">낮음</string>
     <string name="a11y_pitch_sharp">높음</string>
+    <string name="session_complete">튜닝 완료</string>
+    <string name="session_cents_value">%1$s cents</string>
+    <string name="session_dismiss">OK</string>
 </resources>

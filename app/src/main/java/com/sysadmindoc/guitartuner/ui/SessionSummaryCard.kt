@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.tuning.GuitarString
 import kotlin.math.abs
 
@@ -39,7 +41,7 @@ internal fun SessionSummaryCard(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = "Tuning complete",
+                text = stringResource(R.string.session_complete),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -58,10 +60,12 @@ internal fun SessionSummaryCard(
                     )
                     Text(
                         text = if (cents != null) {
-                            val sign = if (cents >= 0) "+" else ""
-                            "$sign${formatOneDecimal(cents)} cents"
+                            stringResource(
+                                R.string.session_cents_value,
+                                formatSignedOneDecimal(cents),
+                            )
                         } else {
-                            "--"
+                            stringResource(R.string.value_placeholder)
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = if (cents != null && abs(cents) <= 5.0) {
@@ -78,7 +82,7 @@ internal fun SessionSummaryCard(
                 shape = PanelShape,
                 contentPadding = CompactButtonPadding,
             ) {
-                Text("OK")
+                Text(stringResource(R.string.session_dismiss))
             }
         }
     }

@@ -164,4 +164,7 @@
     <string name="a11y_direction_tune_down">tune down</string>
     <string name="a11y_pitch_flat">flat</string>
     <string name="a11y_pitch_sharp">sharp</string>
+    <string name="session_complete">Tuning complete</string>
+    <string name="session_cents_value">%1$s cents</string>
+    <string name="session_dismiss">OK</string>
 </resources>

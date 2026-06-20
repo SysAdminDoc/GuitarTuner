@@ -32,7 +32,6 @@ class CustomTuningRepository(
         .map { preferences ->
             preferences[CustomTuningsJsonKey]
                 ?.let { CustomTuningJsonCodec.decode(it) }
-                ?.takeIf { it.errors.isEmpty() }
                 ?.tunings
                 ?: emptyList()
         }

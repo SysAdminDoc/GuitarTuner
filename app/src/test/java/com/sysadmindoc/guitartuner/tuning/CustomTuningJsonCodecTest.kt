@@ -42,6 +42,63 @@ class CustomTuningJsonCodecTest {
     }
 
     @Test
+    fun returnsValidTuningsAlongsideErrors() {
+        val json = """
+            {
+              "schemaVersion": 1,
+              "tunings": [
+                {
+                  "id": "custom_valid",
+                  "name": "Valid Tuning",
+                  "strings": [
+                    { "stringNumber": 1, "name": "E", "note": "E4", "frequencyHz": 329.63 }
+                  ]
+                },
+                {
+                  "id": "standard",
+                  "name": "Collision",
+                  "strings": [
+                    { "stringNumber": 1, "name": "E", "note": "E4", "frequencyHz": 329.63 }
+                  ]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val result = CustomTuningJsonCodec.decode(json)
+
+        assertEquals(1, result.tunings.size)
+        assertEquals("custom_valid", result.tunings.single().id)
+        assertTrue(result.errors.any { it.contains("cannot replace") })
+    }
+
+    @Test
+    fun ignoresUnknownJsonFields() {
+        val json = """
+            {
+              "schemaVersion": 1,
+              "futureField": "should be ignored",
+              "tunings": [
+                {
+                  "id": "custom_test",
+                  "name": "Test",
+                  "extraProperty": true,
+                  "strings": [
+                    { "stringNumber": 1, "name": "E", "note": "E4", "frequencyHz": 329.63, "color": "#ff0000" }
+                  ]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val result = CustomTuningJsonCodec.decode(json)
+
+        assertTrue(result.errors.toString(), result.errors.isEmpty())
+        assertEquals(1, result.tunings.size)
+        assertEquals("custom_test", result.tunings.single().id)
+    }
+
+    @Test
     fun decodesCustomFourStringTuning() {
         val json = """
             {

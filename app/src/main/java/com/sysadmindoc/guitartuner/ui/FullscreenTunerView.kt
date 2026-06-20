@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
@@ -82,12 +83,18 @@ internal fun FullscreenTunerView(
         ) {
             val density = LocalDensity.current
             val availableWidth = maxWidth - 48.dp
-            val noteMaxSp = with(density) { (availableWidth / 3).toSp() }
-            val noteFontSize = min(92.sp, noteMaxSp)
-            val directionMaxSp = with(density) { (availableWidth / 10).toSp() }
-            val directionFontSize = min(34.sp, directionMaxSp)
+            val availableHeight = maxHeight - 48.dp
+            val noteMaxWidthSp = with(density) { (availableWidth / 3).toSp() }
+            val noteMaxHeightSp = with(density) { (availableHeight / 4).toSp() }
+            val noteCapSp = if (noteMaxWidthSp < noteMaxHeightSp) noteMaxWidthSp else noteMaxHeightSp
+            val noteFontSize = if (noteCapSp < 92.sp) noteCapSp else 92.sp
+            val directionMaxWidthSp = with(density) { (availableWidth / 10).toSp() }
+            val directionMaxHeightSp = with(density) { (availableHeight / 8).toSp() }
+            val directionCapSp = if (directionMaxWidthSp < directionMaxHeightSp) directionMaxWidthSp else directionMaxHeightSp
+            val directionFontSize = if (directionCapSp < 34.sp) directionCapSp else 34.sp
 
             Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {

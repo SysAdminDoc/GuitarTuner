@@ -164,4 +164,7 @@
     <string name="a11y_direction_tune_down">调低</string>
     <string name="a11y_pitch_flat">偏低</string>
     <string name="a11y_pitch_sharp">偏高</string>
+    <string name="session_complete">调弦完成</string>
+    <string name="session_cents_value">%1$s 音分</string>
+    <string name="session_dismiss">确定</string>
 </resources>

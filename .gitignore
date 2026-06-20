@@ -37,5 +37,6 @@ replay_pid*.log
 # Local agent / working files
 CLAUDE.md
 CODEX_CHANGELOG.md
+Roadmap_Blocked.md
 .claude/
 *.bak

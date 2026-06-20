@@ -164,4 +164,7 @@
     <string name="a11y_direction_tune_down">baja la afinacion</string>
     <string name="a11y_pitch_flat">baja</string>
     <string name="a11y_pitch_sharp">alta</string>
+    <string name="session_complete">Afinacion completada</string>
+    <string name="session_cents_value">%1$s cents</string>
+    <string name="session_dismiss">OK</string>
 </resources>

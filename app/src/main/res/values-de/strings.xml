@@ -164,4 +164,7 @@
     <string name="a11y_direction_tune_down">tiefer stimmen</string>
     <string name="a11y_pitch_flat">tief</string>
     <string name="a11y_pitch_sharp">hoch</string>
+    <string name="session_complete">Stimmung abgeschlossen</string>
+    <string name="session_cents_value">%1$s Cent</string>
+    <string name="session_dismiss">OK</string>
 </resources>

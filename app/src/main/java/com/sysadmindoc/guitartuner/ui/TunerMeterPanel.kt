@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,7 +37,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
@@ -127,7 +125,7 @@ private fun TargetString(
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
             val density = LocalDensity.current
             val noteMaxSp = with(density) { (maxWidth / 3).toSp() }
-            val noteFontSize = min(92.sp, noteMaxSp)
+            val noteFontSize = if (noteMaxSp < 92.sp) noteMaxSp else 92.sp
             Text(
                 text = target?.scientificPitch ?: stringResource(R.string.target_auto_detect_short),
                 modifier = Modifier.fillMaxWidth(),
@@ -154,9 +152,7 @@ private fun TargetString(
                 )
                 else -> activeTuning.name
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 44.dp),
+            modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

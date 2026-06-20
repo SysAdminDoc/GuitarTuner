@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -63,9 +62,7 @@ internal fun FrequencyReadout(
                 turnDirection = measurement.turnDirection(pegTurnDirections),
                 guidedTarget = guidedTarget,
             ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 58.dp),
+            modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             color = statusColor(measurement.status),
@@ -96,7 +93,6 @@ internal fun FrequencyReadout(
             }
             Text(
                 text = sourceText,
-                modifier = Modifier.heightIn(min = 18.dp),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

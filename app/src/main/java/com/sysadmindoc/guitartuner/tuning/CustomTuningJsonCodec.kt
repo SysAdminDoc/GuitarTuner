@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 object CustomTuningJsonCodec {
     private val json = Json {
         encodeDefaults = true
-        ignoreUnknownKeys = false
+        ignoreUnknownKeys = true
         prettyPrint = true
     }
 
@@ -68,11 +68,7 @@ object CustomTuningJsonCodec {
             validateTuningDto(dto, prefix, seenIds, errors)
         }
 
-        return if (errors.isEmpty()) {
-            CustomTuningImportResult(tunings = tunings, errors = emptyList())
-        } else {
-            CustomTuningImportResult(tunings = emptyList(), errors = errors)
-        }
+        return CustomTuningImportResult(tunings = tunings, errors = errors)
     }
 
     private fun validateTuningDto(

@@ -1,5 +1,15 @@
 # Changelog
 
+## GuitarTuner v0.1.0 (audit) - 2026-06-19
+
+- Fixed forward-compatible JSON imports: set `ignoreUnknownKeys = true` so tuning files exported by future app versions with extra fields can still be imported by older versions.
+- Fixed silent custom tuning data loss: when stored tuning JSON contains a mix of valid and invalid entries, valid tunings now load successfully instead of all being silently dropped.
+- Added session summary string translations for de/es/fr/ja/ko/pt/zh-CN, completing 167/167 strings in all 8 locales.
+- Localized session summary card text to use string resources instead of hardcoded English.
+- Fixed fullscreen view font sizing to cap by both width and height, preventing overflow on small screens.
+- Removed fixed minimum height constraints from meter panel and readout text to prevent blank space on compact screens.
+- Moved blocked roadmap items to Roadmap_Blocked.md to keep ROADMAP.md actionable-only.
+
 ## GuitarTuner v0.1.0 - 2026-06-15
 
 - Version bump to v0.1.0, reflecting feature-complete MVP status.

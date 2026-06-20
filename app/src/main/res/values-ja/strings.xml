@@ -164,4 +164,7 @@
     <string name="a11y_direction_tune_down">音を下げる</string>
     <string name="a11y_pitch_flat">低い</string>
     <string name="a11y_pitch_sharp">高い</string>
+    <string name="session_complete">チューニング完了</string>
+    <string name="session_cents_value">%1$s セント</string>
+    <string name="session_dismiss">OK</string>
 </resources>
