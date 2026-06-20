@@ -177,6 +177,8 @@
     <string name="source_unprocessed">Unprocessed</string>
     <string name="source_default">Android default</string>
     <string name="source_generic">Source %1$d</string>
+    <string name="setting_left_handed">Left-handed</string>
+    <string name="setting_left_handed_helper">Reverse the string order in guided mode.</string>
     <string name="shortcut_quick_tune">Quick tune</string>
     <string name="shortcut_quick_tune_long">Start tuning immediately</string>
     <string name="session_complete">Tuning complete</string>

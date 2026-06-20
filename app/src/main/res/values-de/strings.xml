@@ -177,6 +177,8 @@
     <string name="source_unprocessed">Unverarbeitet</string>
     <string name="source_default">Android-Standard</string>
     <string name="source_generic">Quelle %1$d</string>
+    <string name="setting_left_handed">Linkshaendig</string>
+    <string name="setting_left_handed_helper">Saitenreihenfolge im gefuehrten Modus umkehren.</string>
     <string name="shortcut_quick_tune">Schnell stimmen</string>
     <string name="shortcut_quick_tune_long">Sofort mit dem Stimmen beginnen</string>
     <string name="session_complete">Stimmung abgeschlossen</string>

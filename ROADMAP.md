@@ -67,20 +67,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: setting capo to fret 2 shifts all target frequencies up 2 semitones; chromatic mode shows transposed note names.
   Complexity: M
 
-- [ ] P3 — Left-handed instrument layout indicator
-  Why: beginner left-handed players may be confused by string numbering in guided mode. A simple toggle to mirror the guided string display would improve onboarding.
-  Evidence: Simply Tune by Fender offers left-handed diagrams; community request on beginner forums.
-  Touches: `ui/TunerModeSettings.kt` (guided string display), new preference.
-  Acceptance: guided mode shows strings in reverse visual order when left-handed toggle is on; tuning logic unchanged.
-  Complexity: S
-
-- [ ] P3 — SBOM generation for supply chain transparency
-  Why: privacy-conscious users and F-Droid reviewers value a machine-readable bill of materials. CycloneDX Gradle plugin generates one at build time.
-  Evidence: F-Droid reproducible build requirements; CycloneDX Gradle plugin.
-  Touches: `app/build.gradle.kts` (add `org.cyclonedx.bom` plugin), CI workflow.
-  Acceptance: `./gradlew cyclonedxBom` produces `build/reports/bom.json`.
-  Complexity: S
-
 ## MVP Acceptance Criteria
 
 - The app can tune standard acoustic guitar strings from E2 through E4.

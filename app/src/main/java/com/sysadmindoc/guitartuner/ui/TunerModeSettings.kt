@@ -247,5 +247,6 @@ private fun GuidedModeControls(
         strings = activeTuning.strings,
         guidedStringNumber = guidedStringNumber,
         onGuidedStringSelected = onGuidedStringSelected,
+        reversed = preferences.leftHanded,
     )
 }

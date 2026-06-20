@@ -177,6 +177,8 @@
     <string name="source_unprocessed">未处理</string>
     <string name="source_default">Android 默认</string>
     <string name="source_generic">源 %1$d</string>
+    <string name="setting_left_handed">左手</string>
+    <string name="setting_left_handed_helper">在引导模式中反转琴弦顺序。</string>
     <string name="shortcut_quick_tune">快速调弦</string>
     <string name="shortcut_quick_tune_long">立即开始调弦</string>
     <string name="session_complete">调弦完成</string>

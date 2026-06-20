@@ -353,8 +353,10 @@ internal fun GuidedStringGrid(
     strings: List<GuitarString>,
     guidedStringNumber: Int,
     onGuidedStringSelected: (Int) -> Unit,
+    reversed: Boolean = false,
 ) {
-    for (row in strings.chunked(3)) {
+    val ordered = if (reversed) strings.reversed() else strings
+    for (row in ordered.chunked(3)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

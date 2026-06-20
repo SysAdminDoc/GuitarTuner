@@ -177,6 +177,8 @@
     <string name="source_unprocessed">Nao processado</string>
     <string name="source_default">Android padrao</string>
     <string name="source_generic">Fonte %1$d</string>
+    <string name="setting_left_handed">Canhoto</string>
+    <string name="setting_left_handed_helper">Inverter a ordem das cordas no modo guiado.</string>
     <string name="shortcut_quick_tune">Afinar rapido</string>
     <string name="shortcut_quick_tune_long">Comecar a afinar imediatamente</string>
     <string name="session_complete">Afinacao concluida</string>

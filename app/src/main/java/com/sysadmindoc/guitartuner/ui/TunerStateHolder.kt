@@ -77,6 +77,10 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setNoiseGateRms(rms) }
     }
 
+    fun setLeftHanded(enabled: Boolean) {
+        scope.launch { preferencesRepository.setLeftHanded(enabled) }
+    }
+
     fun setPegTurnDirection(stringNumber: Int, direction: PegTurnDirection) {
         scope.launch { preferencesRepository.setPegTurnDirection(stringNumber, direction) }
     }

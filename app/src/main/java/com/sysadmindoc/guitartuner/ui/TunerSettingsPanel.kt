@@ -35,6 +35,7 @@ internal fun TunerSettingsPanel(
     onHapticEnabledChanged: (Boolean) -> Unit,
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
+    onLeftHandedChanged: (Boolean) -> Unit,
     onMeterStyleSelected: (MeterStyle) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
@@ -81,6 +82,7 @@ internal fun TunerSettingsPanel(
             onHapticEnabledChanged = onHapticEnabledChanged,
             onAutoAdvanceGuidedChanged = onAutoAdvanceGuidedChanged,
             onSpokenFeedbackChanged = onSpokenFeedbackChanged,
+            onLeftHandedChanged = onLeftHandedChanged,
             onMeterStyleSelected = onMeterStyleSelected,
         )
         PrecisionSection(

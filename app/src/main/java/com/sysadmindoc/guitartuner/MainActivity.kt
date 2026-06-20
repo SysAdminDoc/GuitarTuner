@@ -276,6 +276,7 @@ private fun TunerRoute(quickTune: Boolean = false) {
                 onHapticEnabledChanged = { enabled -> stateHolder.setHapticEnabled(enabled) },
                 onAutoAdvanceGuidedChanged = { enabled -> stateHolder.setAutoAdvanceGuided(enabled) },
                 onSpokenFeedbackChanged = { enabled -> stateHolder.setSpokenFeedback(enabled) },
+                onLeftHandedChanged = { enabled -> stateHolder.setLeftHanded(enabled) },
                 onMeterStyleSelected = { style -> stateHolder.setMeterStyle(style) },
                 onMeasureA4 = {
                     val measured = TunerStateHolder.measureA4FromLive(

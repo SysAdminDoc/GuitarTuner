@@ -177,6 +177,8 @@
     <string name="source_unprocessed">Non traite</string>
     <string name="source_default">Android par defaut</string>
     <string name="source_generic">Source %1$d</string>
+    <string name="setting_left_handed">Gaucher</string>
+    <string name="setting_left_handed_helper">Inverser l\'ordre des cordes en mode guide.</string>
     <string name="shortcut_quick_tune">Accordage rapide</string>
     <string name="shortcut_quick_tune_long">Commencer a accorder immediatement</string>
     <string name="session_complete">Accordage termine</string>

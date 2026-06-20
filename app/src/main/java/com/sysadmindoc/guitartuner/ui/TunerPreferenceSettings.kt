@@ -30,6 +30,7 @@ internal fun DefaultsSection(
     onHapticEnabledChanged: (Boolean) -> Unit,
     onAutoAdvanceGuidedChanged: (Boolean) -> Unit,
     onSpokenFeedbackChanged: (Boolean) -> Unit,
+    onLeftHandedChanged: (Boolean) -> Unit,
     onMeterStyleSelected: (MeterStyle) -> Unit,
 ) {
     SettingsSection(
@@ -93,6 +94,12 @@ internal fun DefaultsSection(
             helper = stringResource(R.string.setting_spoken_feedback_helper),
             checked = preferences.spokenFeedback,
             onCheckedChange = onSpokenFeedbackChanged,
+        )
+        ToggleSettingRow(
+            label = stringResource(R.string.setting_left_handed),
+            helper = stringResource(R.string.setting_left_handed_helper),
+            checked = preferences.leftHanded,
+            onCheckedChange = onLeftHandedChanged,
         )
         Row(
             modifier = Modifier.fillMaxWidth(),

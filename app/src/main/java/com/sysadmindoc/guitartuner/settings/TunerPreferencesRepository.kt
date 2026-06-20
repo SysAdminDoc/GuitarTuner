@@ -50,6 +50,7 @@ class TunerPreferencesRepository(
                 centsTolerance = storedPreferences[CentsToleranceKey].sanitizeCentsTolerance(),
                 noiseGateRms = storedPreferences[NoiseGateRmsKey].sanitizeNoiseGateRms(),
                 pegTurnDirections = decodePegTurnDirections(storedPreferences[PegDirectionsKey]),
+                leftHanded = storedPreferences[LeftHandedKey] ?: false,
             )
         }
 
@@ -129,6 +130,12 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setLeftHanded(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[LeftHandedKey] = enabled
+        }
+    }
+
     suspend fun setPegTurnDirection(
         stringNumber: Int,
         direction: PegTurnDirection,
@@ -172,5 +179,6 @@ class TunerPreferencesRepository(
         val CentsToleranceKey = doublePreferencesKey("cents_tolerance")
         val NoiseGateRmsKey = doublePreferencesKey("noise_gate_rms")
         val PegDirectionsKey = stringPreferencesKey("peg_directions")
+        val LeftHandedKey = booleanPreferencesKey("left_handed")
     }
 }
