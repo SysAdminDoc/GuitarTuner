@@ -46,13 +46,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: `differenceFunction` uses FFT; unit tests pass; CPU usage measurably lower on a Snapdragon 6xx device.
   Complexity: M
 
-- [ ] P2 — Add PitchHistoryTimeline accessibility annotation
-  Why: `PitchHistoryTimeline` Canvas has no semantics — screenreader users get no information from the pitch history graph.
-  Evidence: `ui/TunerMeterPanel.kt:350-410` — Canvas has no `semantics` block.
-  Touches: `ui/TunerMeterPanel.kt`.
-  Acceptance: TalkBack announces a summary (e.g., "Pitch history: trending toward in tune") when timeline is visible.
-  Complexity: S
-
 - [ ] P2 — Solfege / international note naming option
   Why: non-English markets (Romance languages, East Asia) expect Do/Re/Mi/Fa/Sol/La/Si notation. No Android tuner app offers this as a setting. billthefarmer/tuner offers it but with no localization-aware toggle.
   Evidence: billthefarmer/tuner solfege support; Moekadu uses scientific pitch only; community requests on r/guitar from non-English speakers.
@@ -66,13 +59,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Touches: new `ui/TuningEditorScreen.kt`, `tuning/CustomTuningJsonCodec.kt`, `settings/CustomTuningRepository.kt`.
   Acceptance: user can create, edit, and delete custom tunings from within the app without JSON knowledge.
   Complexity: L
-
-- [ ] P2 — App shortcut to start tuning immediately
-  Why: tuner is a 30-second utility — every tap between launch and listening is friction. An app shortcut (long-press launcher icon -> "Quick Tune") would start listening immediately.
-  Evidence: Android Static Shortcuts API (API 25+); GuitarTuna offers this.
-  Touches: `AndroidManifest.xml` (shortcut XML), `MainActivity.kt` (intent handling).
-  Acceptance: long-press launcher icon shows "Quick Tune" shortcut; tapping it launches directly to listening mode.
-  Complexity: S
 
 - [ ] P2 — Alternate-tuning WAV fixture tests
   Why: Drop D, Open G, DADGAD, bass, and ukulele tunings have zero audio fixture test coverage. The analyzer is tested only against standard guitar WAVs. A wrong-string detection bug in an alternate tuning would be invisible.

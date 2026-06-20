@@ -177,6 +177,8 @@
     <string name="source_unprocessed">미처리</string>
     <string name="source_default">Android 기본</string>
     <string name="source_generic">소스 %1$d</string>
+    <string name="shortcut_quick_tune">빠른 튜닝</string>
+    <string name="shortcut_quick_tune_long">바로 튜닝 시작</string>
     <string name="session_complete">튜닝 완료</string>
     <string name="session_cents_value">%1$s cents</string>
     <string name="session_dismiss">OK</string>

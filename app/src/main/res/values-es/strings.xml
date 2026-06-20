@@ -177,6 +177,8 @@
     <string name="source_unprocessed">Sin procesar</string>
     <string name="source_default">Android predeterminado</string>
     <string name="source_generic">Fuente %1$d</string>
+    <string name="shortcut_quick_tune">Afinar rapido</string>
+    <string name="shortcut_quick_tune_long">Comenzar a afinar de inmediato</string>
     <string name="session_complete">Afinacion completada</string>
     <string name="session_cents_value">%1$s cents</string>
     <string name="session_dismiss">OK</string>

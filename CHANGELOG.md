@@ -15,6 +15,8 @@
 - Moved device type and audio source labels to string resources with translations in all 8 locales so mic picker and diagnostics display in the device language.
 - Removed dead `sampleRate` constructor parameter from PhaseRefiner; `refine()` now requires `sampleRate` as an explicit parameter at every call site.
 - Extracted duplicated stretch-mode toggle logic in TunerScreen into a shared lambda.
+- Added pitch history timeline accessibility annotation so TalkBack announces the tuning trend.
+- Added "Quick tune" app shortcut (long-press launcher icon) that starts listening immediately, localized in all 8 languages.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 

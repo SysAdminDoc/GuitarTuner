@@ -177,6 +177,8 @@
     <string name="source_unprocessed">Non traite</string>
     <string name="source_default">Android par defaut</string>
     <string name="source_generic">Source %1$d</string>
+    <string name="shortcut_quick_tune">Accordage rapide</string>
+    <string name="shortcut_quick_tune_long">Commencer a accorder immediatement</string>
     <string name="session_complete">Accordage termine</string>
     <string name="session_cents_value">%1$s cents</string>
     <string name="session_dismiss">OK</string>

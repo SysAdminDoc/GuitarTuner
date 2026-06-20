@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="quick_tune"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_quick_tune"
+        android:shortcutLongLabel="@string/shortcut_quick_tune_long">
+        <intent
+            android:action="com.sysadmindoc.guitartuner.QUICK_TUNE"
+            android:targetPackage="com.sysadmindoc.guitartuner"
+            android:targetClass="com.sysadmindoc.guitartuner.MainActivity" />
+    </shortcut>
+</shortcuts>

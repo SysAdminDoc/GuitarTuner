@@ -382,10 +382,22 @@ private fun PitchHistoryTimeline(state: TunerSessionState) {
     val lineColor = MaterialTheme.colorScheme.primary
     val zeroColor = MaterialTheme.colorScheme.outlineVariant
 
+    val lastCents = history.lastOrNull() ?: 0f
+    val trendDescription = stringResource(
+        when {
+            kotlin.math.abs(lastCents) <= 5f -> R.string.a11y_in_tune
+            lastCents < 0f -> R.string.a11y_pitch_flat
+            else -> R.string.a11y_pitch_sharp
+        },
+    )
+
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(48.dp)
+            .semantics {
+                contentDescription = trendDescription
+            },
     ) {
         val pad = 8.dp.toPx()
         val left = pad

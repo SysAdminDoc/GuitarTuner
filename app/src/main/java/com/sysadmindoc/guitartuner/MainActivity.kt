@@ -51,14 +51,19 @@ import kotlinx.coroutines.withContext
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val quickTune = intent?.action == QuickTuneAction
         setContent {
-            TunerRoute()
+            TunerRoute(quickTune = quickTune)
         }
+    }
+
+    companion object {
+        const val QuickTuneAction = "com.sysadmindoc.guitartuner.QUICK_TUNE"
     }
 }
 
 @Composable
-private fun TunerRoute() {
+private fun TunerRoute(quickTune: Boolean = false) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
@@ -254,6 +259,15 @@ private fun TunerRoute() {
             controller.close()
             tonePlayer.stop()
             spokenFeedback.close()
+        }
+    }
+
+    LaunchedEffect(quickTune) {
+        if (!quickTune) return@LaunchedEffect
+        if (hasAudioPermission) {
+            controller.start()
+        } else {
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
     }
 
