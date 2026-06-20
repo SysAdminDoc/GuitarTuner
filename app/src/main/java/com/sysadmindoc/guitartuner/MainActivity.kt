@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -18,29 +17,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sysadmindoc.guitartuner.audio.AudioCaptureController
-import com.sysadmindoc.guitartuner.audio.SpokenFeedbackController
-import com.sysadmindoc.guitartuner.audio.TonePlayer
-import com.sysadmindoc.guitartuner.settings.CustomTuningRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
-import com.sysadmindoc.guitartuner.settings.TunerPreferencesRepository
-import com.sysadmindoc.guitartuner.settings.tunerPreferencesDataStore
-import com.sysadmindoc.guitartuner.tuning.CustomTuningJsonCodec
 import com.sysadmindoc.guitartuner.tuning.GuitarTunings
 import com.sysadmindoc.guitartuner.tuning.TuningMode
 import com.sysadmindoc.guitartuner.tuning.TuningStatus
-import com.sysadmindoc.guitartuner.tuning.TuningTargetSelection
 import com.sysadmindoc.guitartuner.ui.PrimaryAction
 import com.sysadmindoc.guitartuner.ui.PrivacyScreen
 import com.sysadmindoc.guitartuner.ui.TunerScreen
 import com.sysadmindoc.guitartuner.ui.TunerStateHolder
+import com.sysadmindoc.guitartuner.ui.TunerViewModel
 import com.sysadmindoc.guitartuner.ui.TuningFileMessage
 import com.sysadmindoc.guitartuner.ui.theme.GuitarTunerTheme
 import java.io.IOException
@@ -64,41 +56,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun TunerRoute(quickTune: Boolean = false) {
+    val vm: TunerViewModel = viewModel()
     val context = androidx.compose.ui.platform.LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val scope = rememberCoroutineScope()
-    val controller = remember(scope) {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val supportsUnprocessed = audioManager.getProperty(
-            AudioManager.PROPERTY_SUPPORT_AUDIO_SOURCE_UNPROCESSED,
-        ) == "true"
-        AudioCaptureController(
-            scope = scope,
-            supportsUnprocessedSource = supportsUnprocessed,
-            audioManager = audioManager,
-            context = context,
-        )
-    }
-    val tonePlayer = remember { TonePlayer() }
-    val spokenFeedback = remember(context) { SpokenFeedbackController(context) }
+    val controller = vm.controller
+    val stateHolder = vm.stateHolder
+    val tonePlayer = vm.tonePlayer
+    val spokenFeedback = vm.spokenFeedback
+
     var showPrivacy by rememberSaveable { mutableStateOf(false) }
-    var selectedTuningId by rememberSaveable { mutableStateOf<String?>(null) }
-    var tuningMode by rememberSaveable { mutableStateOf(TuningMode.Auto) }
-    var guidedStringNumber by rememberSaveable { mutableStateOf(6) }
     var tuningFileMessage by remember { mutableStateOf<TuningFileMessage?>(null) }
-    val preferencesRepository = remember(context.applicationContext) {
-        TunerPreferencesRepository(context.applicationContext.tunerPreferencesDataStore)
-    }
-    val customTuningRepository = remember(context.applicationContext) {
-        CustomTuningRepository(context.applicationContext.tunerPreferencesDataStore)
-    }
-    val stateHolder = remember(preferencesRepository, customTuningRepository, scope) {
-        TunerStateHolder(preferencesRepository, customTuningRepository, scope)
-    }
-    val preferences by preferencesRepository.preferences.collectAsStateWithLifecycle(
+
+    val preferences by vm.preferencesRepository.preferences.collectAsStateWithLifecycle(
         initialValue = StoredTunerPreferences(),
     )
-    val customTunings by customTuningRepository.customTunings.collectAsStateWithLifecycle(
+    val customTunings by vm.customTuningRepository.customTunings.collectAsStateWithLifecycle(
         initialValue = emptyList(),
     )
     val uncalibratedTuningCatalog = remember(customTunings) {
@@ -107,37 +79,30 @@ private fun TunerRoute(quickTune: Boolean = false) {
     val tuningCatalog = remember(customTunings, preferences.a4Hz) {
         GuitarTunings.catalog(customTunings, preferences.a4Hz)
     }
-    var selectedDeviceId by rememberSaveable { mutableStateOf<Int?>(null) }
     val inputDevices = remember(controller) { controller.availableInputDevices() }
     val startupTuningId = preferences.startupTuningId()
-    val activeTuning = remember(tuningCatalog, selectedTuningId, startupTuningId) {
-        tuningCatalog.find(selectedTuningId ?: startupTuningId)
+    val activeTuning = remember(tuningCatalog, vm.selectedTuningId, startupTuningId) {
+        tuningCatalog.find(vm.selectedTuningId ?: startupTuningId)
     }
     val state by controller.state.collectAsStateWithLifecycle()
     var hasAudioPermission by remember { mutableStateOf(context.hasAudioPermission()) }
 
     LaunchedEffect(startupTuningId, tuningCatalog) {
-        if (selectedTuningId == null || tuningCatalog.tunings.none { it.id == selectedTuningId }) {
-            selectedTuningId = startupTuningId
+        if (vm.selectedTuningId == null || tuningCatalog.tunings.none { it.id == vm.selectedTuningId }) {
+            vm.selectedTuningId = startupTuningId
         }
     }
 
     LaunchedEffect(activeTuning) {
         controller.setTuning(activeTuning.strings, activeTuning.minFrequencyHz, activeTuning.maxFrequencyHz)
-        preferencesRepository.rememberLastUsedTuning(activeTuning.id)
-        if (activeTuning.strings.none { it.stringNumber == guidedStringNumber }) {
-            guidedStringNumber = activeTuning.strings.firstOrNull()?.stringNumber ?: guidedStringNumber
+        vm.preferencesRepository.rememberLastUsedTuning(activeTuning.id)
+        if (activeTuning.strings.none { it.stringNumber == vm.guidedStringNumber }) {
+            vm.guidedStringNumber = activeTuning.strings.firstOrNull()?.stringNumber ?: vm.guidedStringNumber
         }
     }
 
-    LaunchedEffect(activeTuning.id, tuningMode, guidedStringNumber) {
-        controller.setTargetSelection(
-            when (tuningMode) {
-                TuningMode.Auto -> TuningTargetSelection.auto()
-                TuningMode.Guided -> TuningTargetSelection.guided(guidedStringNumber)
-                TuningMode.Chromatic -> TuningTargetSelection.chromatic()
-            },
-        )
+    LaunchedEffect(activeTuning.id, vm.tuningMode, vm.guidedStringNumber) {
+        vm.updateTargetSelection()
     }
 
     LaunchedEffect(preferences.a4Hz) {
@@ -177,6 +142,8 @@ private fun TunerRoute(quickTune: Boolean = false) {
         }
         spokenFeedback.speak(text)
     }
+
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
@@ -233,7 +200,7 @@ private fun TunerRoute(quickTune: Boolean = false) {
         }
     }
 
-    DisposableEffect(lifecycleOwner, controller, context) {
+    DisposableEffect(lifecycleOwner) {
         val lifecycle = lifecycleOwner.lifecycle
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -256,9 +223,6 @@ private fun TunerRoute(quickTune: Boolean = false) {
         lifecycle.addObserver(observer)
         onDispose {
             lifecycle.removeObserver(observer)
-            controller.close()
-            tonePlayer.stop()
-            spokenFeedback.close()
         }
     }
 
@@ -281,8 +245,8 @@ private fun TunerRoute(quickTune: Boolean = false) {
                 permissionPermanentlyDenied = permanentlyDenied,
                 activeTuning = activeTuning,
                 tunings = tuningCatalog.tunings,
-                tuningMode = tuningMode,
-                guidedStringNumber = guidedStringNumber,
+                tuningMode = vm.tuningMode,
+                guidedStringNumber = vm.guidedStringNumber,
                 preferences = preferences,
                 onPrimaryAction = {
                     when (TunerStateHolder.determinePrimaryAction(
@@ -301,10 +265,10 @@ private fun TunerRoute(quickTune: Boolean = false) {
                         PrimaryAction.Start -> controller.start()
                     }
                 },
-                onTuningModeSelected = { mode -> tuningMode = mode },
-                onGuidedStringSelected = { stringNumber -> guidedStringNumber = stringNumber },
+                onTuningModeSelected = { mode -> vm.tuningMode = mode },
+                onGuidedStringSelected = { stringNumber -> vm.guidedStringNumber = stringNumber },
                 onStartupModeSelected = { mode ->
-                    selectedTuningId = stateHolder.setStartupMode(mode, preferences)
+                    vm.selectedTuningId = stateHolder.setStartupMode(mode, preferences)
                 },
                 onSetFavoriteTuning = { stateHolder.setFavoriteTuning(activeTuning.id) },
                 onThemeModeSelected = { mode -> stateHolder.setThemeMode(mode) },
@@ -326,7 +290,7 @@ private fun TunerRoute(quickTune: Boolean = false) {
                     stateHolder.setPegTurnDirection(stringNumber, direction)
                 },
                 onTuningSelected = { tuning ->
-                    selectedTuningId = tuning.id
+                    vm.selectedTuningId = tuning.id
                     stateHolder.selectTuning(tuning)
                 },
                 onImportTunings = {
@@ -336,9 +300,9 @@ private fun TunerRoute(quickTune: Boolean = false) {
                     exportLauncher.launch("guitartuner-custom-tunings.json")
                 },
                 inputDevices = inputDevices,
-                selectedDeviceId = selectedDeviceId,
+                selectedDeviceId = vm.selectedDeviceId,
                 onInputDeviceSelected = { deviceId ->
-                    selectedDeviceId = deviceId
+                    vm.selectedDeviceId = deviceId
                     controller.setPreferredDevice(deviceId)
                 },
                 onPlayTone = { frequencyHz ->

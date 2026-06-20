@@ -21,6 +21,7 @@
 - Added contentDescription to the status dot in the tuner header for color-blind accessibility.
 - Refined A4 calibration to 0.1 Hz granularity: measure-from-live rounds to 0.1 Hz, stepper increments by 0.5 Hz, display shows decimals when non-integer.
 - Replaced pitch history timeline SnapshotStateList with a circular FloatArray buffer for O(1) per-frame updates instead of O(n) removeAt(0).
+- Extracted TunerViewModel from TunerRoute: AudioCaptureController, TonePlayer, SpokenFeedbackController, and repositories now survive configuration changes. Tuning mode, guided string, and selected tuning persist across process death via SavedStateHandle.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 

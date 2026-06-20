@@ -28,15 +28,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
 
 ## Research-Driven Additions (2026-06-19)
 
-### P1
-
-- [ ] P1 — Extract ViewModel from TunerRoute
-  Why: `AudioCaptureController` + `TunerStateHolder` created via `remember` in `TunerRoute` (~340 lines of DI/plumbing) is not lifecycle-safe across process death. Configuration changes lose state. Prerequisite for v1.0 stability.
-  Evidence: `MainActivity.kt` — all state is `remember`-based with no SavedStateHandle or ViewModel.
-  Touches: new `TunerViewModel.kt`, refactor `MainActivity.kt` TunerRoute to delegate to ViewModel.
-  Acceptance: process death and recreation (via developer options "Don't keep activities") preserves tuning mode, calibration, and listening state.
-  Complexity: M
-
 ### P2
 
 - [ ] P2 — FFT-accelerated YIN difference function
