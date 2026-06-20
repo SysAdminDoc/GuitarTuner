@@ -44,13 +44,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: user can create, edit, and delete custom tunings from within the app without JSON knowledge.
   Complexity: L
 
-- [ ] P2 — Alternate-tuning WAV fixture tests
-  Why: Drop D, Open G, DADGAD, bass, and ukulele tunings have zero audio fixture test coverage. The analyzer is tested only against standard guitar WAVs. A wrong-string detection bug in an alternate tuning would be invisible.
-  Evidence: existing test coverage in `guitar-fixtures/` covers only standard 6-string; Moekadu #114 wrong-string latch in alternate tunings.
-  Touches: `test/resources/guitar-fixtures/` (new WAV files for Drop D low-D, Open G low-D, bass E1, ukulele G4), new test classes.
-  Acceptance: each alternate tuning has at least one WAV fixture with golden-target regression coverage.
-  Complexity: M
-
 ### P3
 
 - [ ] P3 — Capo / transposition support

@@ -25,6 +25,7 @@
 - Added left-handed instrument layout toggle: reverses the guided string grid order, persisted in preferences, localized in all 8 languages.
 - Added CycloneDX SBOM generation plugin (`./gradlew :app:cyclonedxBom` produces a machine-readable bill of materials).
 - Replaced O(N^2) time-domain YIN difference function with FFT-accelerated autocorrelation (O(N log N)), reducing CPU cost ~10x per audio frame on the pitch detection hot path. All existing pitch detection tests pass unchanged.
+- Added alternate-tuning detection tests: 10 new tests covering Drop D, Open G, DADGAD, Half-step down, bass standard, and ukulele standard with synthetic guitar-like signals.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 
