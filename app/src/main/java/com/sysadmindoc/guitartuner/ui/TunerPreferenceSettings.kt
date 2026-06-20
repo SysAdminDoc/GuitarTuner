@@ -127,13 +127,13 @@ internal fun PrecisionSection(
     ) {
         NumericSettingRow(
             label = stringResource(R.string.setting_a4_calibration),
-            value = formatWholeHz(preferences.a4Hz),
-            decreaseLabel = "-1",
-            increaseLabel = "+1",
+            value = formatA4Hz(preferences.a4Hz),
+            decreaseLabel = "-0.5",
+            increaseLabel = "+0.5",
             canDecrease = preferences.a4Hz > 400.0,
             canIncrease = preferences.a4Hz < 480.0,
-            onDecrease = { onA4CalibrationChanged((preferences.a4Hz - 1.0).coerceAtLeast(400.0)) },
-            onIncrease = { onA4CalibrationChanged((preferences.a4Hz + 1.0).coerceAtMost(480.0)) },
+            onDecrease = { onA4CalibrationChanged((preferences.a4Hz - 0.5).coerceAtLeast(400.0)) },
+            onIncrease = { onA4CalibrationChanged((preferences.a4Hz + 0.5).coerceAtMost(480.0)) },
         )
         OutlinedButton(
             onClick = onMeasureA4,

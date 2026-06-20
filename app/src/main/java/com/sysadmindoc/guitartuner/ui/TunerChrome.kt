@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,7 @@ internal fun TunerHeader(
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.SemiBold,
         )
+        val currentStatus = statusText(state, hasAudioPermission)
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -55,10 +58,11 @@ internal fun TunerHeader(
                     .background(
                         color = statusAccentColor(state, hasAudioPermission),
                         shape = RoundedCornerShape(2.dp),
-                    ),
+                    )
+                    .semantics { contentDescription = currentStatus },
             )
             Text(
-                text = statusText(state, hasAudioPermission),
+                text = currentStatus,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

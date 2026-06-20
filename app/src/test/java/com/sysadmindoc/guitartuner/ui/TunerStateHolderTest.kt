@@ -67,9 +67,9 @@ class TunerStateHolderTest {
     }
 
     @Test
-    fun measureA4_validFrequencyAndConfidence_returnsRounded() {
-        val result = TunerStateHolder.measureA4FromLive(441.7, 0.95)
-        assertEquals(442.0, result!!, 0.01)
+    fun measureA4_validFrequencyAndConfidence_returnsRoundedToTenth() {
+        val result = TunerStateHolder.measureA4FromLive(441.73, 0.95)
+        assertEquals(441.7, result!!, 0.01)
     }
 
     @Test

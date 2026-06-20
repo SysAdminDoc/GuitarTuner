@@ -316,8 +316,9 @@ internal fun formatOneDecimal(value: Double): String =
 internal fun formatSignedOneDecimal(value: Double): String =
     String.format(Locale.US, "%+.1f", value)
 
-internal fun formatWholeHz(value: Double): String =
-    String.format(Locale.US, "%.0f Hz", value)
+internal fun formatA4Hz(value: Double): String =
+    if (value == kotlin.math.floor(value)) String.format(Locale.US, "%.0f Hz", value)
+    else String.format(Locale.US, "%.1f Hz", value)
 
 internal fun formatWholeNumber(value: Double): String =
     String.format(Locale.US, "%.0f", value)

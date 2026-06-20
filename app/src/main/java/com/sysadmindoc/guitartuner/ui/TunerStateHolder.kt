@@ -117,7 +117,7 @@ class TunerStateHolder(
 
         fun measureA4FromLive(frequencyHz: Double?, confidence: Double): Double? {
             if (frequencyHz == null || frequencyHz !in 400.0..480.0 || confidence < 0.8) return null
-            return kotlin.math.round(frequencyHz).coerceIn(400.0, 480.0)
+            return (kotlin.math.round(frequencyHz * 10.0) / 10.0).coerceIn(400.0, 480.0)
         }
     }
 }

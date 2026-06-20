@@ -90,32 +90,11 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: guided mode shows strings in reverse visual order when left-handed toggle is on; tuning logic unchanged.
   Complexity: S
 
-- [ ] P3 — SessionSummaryCard accessibility grouping
-  Why: `SessionSummaryCard` uses plain `Text` items with no `semantics(mergeDescendants = true)` — TalkBack announces each value separately ("6", "E2", "minus 2 cents") instead of as a combined row.
-  Evidence: code inspection of `ui/SessionSummaryCard.kt`.
-  Touches: `ui/SessionSummaryCard.kt`.
-  Acceptance: TalkBack announces each string row as a single phrase (e.g., "String 6, E2, minus 2 cents").
-  Complexity: S
-
-- [ ] P3 — TunerHeader status dot contentDescription
-  Why: the colored status dot (8dp `Box` with background color) has no `contentDescription` — color-blind users have no semantic signal from it.
-  Evidence: code inspection of `ui/TunerChrome.kt`.
-  Touches: `ui/TunerChrome.kt`.
-  Acceptance: TalkBack announces the status dot state (e.g., "Listening", "In tune", "Error").
-  Complexity: S
-
 - [ ] P3 — SBOM generation for supply chain transparency
   Why: privacy-conscious users and F-Droid reviewers value a machine-readable bill of materials. CycloneDX Gradle plugin generates one at build time.
   Evidence: F-Droid reproducible build requirements; CycloneDX Gradle plugin.
   Touches: `app/build.gradle.kts` (add `org.cyclonedx.bom` plugin), CI workflow.
   Acceptance: `./gradlew cyclonedxBom` produces `build/reports/bom.json`.
-  Complexity: S
-
-- [ ] P3 — A4 calibration at 0.1 Hz granularity
-  Why: `measureA4FromLive()` rounds to the nearest integer Hz (`kotlin.math.round(frequencyHz)`). A4 calibration at 1 Hz resolution is coarse when the phase refiner can deliver sub-cent accuracy. The 432-445 Hz range benefits from 0.1 Hz steps.
-  Evidence: Peterson iStroboSoft offers 0.1 Hz calibration; Moekadu #100 requests calibration in cents.
-  Touches: `ui/TunerStateHolder.kt` (measureA4FromLive), `settings/TunerPreferencesRepository.kt`, calibration UI stepper.
-  Acceptance: A4 calibration accepts and persists values like 432.0, 440.5, 443.7.
   Complexity: S
 
 ## MVP Acceptance Criteria

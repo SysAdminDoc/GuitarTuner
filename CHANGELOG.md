@@ -17,6 +17,9 @@
 - Extracted duplicated stretch-mode toggle logic in TunerScreen into a shared lambda.
 - Added pitch history timeline accessibility annotation so TalkBack announces the tuning trend.
 - Added "Quick tune" app shortcut (long-press launcher icon) that starts listening immediately, localized in all 8 languages.
+- Added TalkBack accessibility grouping to session summary card so each string row is announced as one phrase.
+- Added contentDescription to the status dot in the tuner header for color-blind accessibility.
+- Refined A4 calibration to 0.1 Hz granularity: measure-from-live rounds to 0.1 Hz, stepper increments by 0.5 Hz, display shows decimals when non-integer.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 
