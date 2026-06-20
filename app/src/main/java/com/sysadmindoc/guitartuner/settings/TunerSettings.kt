@@ -44,6 +44,7 @@ data class StoredTunerPreferences(
     val pegTurnDirections: Map<Int, PegTurnDirection> = emptyMap(),
     val leftHanded: Boolean = false,
     val capoFret: Int = 0,
+    val noteNaming: NoteNaming = NoteNaming.Scientific,
 ) {
     init {
         PitchCalibration(a4Hz)
@@ -67,4 +68,9 @@ enum class StartupTuningMode {
 enum class MeterStyle {
     Normal,
     Strobe,
+}
+
+enum class NoteNaming {
+    Scientific,
+    Solfege,
 }

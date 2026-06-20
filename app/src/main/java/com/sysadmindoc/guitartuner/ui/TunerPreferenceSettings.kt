@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.InputDeviceInfo
 import com.sysadmindoc.guitartuner.settings.MeterStyle
+import com.sysadmindoc.guitartuner.settings.NoteNaming
 import com.sysadmindoc.guitartuner.settings.StartupTuningMode
 import com.sysadmindoc.guitartuner.settings.StoredTunerPreferences
 import com.sysadmindoc.guitartuner.settings.ThemeMode
@@ -32,6 +33,7 @@ internal fun DefaultsSection(
     onSpokenFeedbackChanged: (Boolean) -> Unit,
     onLeftHandedChanged: (Boolean) -> Unit,
     onCapoFretChanged: (Int) -> Unit,
+    onNoteNamingSelected: (NoteNaming) -> Unit,
     onMeterStyleSelected: (MeterStyle) -> Unit,
 ) {
     SettingsSection(
@@ -112,6 +114,22 @@ internal fun DefaultsSection(
             onDecrease = { onCapoFretChanged(preferences.capoFret - 1) },
             onIncrease = { onCapoFretChanged(preferences.capoFret + 1) },
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            for (naming in NoteNaming.entries) {
+                SelectableOptionButton(
+                    label = when (naming) {
+                        NoteNaming.Scientific -> stringResource(R.string.note_naming_scientific)
+                        NoteNaming.Solfege -> stringResource(R.string.note_naming_solfege)
+                    },
+                    selected = preferences.noteNaming == naming,
+                    onClick = { onNoteNamingSelected(naming) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

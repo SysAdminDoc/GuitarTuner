@@ -53,6 +53,7 @@ class TunerPreferencesRepository(
                 pegTurnDirections = decodePegTurnDirections(storedPreferences[PegDirectionsKey]),
                 leftHanded = storedPreferences[LeftHandedKey] ?: false,
                 capoFret = (storedPreferences[CapoFretKey] ?: 0).coerceIn(0, MaxCapoFret),
+                noteNaming = storedPreferences[NoteNamingKey].toNoteNaming(),
             )
         }
 
@@ -132,6 +133,12 @@ class TunerPreferencesRepository(
         }
     }
 
+    suspend fun setNoteNaming(naming: NoteNaming) {
+        dataStore.edit { preferences ->
+            preferences[NoteNamingKey] = naming.name
+        }
+    }
+
     suspend fun setCapoFret(fret: Int) {
         dataStore.edit { preferences ->
             preferences[CapoFretKey] = fret.coerceIn(0, MaxCapoFret)
@@ -164,6 +171,9 @@ class TunerPreferencesRepository(
     private fun String?.toMeterStyle(): MeterStyle =
         MeterStyle.entries.firstOrNull { it.name == this } ?: MeterStyle.Normal
 
+    private fun String?.toNoteNaming(): NoteNaming =
+        NoteNaming.entries.firstOrNull { it.name == this } ?: NoteNaming.Scientific
+
     private fun Double?.sanitizeA4Hz(): Double =
         this?.takeIf { it in 400.0..480.0 } ?: PitchCalibration().a4Hz
 
@@ -188,6 +198,7 @@ class TunerPreferencesRepository(
         val NoiseGateRmsKey = doublePreferencesKey("noise_gate_rms")
         val PegDirectionsKey = stringPreferencesKey("peg_directions")
         val LeftHandedKey = booleanPreferencesKey("left_handed")
+        val NoteNamingKey = stringPreferencesKey("note_naming")
         val CapoFretKey = intPreferencesKey("capo_fret")
         const val MaxCapoFret = 12
     }

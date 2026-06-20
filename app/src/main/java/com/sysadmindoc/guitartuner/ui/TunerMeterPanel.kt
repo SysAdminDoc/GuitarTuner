@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.audio.TunerSessionState
 import com.sysadmindoc.guitartuner.settings.MeterStyle
+import com.sysadmindoc.guitartuner.settings.NoteNaming
 import com.sysadmindoc.guitartuner.settings.PegTurnDirection
 import com.sysadmindoc.guitartuner.tuning.GuitarString
 import com.sysadmindoc.guitartuner.tuning.TuningDefinition
@@ -56,6 +57,7 @@ internal fun TunerMeterPanel(
     tuningMode: TuningMode,
     guidedStringNumber: Int,
     pegTurnDirections: Map<Int, PegTurnDirection>,
+    noteNaming: NoteNaming = NoteNaming.Scientific,
     meterStyle: MeterStyle = MeterStyle.Normal,
     modifier: Modifier = Modifier,
 ) {
@@ -81,6 +83,7 @@ internal fun TunerMeterPanel(
                 guidedTarget = guidedTarget,
                 activeTuning = activeTuning,
                 tuningMode = tuningMode,
+                noteNaming = noteNaming,
             )
             when (meterStyle) {
                 MeterStyle.Normal -> CentsMeter(state)
@@ -105,9 +108,14 @@ private fun TargetString(
     guidedTarget: GuitarString?,
     activeTuning: TuningDefinition,
     tuningMode: TuningMode,
+    noteNaming: NoteNaming = NoteNaming.Scientific,
 ) {
     val measurement = state.measurement
     val target = measurement.target ?: guidedTarget
+    val displayPitch = when (noteNaming) {
+        NoteNaming.Scientific -> target?.scientificPitch
+        NoteNaming.Solfege -> target?.solfegePitch
+    }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -127,7 +135,7 @@ private fun TargetString(
             val noteMaxSp = with(density) { (maxWidth / 3).toSp() }
             val noteFontSize = if (noteMaxSp < 92.sp) noteMaxSp else 92.sp
             Text(
-                text = target?.scientificPitch ?: stringResource(R.string.target_auto_detect_short),
+                text = displayPitch ?: stringResource(R.string.target_auto_detect_short),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Bold,

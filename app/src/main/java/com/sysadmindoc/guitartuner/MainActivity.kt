@@ -278,6 +278,7 @@ private fun TunerRoute(quickTune: Boolean = false) {
                 onSpokenFeedbackChanged = { enabled -> stateHolder.setSpokenFeedback(enabled) },
                 onLeftHandedChanged = { enabled -> stateHolder.setLeftHanded(enabled) },
                 onCapoFretChanged = { fret -> stateHolder.setCapoFret(fret) },
+                onNoteNamingSelected = { naming -> stateHolder.setNoteNaming(naming) },
                 onMeterStyleSelected = { style -> stateHolder.setMeterStyle(style) },
                 onMeasureA4 = {
                     val measured = TunerStateHolder.measureA4FromLive(

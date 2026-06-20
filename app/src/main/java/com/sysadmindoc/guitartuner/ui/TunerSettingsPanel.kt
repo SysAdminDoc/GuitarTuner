@@ -37,6 +37,7 @@ internal fun TunerSettingsPanel(
     onSpokenFeedbackChanged: (Boolean) -> Unit,
     onLeftHandedChanged: (Boolean) -> Unit,
     onCapoFretChanged: (Int) -> Unit,
+    onNoteNamingSelected: (com.sysadmindoc.guitartuner.settings.NoteNaming) -> Unit,
     onMeterStyleSelected: (MeterStyle) -> Unit,
     onMeasureA4: () -> Unit,
     onA4CalibrationChanged: (Double) -> Unit,
@@ -85,6 +86,7 @@ internal fun TunerSettingsPanel(
             onSpokenFeedbackChanged = onSpokenFeedbackChanged,
             onLeftHandedChanged = onLeftHandedChanged,
             onCapoFretChanged = onCapoFretChanged,
+            onNoteNamingSelected = onNoteNamingSelected,
             onMeterStyleSelected = onMeterStyleSelected,
         )
         PrecisionSection(

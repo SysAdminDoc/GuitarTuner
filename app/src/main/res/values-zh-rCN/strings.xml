@@ -177,6 +177,9 @@
     <string name="source_unprocessed">未处理</string>
     <string name="source_default">Android 默认</string>
     <string name="source_generic">源 %1$d</string>
+    <string name="setting_note_naming">音名显示</string>
+    <string name="note_naming_scientific">英文</string>
+    <string name="note_naming_solfege">唱名</string>
     <string name="setting_capo">变调夹</string>
     <string name="capo_off">关闭</string>
     <string name="capo_fret_value">品 %1$d</string>

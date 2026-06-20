@@ -30,13 +30,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
 
 ### P2
 
-- [ ] P2 — Solfege / international note naming option
-  Why: non-English markets (Romance languages, East Asia) expect Do/Re/Mi/Fa/Sol/La/Si notation. No Android tuner app offers this as a setting. billthefarmer/tuner offers it but with no localization-aware toggle.
-  Evidence: billthefarmer/tuner solfege support; Moekadu uses scientific pitch only; community requests on r/guitar from non-English speakers.
-  Touches: `tuning/GuitarString.kt` (add note name formatting), `settings/TunerSettings.kt` (new preference), `ui/TunerMeterPanel.kt`, all `values-*/strings.xml`.
-  Acceptance: setting to switch between scientific pitch (C4) and solfege (Do4); default follows locale.
-  Complexity: M
-
 - [ ] P2 — In-app custom tuning editor
   Why: JSON import/export is a power-user flow. Intermediate users wanting to create a custom tuning (e.g., Open C, NST) must edit JSON externally. A simple in-app editor with string count + note/frequency pickers would serve a much wider audience.
   Evidence: Choona offers in-app tuning editor with note/octave entry; community request frequency on r/guitar.

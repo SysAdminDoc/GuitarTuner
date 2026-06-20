@@ -77,6 +77,10 @@ class TunerStateHolder(
         scope.launch { preferencesRepository.setNoiseGateRms(rms) }
     }
 
+    fun setNoteNaming(naming: com.sysadmindoc.guitartuner.settings.NoteNaming) {
+        scope.launch { preferencesRepository.setNoteNaming(naming) }
+    }
+
     fun setCapoFret(fret: Int) {
         scope.launch { preferencesRepository.setCapoFret(fret) }
     }

@@ -177,6 +177,9 @@
     <string name="source_unprocessed">未処理</string>
     <string name="source_default">Android既定</string>
     <string name="source_generic">ソース %1$d</string>
+    <string name="setting_note_naming">音名表記</string>
+    <string name="note_naming_scientific">英米式</string>
+    <string name="note_naming_solfege">ソルフェージュ</string>
     <string name="setting_capo">カポ</string>
     <string name="capo_off">オフ</string>
     <string name="capo_fret_value">フレット %1$d</string>

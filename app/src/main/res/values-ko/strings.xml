@@ -177,6 +177,9 @@
     <string name="source_unprocessed">미처리</string>
     <string name="source_default">Android 기본</string>
     <string name="source_generic">소스 %1$d</string>
+    <string name="setting_note_naming">음이름 표기</string>
+    <string name="note_naming_scientific">과학적</string>
+    <string name="note_naming_solfege">솔페지오</string>
     <string name="setting_capo">카포</string>
     <string name="capo_off">끄기</string>
     <string name="capo_fret_value">프렛 %1$d</string>

@@ -177,6 +177,9 @@
     <string name="source_unprocessed">Sin procesar</string>
     <string name="source_default">Android predeterminado</string>
     <string name="source_generic">Fuente %1$d</string>
+    <string name="setting_note_naming">Nombres de notas</string>
+    <string name="note_naming_scientific">Cientifico</string>
+    <string name="note_naming_solfege">Solfeo</string>
     <string name="setting_capo">Cejilla</string>
     <string name="capo_off">Desactivado</string>
     <string name="capo_fret_value">Traste %1$d</string>
