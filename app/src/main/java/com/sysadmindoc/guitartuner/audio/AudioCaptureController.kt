@@ -1,6 +1,7 @@
 package com.sysadmindoc.guitartuner.audio
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
@@ -8,6 +9,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
 import android.util.Log
+import com.sysadmindoc.guitartuner.R
 import com.sysadmindoc.guitartuner.pitch.PhaseRefiner
 import com.sysadmindoc.guitartuner.pitch.PitchDetectorConfig
 import com.sysadmindoc.guitartuner.pitch.SignalStatus
@@ -37,6 +39,7 @@ class AudioCaptureController(
     initialStrings: List<GuitarString> = StandardGuitarTuning.strings,
     private val supportsUnprocessedSource: Boolean = false,
     private val audioManager: AudioManager? = null,
+    private val context: Context? = null,
 ) : Closeable {
     private val _state = MutableStateFlow(TunerSessionState())
     val state: StateFlow<TunerSessionState> = _state.asStateFlow()
@@ -417,14 +420,17 @@ class AudioCaptureController(
         }
     }
 
-    private fun deviceTypeLabel(type: Int): String = when (type) {
-        AudioDeviceInfo.TYPE_BUILTIN_MIC -> "Built-in mic"
-        AudioDeviceInfo.TYPE_WIRED_HEADSET -> "Wired headset"
-        AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> "Bluetooth SCO"
-        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "Bluetooth A2DP"
-        AudioDeviceInfo.TYPE_USB_DEVICE -> "USB device"
-        AudioDeviceInfo.TYPE_USB_HEADSET -> "USB headset"
-        else -> "Input $type"
+    private fun deviceTypeLabel(type: Int): String {
+        val ctx = context
+        return when (type) {
+            AudioDeviceInfo.TYPE_BUILTIN_MIC -> ctx?.getString(R.string.device_builtin_mic) ?: "Built-in mic"
+            AudioDeviceInfo.TYPE_WIRED_HEADSET -> ctx?.getString(R.string.device_wired_headset) ?: "Wired headset"
+            AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> ctx?.getString(R.string.device_bluetooth_sco) ?: "Bluetooth SCO"
+            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> ctx?.getString(R.string.device_bluetooth_a2dp) ?: "Bluetooth A2DP"
+            AudioDeviceInfo.TYPE_USB_DEVICE -> ctx?.getString(R.string.device_usb) ?: "USB device"
+            AudioDeviceInfo.TYPE_USB_HEADSET -> ctx?.getString(R.string.device_usb_headset) ?: "USB headset"
+            else -> ctx?.getString(R.string.device_input_generic, type) ?: "Input $type"
+        }
     }
 
     private fun AudioRecord.safeStop() {
@@ -451,13 +457,16 @@ class AudioCaptureController(
         else -> "Microphone read failed with AudioRecord code $errorCode."
     }
 
-    private fun Int.audioSourceLabel(): String = when (this) {
-        MediaRecorder.AudioSource.VOICE_PERFORMANCE -> "Voice performance"
-        MediaRecorder.AudioSource.VOICE_RECOGNITION -> "Voice recognition"
-        MediaRecorder.AudioSource.MIC -> "Mic"
-        MediaRecorder.AudioSource.UNPROCESSED -> "Unprocessed"
-        MediaRecorder.AudioSource.DEFAULT -> "Android default"
-        else -> "Source $this"
+    private fun Int.audioSourceLabel(): String {
+        val ctx = context
+        return when (this) {
+            MediaRecorder.AudioSource.VOICE_PERFORMANCE -> ctx?.getString(R.string.source_voice_performance) ?: "Voice performance"
+            MediaRecorder.AudioSource.VOICE_RECOGNITION -> ctx?.getString(R.string.source_voice_recognition) ?: "Voice recognition"
+            MediaRecorder.AudioSource.MIC -> ctx?.getString(R.string.source_mic) ?: "Mic"
+            MediaRecorder.AudioSource.UNPROCESSED -> ctx?.getString(R.string.source_unprocessed) ?: "Unprocessed"
+            MediaRecorder.AudioSource.DEFAULT -> ctx?.getString(R.string.source_default) ?: "Android default"
+            else -> ctx?.getString(R.string.source_generic, this) ?: "Source $this"
+        }
     }
 
     private companion object {

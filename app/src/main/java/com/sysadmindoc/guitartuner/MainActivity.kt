@@ -71,6 +71,7 @@ private fun TunerRoute() {
             scope = scope,
             supportsUnprocessedSource = supportsUnprocessed,
             audioManager = audioManager,
+            context = context,
         )
     }
     val tonePlayer = remember { TonePlayer() }

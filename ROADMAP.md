@@ -37,13 +37,6 @@ Blocked items live in `Roadmap_Blocked.md` (gitignored). Move items back here wh
   Acceptance: process death and recreation (via developer options "Don't keep activities") preserves tuning mode, calibration, and listening state.
   Complexity: M
 
-- [ ] P1 — Move deviceTypeLabel/audioSourceLabel to string resources
-  Why: `deviceTypeLabel()` ("Built-in mic", "Wired headset") and `audioSourceLabel()` ("Voice recognition", "Mic") return English-only strings visible in the UI, not in string resources.
-  Evidence: `audio/AudioCaptureController.kt:420-428,454-461`.
-  Touches: `AudioCaptureController.kt`, all `values-*/strings.xml` files.
-  Acceptance: mic device picker and diagnostics display show translated labels in all 8 locales.
-  Complexity: S
-
 ### P2
 
 - [ ] P2 — FFT-accelerated YIN difference function
