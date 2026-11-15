@@ -23,8 +23,8 @@ android {
         applicationId = "com.sysadmindoc.guitartuner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.1.0"
+        versionCode = 7
+        versionName = "0.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -102,6 +102,14 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+}
+
+// The SBOM lists what ships in the release APK. Left unscoped, the task walks every
+// configuration (lint, R8, compiler tooling) and resolves hundreds of build-tool POMs
+// that gradle/verification-metadata.xml rightly doesn't cover.
+tasks.named<org.cyclonedx.gradle.CycloneDxTask>("cyclonedxBom") {
+    includeConfigs.set(listOf("releaseRuntimeClasspath"))
+    outputFormat.set("json")
 }
 
 androidComponents {

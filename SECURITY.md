@@ -1,14 +1,14 @@
 # Security Policy
 
-## Verifying Release Artifacts
+## Verifying release downloads
 
-Every tagged GitHub Release includes `SHA256SUMS.txt` alongside the APK and AAB. To verify a downloaded artifact:
+Every GitHub release includes a `SHA256SUMS.txt` next to the APK. To check a download:
 
 ### PowerShell
 
 ```powershell
-(Get-FileHash app-release.apk -Algorithm SHA256).Hash
-# Compare the output with the corresponding line in SHA256SUMS.txt
+(Get-FileHash GuitarTuner-vX.Y.Z.apk -Algorithm SHA256).Hash
+# Compare the output with the matching line in SHA256SUMS.txt
 ```
 
 ### Linux / macOS
@@ -17,24 +17,28 @@ Every tagged GitHub Release includes `SHA256SUMS.txt` alongside the APK and AAB.
 sha256sum -c SHA256SUMS.txt
 ```
 
-### APK Signing Certificate Fingerprint
+### APK signing certificate
 
-Verify the APK was signed with the official GuitarTuner release key:
+Check that the APK was signed with the GuitarTuner release key:
 
 ```bash
-apksigner verify --print-certs app-release.apk
+apksigner verify --print-certs GuitarTuner-vX.Y.Z.apk
 ```
 
-The release signing certificate SHA-256 fingerprint will be published here after the first signed release is created.
+The signer's certificate SHA-256 should be:
+
+```
+DB:A1:AA:88:E3:7B:90:15:5F:CA:31:35:CA:3B:78:1D:E9:2C:22:51:07:E4:7C:98:06:E7:5B:F8:80:55:FD:D8
+```
+
+If it doesn't match, don't install it.
 
 ## Permissions
 
-GuitarTuner declares a single Android permission:
+GuitarTuner asks for one Android permission, `android.permission.RECORD_AUDIO`, and only uses it while the tuner screen is visible.
 
-- `android.permission.RECORD_AUDIO` — used only while the tuner screen is visible.
+There's no network permission. Audio is processed on the phone and is never stored, exported or uploaded.
 
-The app declares **no network permission**. Audio samples are processed locally and are never stored, exported, or uploaded.
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
-
-If you find a security issue, please open a GitHub issue or email the maintainer directly. There is no bug bounty, but responsible disclosure is appreciated.
+If you find a security issue, please open a GitHub issue or email the maintainer directly. There's no bug bounty, but responsible disclosure is appreciated.

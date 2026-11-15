@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/SysAdminDoc/GuitarTuner/refs/heads/main/logo.png" width="300" alt="GuitarTuner logo">
 </p>
 
-![Version](https://img.shields.io/badge/version-v0.1.0-blue)
+![Version](https://img.shields.io/badge/version-v0.2.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Android%208.0%2B-lightgrey)
 
@@ -18,113 +18,63 @@
   <sub><em>If this project helps you, a coffee helps me keep working on it.</em></sub>
 </p>
 
-GuitarTuner is an open-source Android app for tuning an acoustic guitar by sound. The app listens through the microphone, identifies the strummed open string, shows whether it is flat or sharp, and guides the player through small tuning adjustments.
+GuitarTuner is an open-source Android tuner for acoustic guitar. It listens through the microphone, works out which open string you played, and tells you whether it's flat or sharp and which way to turn the peg. Everything runs on the phone. There are no accounts or ads, and the app doesn't have network permission.
 
-GitHub description: Offline open-source Android acoustic guitar tuner with automatic string detection, local-only microphone processing, and beginner-friendly tune-up / tune-down guidance.
+<p align="center">
+  <img src="docs/screenshots/tuner-stable-controls.png" alt="Tuner screen, ready to listen" width="260">
+  <img src="docs/screenshots/tuner-main.png" alt="Tuner screen while listening to the microphone" width="260">
+  <img src="docs/screenshots/tuner-settings.png" alt="Tuning presets and mode settings" width="260">
+</p>
 
-Suggested topics: `android`, `kotlin`, `jetpack-compose`, `guitar-tuner`, `pitch-detection`, `audiorecord`, `offline-first`, `privacy`.
+## Features
 
-## Current Direction
+- Auto, Guided and Chromatic modes. Guided walks you from low E to high E and moves to the next string once the current one holds in tune.
+- Guitar, bass and ukulele presets plus Drop D, Open G, DADGAD and half-step down.
+- Custom tunings with 1 to 12 strings. Build them in the app or import them as JSON.
+- A normal or strobe meter, a fullscreen stage view and a pitch history timeline.
+- Capo from fret 0 to 12, A4 calibration in 0.1 Hz steps, and adjustable cents tolerance and noise gate.
+- Reference tones, spoken feedback, haptic confirmation and a left-handed layout.
+- Scientific (E2) or solfege (Mi2) note names.
+- TalkBack support, with the app translated into English, German, Spanish, Portuguese, French, Japanese, Korean and Simplified Chinese.
+- AMOLED dark theme by default, with light and system options.
 
-- Native Android app with Kotlin, Jetpack Compose, and Material 3.
-- Offline-first design with no network permission.
-- Microphone-only pitch detection using lifecycle-bound Android `AudioRecord` capture.
-- Auto, Guided, and Chromatic modes with guitar, bass, ukulele, built-in alternate tunings, and custom JSON tunings.
-- Premium AMOLED tuner surface with a tick-based cents scale, compact frequency/cents/confidence/input readouts, and fullscreen stage mode.
-- Live microphone diagnostics show raw level, peak level, input source, and sample rate before pitch detection succeeds.
-- Guided walkthrough with reference tone playback and per-string peg-direction calibration.
-- Clear tune-up / tune-down guidance with optional peg-direction calibration.
-- Optional haptic in-tune confirmation and freeze-last-note display after note decay.
-- AMOLED dark theme by default with an accessible light theme.
+## Install
 
-## GitHub Launch Post
+You need Android 8.0 or newer.
 
-GuitarTuner is a privacy-first, open-source Android tuner for acoustic guitar. It uses the phone microphone locally, detects which open string was strummed, and gives clear flat/sharp plus tune-up/tune-down feedback without accounts, ads, uploads, or network permission.
+1. Download the APK from the [latest release](https://github.com/SysAdminDoc/GuitarTuner/releases/latest).
+2. Open it on your phone. If Android asks, let your browser or file manager install unknown apps.
+3. Later releases install over the top and keep your settings.
 
-The current v0.1.0 build includes native Kotlin/Compose UI, YIN pitch detection with inter-frame octave hysteresis and autocorrelation fallback, Auto/Guided/Chromatic modes with guided auto-advance, guitar/bass/ukulele presets, custom tunings (1-12 strings), normal and strobe meter styles, fullscreen stage mode, pitch history timeline, spoken TTS feedback, reference tone playback, haptic confirmation, live mic level/peak diagnostics, localized TalkBack accessibility in 8 languages (en/de/es/pt/fr/ja/ko/zh), keep-screen-on during listening, resilient local settings, light/dark themes, noise-profile and fixture-based regression tests, and a hardened GitHub release workflow.
+## Verify the download
 
-## Microphone Reliability Notes
+Each release ships a `SHA256SUMS.txt`. Compare it against the APK you downloaded:
 
-- If the tuner shows `Mic 0.0% / peak 0.0%` while listening, Android is giving the app silence. Check the system microphone privacy toggle, app microphone permission, and whether another app is holding the microphone.
-- If `peak` moves but no string is detected, sound is reaching the app; move closer, strum one open string, lower background noise, or reduce the noise gate.
-- The app tries Android input sources aimed at real-time performance, voice recognition, standard mic capture, and unprocessed capture where supported.
-- Emulator audio is not a reliable test target; use a physical phone for microphone QA.
-
-## Build
-
-Requirements:
-
-- JDK 21.
-- Android SDK platform 36.
-- Gradle 9.5.1 wrapper.
-- Android Gradle Plugin 9.2.1.
-- Kotlin/Compose plugin 2.3.21.
-
-PowerShell:
-
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"
-$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
-.\gradlew.bat check assembleDebug assembleRelease
+```bash
+sha256sum -c SHA256SUMS.txt
 ```
 
-## Release Checklist
+On Windows, `Get-FileHash <file>.apk -Algorithm SHA256` gives the same hash.
 
-- Build from a clean tag named `v*`.
-- Set signing secrets before pushing a release tag: `ANDROID_SIGNING_KEYSTORE_BASE64`, `GUITARTUNER_KEYSTORE_PASSWORD`, `GUITARTUNER_KEY_ALIAS`, and `GUITARTUNER_KEY_PASSWORD`.
-- Run `.\gradlew.bat check assembleRelease bundleRelease --no-daemon --no-configuration-cache`.
-- Push the tag to GitHub after a remote and signing secrets are configured; `.github/workflows/release.yml` uploads the APK/AAB plus `SHA256SUMS.txt` and publishes them to a GitHub Release.
-- Do not publish artifacts from a dirty worktree or from an untagged local build.
+The APK is signed with this certificate (SHA-256):
 
-## Signed Release Builds
-
-Generate a release keystore once and keep it outside the repository. The `.gitignore` blocks common keystore extensions, but the keystore still belongs in a password manager or secrets vault.
-
-```powershell
-keytool -genkeypair -v `
-  -keystore "$env:USERPROFILE\guitartuner-release.jks" `
-  -alias guitartuner `
-  -keyalg RSA `
-  -keysize 4096 `
-  -validity 10000
+```
+DB:A1:AA:88:E3:7B:90:15:5F:CA:31:35:CA:3B:78:1D:E9:2C:22:51:07:E4:7C:98:06:E7:5B:F8:80:55:FD:D8
 ```
 
-For a local signed build, export the signing environment variables before running Gradle:
+`apksigner verify --print-certs <file>.apk` prints it.
 
-```powershell
-$env:GUITARTUNER_KEYSTORE_PATH = "$env:USERPROFILE\guitartuner-release.jks"
-$env:GUITARTUNER_KEYSTORE_PASSWORD = "<keystore-password>"
-$env:GUITARTUNER_KEY_ALIAS = "guitartuner"
-$env:GUITARTUNER_KEY_PASSWORD = "<key-password>"
-.\gradlew.bat check assembleRelease bundleRelease --no-daemon --no-configuration-cache
-Get-FileHash app\build\outputs\apk\release\app-release.apk -Algorithm SHA256
-```
+## Use
 
-For GitHub release builds, store the same passwords plus a base64-encoded keystore in repository secrets:
+Tap **Start listening**, pluck one open string and turn the peg the way the tuner says (tune up or tune down). Pick a tuning before you start if you aren't in standard. Long-pressing the launcher icon gives you a Quick tune shortcut that starts listening straight away.
 
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\guitartuner-release.jks")) | Set-Clipboard
-```
+If the level reads `Mic 0.0% / peak 0.0%` while listening, Android is handing the app silence. Check the microphone privacy toggle, the app's microphone permission, and whether another app is holding the mic. If the peak moves but no string shows up, sound is getting through, so move closer, play one string at a time, or lower the noise gate.
 
-Paste that value into `ANDROID_SIGNING_KEYSTORE_BASE64`. The release workflow decodes it on the runner, builds `assembleRelease` and `bundleRelease`, and uploads APK/AAB artifacts with `SHA256SUMS.txt`.
+Emulator audio isn't reliable for this. Test on a real phone.
 
-The release workflow is ready in this repository, but it only runs after the project is pushed to a GitHub remote and the four signing secrets exist. A `v*` tag push publishes or updates the matching GitHub Release; manual workflow runs build and upload artifacts without creating a release.
+## Custom tuning JSON
 
-## Repository Status
-
-GuitarTuner v0.1.0 has a native Android scaffold with an in-project YIN pitch detector with inter-frame octave hysteresis, autocorrelation fallback, overlapping live audio windows, stable-frame smoothing that preserves overshoot warnings, Auto/Guided/Chromatic tuning modes with guided auto-advance, guitar/bass/ukulele presets, custom tunings (1-12 strings), normal and strobe meter styles, a pitch history timeline, spoken TTS feedback, fullscreen stage mode, per-string peg-direction calibration, persisted A4 calibration, cents tolerance, noise gate, System/Dark/Light theme, localized TalkBack accessibility in 8 locales, safe reference tone playback, keep-screen-on during listening, bounded tuning-file import, DataStore recovery, a merged-manifest permission gate, and comprehensive JVM test coverage including standard-string, octave-error, quiet-input, live-sized fixture, and noise-profile tests.
-
-## Screenshot
-
-![Stable bottom listening controls](docs/screenshots/tuner-stable-controls.png)
-
-## Privacy Baseline
-
-The Android manifest declares `RECORD_AUDIO` only. The app has no network permission, no background microphone service, and no audio upload path.
-
-## Custom Tuning JSON
-
-The Import button accepts a JSON file shaped like this:
+The Import button takes a file shaped like this:
 
 ```json
 {
@@ -146,13 +96,27 @@ The Import button accepts a JSON file shaped like this:
 }
 ```
 
-## Play Data Safety Draft
+## Privacy
 
-- Data collected: none transmitted off device.
-- Data shared: none.
-- Audio: microphone samples are processed ephemerally on device for tuning, not stored, exported, or uploaded.
-- App activity and settings: startup tuning preferences are stored locally only and are deleted when app data is cleared or the app is uninstalled.
-- Network: the app declares no network permission.
+The manifest asks for `RECORD_AUDIO` and nothing else. Audio is analyzed in memory while the tuner is on screen and is never saved or uploaded. Settings and custom tunings stay on the phone and go away when you clear the app's data or uninstall it.
+
+## Build
+
+You'll need JDK 21 and Android SDK platform 36. The Gradle wrapper handles the rest.
+
+```powershell
+$env:JAVA_HOME = "<path to JDK 21>"
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+.\gradlew.bat check assembleDebug
+```
+
+For a signed release build, set `GUITARTUNER_KEYSTORE_PATH`, `GUITARTUNER_KEYSTORE_PASSWORD`, `GUITARTUNER_KEY_ALIAS` and `GUITARTUNER_KEY_PASSWORD`, then run `.\gradlew.bat assembleRelease`. Without those four, Gradle still finishes but writes an unsigned `app-release-unsigned.apk`.
+
+`.\gradlew.bat :app:cyclonedxBom` writes a CycloneDX bill of materials.
+
+## Credits
+
+Pitch detection is built on the YIN algorithm by Alain de Cheveigné and Hideki Kawahara (2002).
 
 ## License
 

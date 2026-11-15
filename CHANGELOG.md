@@ -1,34 +1,34 @@
 # Changelog
 
-## GuitarTuner v0.1.0 (audit) - 2026-06-19
+## GuitarTuner v0.2.0 - 2026-11-15
 
-- Fixed forward-compatible JSON imports: set `ignoreUnknownKeys = true` so tuning files exported by future app versions with extra fields can still be imported by older versions.
-- Fixed silent custom tuning data loss: when stored tuning JSON contains a mix of valid and invalid entries, valid tunings now load successfully instead of all being silently dropped.
-- Added session summary string translations for de/es/fr/ja/ko/pt/zh-CN, completing 167/167 strings in all 8 locales.
-- Localized session summary card text to use string resources instead of hardcoded English.
-- Fixed fullscreen view font sizing to cap by both width and height, preventing overflow on small screens.
-- Removed fixed minimum height constraints from meter panel and readout text to prevent blank space on compact screens.
-- Moved blocked roadmap items to Roadmap_Blocked.md to keep ROADMAP.md actionable-only.
-- Added TalkBack accessibility semantics to strobe meter mode (contentDescription, stateDescription, progressBarRangeInfo, liveRegion) matching the normal meter's existing accessibility support.
-- Added liveRegion to fullscreen tuner view so TalkBack announces note and direction updates.
-- Fixed haptic confirmation on API 26-29 devices: falls back to LONG_PRESS when CONFIRM constant is unavailable (added in API 30).
-- Moved device type and audio source labels to string resources with translations in all 8 locales so mic picker and diagnostics display in the device language.
-- Removed dead `sampleRate` constructor parameter from PhaseRefiner; `refine()` now requires `sampleRate` as an explicit parameter at every call site.
-- Extracted duplicated stretch-mode toggle logic in TunerScreen into a shared lambda.
-- Added pitch history timeline accessibility annotation so TalkBack announces the tuning trend.
-- Added "Quick tune" app shortcut (long-press launcher icon) that starts listening immediately, localized in all 8 languages.
-- Added TalkBack accessibility grouping to session summary card so each string row is announced as one phrase.
-- Added contentDescription to the status dot in the tuner header for color-blind accessibility.
-- Refined A4 calibration to 0.1 Hz granularity: measure-from-live rounds to 0.1 Hz, stepper increments by 0.5 Hz, display shows decimals when non-integer.
-- Replaced pitch history timeline SnapshotStateList with a circular FloatArray buffer for O(1) per-frame updates instead of O(n) removeAt(0).
-- Extracted TunerViewModel from TunerRoute: AudioCaptureController, TonePlayer, SpokenFeedbackController, and repositories now survive configuration changes. Tuning mode, guided string, and selected tuning persist across process death via SavedStateHandle.
-- Added left-handed instrument layout toggle: reverses the guided string grid order, persisted in preferences, localized in all 8 languages.
-- Added CycloneDX SBOM generation plugin (`./gradlew :app:cyclonedxBom` produces a machine-readable bill of materials).
-- Replaced O(N^2) time-domain YIN difference function with FFT-accelerated autocorrelation (O(N log N)), reducing CPU cost ~10x per audio frame on the pitch detection hot path. All existing pitch detection tests pass unchanged.
-- Added alternate-tuning detection tests: 10 new tests covering Drop D, Open G, DADGAD, Half-step down, bass standard, and ukulele standard with synthetic guitar-like signals.
-- Added capo/transposition support: stepper control (fret 0-12) shifts all target frequencies up by the selected number of semitones. Persisted in preferences, localized in all 8 languages.
-- Added solfege/international note naming option: toggle between scientific pitch (C4, E2) and solfege (Do4, Mi2) in settings. Maps all chromatic notes including sharps and flats to Do/Re/Mi/Fa/Sol/La/Si notation. Localized in all 8 languages.
-- Added in-app custom tuning editor: create, edit, and delete custom tunings without JSON knowledge. Per-string name, pitch, and frequency entry with 1-12 string support. Localized in all 8 languages.
+- Tuning files exported by a newer version of the app now import into older ones. Fields the older app doesn't know about are skipped (`ignoreUnknownKeys = true`) instead of failing the import.
+- A stored tuning list with one bad entry in it no longer loses every custom tuning. The valid ones still load.
+- Translated the session summary strings for de, es, fr, ja, ko, pt and zh-CN. All 8 locales now have all 167 strings.
+- The session summary card reads its text from string resources, so it follows the device language instead of always showing English.
+- Fullscreen text is capped by the screen's height as well as its width, which keeps it from overflowing on small phones.
+- Dropped the fixed minimum heights on the meter panel and readout text that left blank space on compact screens.
+- Blocked roadmap items moved to their own list, so ROADMAP.md only holds work that can start now.
+- The strobe meter gets the same TalkBack support the normal meter already had (content description, state description, range info and a live region).
+- Fullscreen mode has a live region now, so TalkBack reads out note and direction changes.
+- Haptic confirmation works on API 26-29 devices. The CONFIRM effect only exists from API 30 on, so older phones fall back to LONG_PRESS.
+- Device type and audio source labels in the mic picker and diagnostics come from string resources, translated into all 8 locales.
+- PhaseRefiner no longer takes an unused `sampleRate` constructor parameter. Every call to `refine()` passes `sampleRate` itself.
+- TunerScreen had the stretch-mode toggle logic written out twice. It's one shared lambda now.
+- TalkBack describes the tuning trend shown on the pitch history timeline.
+- Long-press the launcher icon for a "Quick tune" shortcut that starts listening right away. Its label is localized in all 8 languages.
+- TalkBack reads each string row on the session summary card as a single phrase.
+- The status dot in the tuner header has a content description, which helps color-blind users.
+- A4 calibration now goes down to 0.1 Hz. Measuring from the mic rounds to 0.1 Hz, the stepper moves in 0.5 Hz steps, and the display shows decimals when the value isn't a whole number.
+- The pitch history timeline keeps its points in a circular FloatArray buffer. Each frame costs O(1) now, where the old SnapshotStateList paid O(n) for `removeAt(0)`.
+- Moved tuner state out of TunerRoute into a new TunerViewModel. AudioCaptureController, TonePlayer, SpokenFeedbackController and the repositories survive rotation and other configuration changes, and tuning mode, guided string and selected tuning come back after process death through SavedStateHandle.
+- New left-handed layout toggle that reverses the guided string grid. It's saved with your other preferences and localized in all 8 languages.
+- `./gradlew :app:cyclonedxBom` writes a CycloneDX bill of materials (JSON) listing the libraries that ship in the release APK.
+- The YIN difference function runs on FFT-based autocorrelation now, O(N log N) instead of O(N^2). That's roughly 10x less CPU per audio frame on the pitch detection path, and every existing pitch test passes unchanged.
+- 10 new tests check detection in Drop D, Open G, DADGAD, half-step down, bass standard and ukulele standard, using synthetic guitar-like signals.
+- Added a capo stepper (frets 0 to 12) that shifts every target pitch up by that many semitones. The setting is saved and localized in all 8 languages.
+- Note names can switch between scientific pitch (C4, E2) and solfege (Do4, Mi2) in settings. Every chromatic note maps across, sharps and flats included, using Do, Re, Mi, Fa, Sol, La and Si. Available in all 8 languages.
+- You can create, edit and delete custom tunings inside the app without writing any JSON. Each string gets a name, pitch and frequency, and a tuning can have anywhere from 1 to 12 strings. The editor is localized in all 8 languages.
 
 ## GuitarTuner v0.1.0 - 2026-06-15
 
